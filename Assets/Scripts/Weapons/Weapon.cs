@@ -31,6 +31,7 @@ namespace SWAT.Weapons
         protected override void OnEnabled()
         {
             _projectile.Configure(_projectileDamage);
+            _currentClipSize = _clipSize;
         }
 
         public void Fire()

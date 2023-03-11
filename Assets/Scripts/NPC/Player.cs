@@ -1,44 +1,36 @@
 ﻿using Controllers;
-using NTC.Global.Cache;
 using SWAT.Behaviour;
-using SWAT.Weapons;
 using UnityEngine;
 
 namespace SWAT
 {
-    public class Player : MonoCache
+    public class Player : NPC
     {
         public bool IsVulnerable { get; private set; }
-
+        
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
 
-        private StateEngine _stateEngine;
-        private Weapon      _currentWeapon;
-        private Crosshair   _crosshair;
-
-        private int _currentHealth;
-        private int _currentArmour;
+        private Crosshair _crosshair;
 
         protected override void OnEnabled()
         {
+            base.OnEnabled();
+
             _crosshair = ObjectHolder.GetObject<Crosshair>();
 
-            _currentWeapon = ChildrenGet<Weapon>();
-
-            _stateEngine = new StateEngine();
-            _stateEngine.AddState(
+            StateEngine.AddState(
                 new FiringState(this),
                 new ReloadingState(this),
                 new IdleState(this));
 
-            _stateEngine.SwitchState<IdleState>();
+            StateEngine.SwitchState<IdleState>();
         }
 
         protected override void Run()
         {
-            _stateEngine.CurrentState?.Run();
+            base.Run();
 
             Quaternion target = Quaternion.LookRotation(_crosshair.RayHit());
             transform.rotation = Quaternion.Lerp(transform.rotation, target, Time.deltaTime * 20f);
@@ -61,21 +53,22 @@ namespace SWAT
             {
                 if (Input.GetMouseButton(0))
                 {
-                    _player._currentWeapon.Fire();
+                    _player.CurrentWeapon.Fire();
                 }
 
                 if (Input.GetMouseButtonUp(0))
                 {
-                    _player._currentWeapon.ResetFiringRate();
+                    _player.CurrentWeapon.ResetFiringRate();
+                    _player.StateEngine.SwitchState<IdleState>();
                 }
 
-                if (_player._currentWeapon.ClipIsEmpty) Exit();
+                if (_player.CurrentWeapon.ClipIsEmpty)
+                    _player.StateEngine.SwitchState<ReloadingState>();
             }
 
             public void Exit()
             {
                 _player.IsVulnerable = false;
-                _player._stateEngine.SwitchState<ReloadingState>();
             }
         }
 
@@ -89,20 +82,20 @@ namespace SWAT
 
             public void Enter()
             {
-                _currentReloadingTime = _player._currentWeapon.ReloadTime;
+                _currentReloadingTime = _player.CurrentWeapon.ReloadTime;
             }
 
             public void Run()
             {
                 _currentReloadingTime -= Time.deltaTime;
 
-                if (_currentReloadingTime <= 0) Exit();
+                if (_currentReloadingTime <= 0)
+                    _player.StateEngine.SwitchState<IdleState>();
             }
 
             public void Exit()
             {
-                _player._currentWeapon.Reload();
-                _player._stateEngine.SwitchState<IdleState>();
+                _player.CurrentWeapon.Reload();
             }
         }
 
@@ -118,14 +111,11 @@ namespace SWAT
             {
                 if (Input.GetMouseButtonDown(0))
                 {
-                    Exit();
+                    _player.StateEngine.SwitchState<FiringState>();
                 }
             }
 
-            public void Exit()
-            {
-                _player._stateEngine.SwitchState<FiringState>();
-            }
+            public void Exit() { }
         }
 #endregion
     }

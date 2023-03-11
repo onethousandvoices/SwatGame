@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SWAT.Behaviour
 {
@@ -20,6 +21,7 @@ namespace SWAT.Behaviour
 
         public void SwitchState<T>()
         {
+            CurrentState?.Exit();
             CurrentState = _states[typeof(T)];
             CurrentState.Enter();
         }
