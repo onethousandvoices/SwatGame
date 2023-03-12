@@ -60,7 +60,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Collider>k__BackingField: {fileID: 605033036016228144}
-  <FlySpeed>k__BackingField: 30
+  <FlySpeed>k__BackingField: 20
 --- !u!1001 &1668181460925706036
 PrefabInstance:
   m_ObjectHideFlags: 0
