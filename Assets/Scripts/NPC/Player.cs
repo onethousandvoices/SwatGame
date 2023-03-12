@@ -1,6 +1,7 @@
 ﻿using Controllers;
 using SWAT.Behaviour;
 using UnityEngine;
+using UnityEngine.Animations;
 
 namespace SWAT
 {
@@ -12,7 +13,9 @@ namespace SWAT
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
 
-        private Animator  _animator;
+        [SerializeField] private RotationConstraint _rotationConstraint;
+
+        private Animator _animator;
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
 
@@ -21,7 +24,7 @@ namespace SWAT
             base.OnEnabled();
 
             _animator = Get<Animator>();
-            
+
             StateEngine.AddState(
                 new FiringState(this),
                 new ReloadingState(this),
@@ -29,7 +32,6 @@ namespace SWAT
 
             StateEngine.SwitchState<IdleState>();
         }
-        
 
         private void GetUp()
         {
@@ -40,7 +42,20 @@ namespace SWAT
         {
             _animator.SetBool(_isSit, true);
         }
-        
+
+        public void UnityEvent_FirePoseAnimationEnd()
+        {
+            if (CurrentWeapon.FireState == false)
+            {
+                CurrentWeapon.SetFireState(true);
+                _rotationConstraint.constraintActive = true;
+            }
+            else
+            {
+                CurrentWeapon.SetFireState(false);
+                _rotationConstraint.constraintActive = false;
+            }
+        }
 
 #region States
         private class FiringState : IState
@@ -51,16 +66,12 @@ namespace SWAT
 
             public void Enter()
             {
-                //get up
                 _player.GetUp();
                 _player.IsVulnerable = true;
             }
 
             public void Run()
             {
-                // _player._spine.transform.eulerAngles = Vector3.Lerp(
-                //     _player._spine.transform.eulerAngles, _player._crosshair.RayHit() - new Vector3(0f, 33f, 0f), Time.deltaTime * 20f);
-
                 if (Input.GetMouseButton(0))
                 {
                     _player.CurrentWeapon.Fire();
