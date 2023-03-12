@@ -8,13 +8,15 @@ namespace SWAT.Weapons
     public class Weapon : MonoCache
     {
         public bool ClipIsEmpty { get; private set; }
+        public bool FireState   { get; private set; }
         // ReSharper disable once ConvertToAutoProperty
         public float ReloadTime => _reloadTime;
 
-        [SerializeField]                  private Projectile _projectile;
-        [SerializeField]                  private Transform  _firePoint;
-        [SerializeField, Range(1f, 500f)] private float      _maxFireRange;
-        [SerializeField]                  private Transform  _rightHand;
+        [SerializeField]                  private Projectile         _projectile;
+        [SerializeField]                  private Transform          _firePoint;
+        [SerializeField, Range(1f, 500f)] private float              _maxFireRange;
+        [SerializeField]                  private Transform          _rightHand;
+        [SerializeField]                  private Transform          _leftHand;
 
         [Config(Extras.PlayerWeapon, "A1")] private int _projectileDamage;
         [Config(Extras.PlayerWeapon, "A2")] private int _firingRate;
@@ -22,25 +24,26 @@ namespace SWAT.Weapons
         [Config(Extras.PlayerWeapon, "A4")] private int _reloadTime;
         [Config(Extras.PlayerWeapon, "A5")] private int _totalAmmo;
 
+        private Crosshair  _crosshair;
         private RaycastHit _hit;
 
         private float _currentFiringRate;
         private float _currentClipSize;
 
         private int _obstaclesLayer;
-
-        private Crosshair _crosshair;
-
+        
         protected override void OnEnabled()
         {
             _crosshair = ObjectHolder.GetObject<Crosshair>();
-            
+
             _projectile.Configure(_projectileDamage);
             _currentClipSize = _clipSize;
         }
 
         public void Fire()
         {
+            if (FireState == false) return;
+            
             _currentFiringRate -= Time.deltaTime;
 
             if (_currentFiringRate >= 0) return;
@@ -60,12 +63,22 @@ namespace SWAT.Weapons
         {
             transform.position = _rightHand.position;
 
-            Vector3 direction = _crosshair.RayHit() - transform.position;
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction),Time.deltaTime * 20f);
+            if (FireState)
+            {
+                Vector3 direction = _crosshair.RayHit() - transform.position;
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * 20f);
+            }
+            else
+            {
+                transform.LookAt(_leftHand.transform.position);
+            }
+
 #if UNITY_EDITOR
             Debug.DrawRay(transform.position, transform.forward * 100f, Color.cyan);
 #endif
         }
+
+        public void SetFireState(bool state) => FireState = state;
 
         private float FlyTime()
         {
