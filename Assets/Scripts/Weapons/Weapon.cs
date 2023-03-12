@@ -38,6 +38,8 @@ namespace SWAT.Weapons
 
             _projectile.Configure(_projectileDamage);
             _currentClipSize = _clipSize;
+
+            ResetFiringRate();
         }
 
         public void Fire()
