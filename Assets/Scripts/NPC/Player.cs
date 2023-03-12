@@ -33,12 +33,12 @@ namespace SWAT
 
         private void GetUp()
         {
-            // _animator.SetBool(_isSit, false);
+            _animator.SetBool(_isSit, false);
         }
 
         private void SitDown()
         {
-            // _animator.SetBool(_isSit, true);
+            _animator.SetBool(_isSit, true);
         }
         
 
