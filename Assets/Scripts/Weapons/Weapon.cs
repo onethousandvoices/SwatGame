@@ -1,4 +1,5 @@
-﻿using NTC.Global.Cache;
+﻿using Controllers;
+using NTC.Global.Cache;
 using NTC.Global.Pool;
 using UnityEngine;
 
@@ -7,10 +8,13 @@ namespace SWAT.Weapons
     public class Weapon : MonoCache
     {
         public bool ClipIsEmpty { get; private set; }
+        // ReSharper disable once ConvertToAutoProperty
+        public float ReloadTime => _reloadTime;
 
         [SerializeField]                  private Projectile _projectile;
         [SerializeField]                  private Transform  _firePoint;
         [SerializeField, Range(1f, 500f)] private float      _maxFireRange;
+        [SerializeField]                  private Transform  _rightHand;
 
         [Config(Extras.PlayerWeapon, "A1")] private int _projectileDamage;
         [Config(Extras.PlayerWeapon, "A2")] private int _firingRate;
@@ -25,11 +29,12 @@ namespace SWAT.Weapons
 
         private int _obstaclesLayer;
 
-        // ReSharper disable once ConvertToAutoProperty
-        public float ReloadTime => _reloadTime;
+        private Crosshair _crosshair;
 
         protected override void OnEnabled()
         {
+            _crosshair = ObjectHolder.GetObject<Crosshair>();
+            
             _projectile.Configure(_projectileDamage);
             _currentClipSize = _clipSize;
         }
@@ -53,6 +58,10 @@ namespace SWAT.Weapons
 
         protected override void Run()
         {
+            transform.position = _rightHand.position;
+
+            Vector3 direction = _crosshair.RayHit() - transform.position;
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction),Time.deltaTime * 20f);
 #if UNITY_EDITOR
             Debug.DrawRay(transform.position, transform.forward * 100f, Color.cyan);
 #endif

@@ -7,19 +7,21 @@ namespace SWAT
     public class Player : NPC
     {
         public bool IsVulnerable { get; private set; }
-        
+
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
 
-        private Crosshair _crosshair;
+        private Animator  _animator;
+
+        private static readonly int _isSit = Animator.StringToHash("IsSit");
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
 
-            _crosshair = ObjectHolder.GetObject<Crosshair>();
-
+            _animator = Get<Animator>();
+            
             StateEngine.AddState(
                 new FiringState(this),
                 new ReloadingState(this),
@@ -27,14 +29,18 @@ namespace SWAT
 
             StateEngine.SwitchState<IdleState>();
         }
+        
 
-        protected override void Run()
+        private void GetUp()
         {
-            base.Run();
-
-            Quaternion target = Quaternion.LookRotation(_crosshair.RayHit());
-            transform.rotation = Quaternion.Lerp(transform.rotation, target, Time.deltaTime * 20f);
+            // _animator.SetBool(_isSit, false);
         }
+
+        private void SitDown()
+        {
+            // _animator.SetBool(_isSit, true);
+        }
+        
 
 #region States
         private class FiringState : IState
@@ -46,11 +52,15 @@ namespace SWAT
             public void Enter()
             {
                 //get up
+                _player.GetUp();
                 _player.IsVulnerable = true;
             }
 
             public void Run()
             {
+                // _player._spine.transform.eulerAngles = Vector3.Lerp(
+                //     _player._spine.transform.eulerAngles, _player._crosshair.RayHit() - new Vector3(0f, 33f, 0f), Time.deltaTime * 20f);
+
                 if (Input.GetMouseButton(0))
                 {
                     _player.CurrentWeapon.Fire();
@@ -82,6 +92,7 @@ namespace SWAT
 
             public void Enter()
             {
+                _player.SitDown();
                 _currentReloadingTime = _player.CurrentWeapon.ReloadTime;
             }
 
@@ -105,7 +116,10 @@ namespace SWAT
 
             public IdleState(Player player) => _player = player;
 
-            public void Enter() { }
+            public void Enter()
+            {
+                _player.SitDown();
+            }
 
             public void Run()
             {

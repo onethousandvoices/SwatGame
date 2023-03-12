@@ -1,4 +1,6 @@
-﻿namespace SWAT
+﻿using SWAT.Behaviour;
+
+namespace SWAT
 {
     public class Enemy : NPC
     {
@@ -15,5 +17,22 @@
             base.Run();
             
         }
+
+#region States
+        private class FiringState : IState
+        {
+            public void Enter()
+            {
+            }
+
+            public void Run()
+            {
+            }
+
+            public void Exit()
+            {
+            }
+        }
+#endregion
     }
 }
