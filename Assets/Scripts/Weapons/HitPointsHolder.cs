@@ -38,18 +38,20 @@ namespace SWAT
         {
             if (HitPoints == null || HitPoints.Count < 1) return;
 
+            Vector3 gizmosScale = new Vector3(0.1f, 0.1f, 0.1f);
+
             foreach (HitPoint hitPoint in HitPoints)
             {
                 Gizmos.color = Color.cyan;
 
                 if (hitPoint.Target == null) continue;
 
-                Collider[] r = Physics.OverlapBox(hitPoint.Target.position, new Vector3(0.15f, 0.15f, 0.15f));
+                Collider[] r = Physics.OverlapBox(hitPoint.Target.position, gizmosScale / 2);
 
                 if (r.Any(x => x.GetComponentInParent<Player>()))
                     Gizmos.color = Color.red;
-                
-                Gizmos.DrawWireCube(hitPoint.Target.position, new Vector3(0.3f, 0.3f, 0.3f));
+
+                Gizmos.DrawWireCube(hitPoint.Target.position, gizmosScale);
             }
         }
     }
