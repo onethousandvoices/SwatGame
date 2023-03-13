@@ -8,5 +8,11 @@ namespace SWAT
     {
         [SerializeField]               public Transform Target;
         [SerializeField, Range(1, 96)] public int       Value;
+
+        public HitPoint(Transform target)
+        {
+            Target = target;
+            Value  = 1;
+        }
     }
 }
