@@ -1,21 +1,20 @@
 ﻿using SWAT.Behaviour;
+using SWAT.Weapons;
+using System;
+using UnityEngine;
 
 namespace SWAT
 {
     public class Enemy : NPC
     {
-        
+        [SerializeField] private Weapon _weapon;
         
         protected override void OnEnabled()
         {
-            base.OnEnabled();
-            
         }
 
         protected override void Run()
         {
-            base.Run();
-            
         }
 
 #region States

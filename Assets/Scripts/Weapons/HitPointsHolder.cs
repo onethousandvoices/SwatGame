@@ -16,6 +16,7 @@ namespace SWAT
 
         private void OnDrawGizmos()
         {
+            if (HitPoints == null) return;
             if (HitPoints.Length < 1) return;
             
             Gizmos.color = Color.cyan;

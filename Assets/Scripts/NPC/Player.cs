@@ -1,5 +1,7 @@
 ﻿using Controllers;
 using SWAT.Behaviour;
+using SWAT.Utility;
+using UI;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -15,7 +17,8 @@ namespace SWAT
 
         [SerializeField] private RotationConstraint _rotationConstraint;
 
-        private Animator _animator;
+        private Animator  _animator;
+        private ReloadBar _reloadBar;
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
 
@@ -24,6 +27,8 @@ namespace SWAT
             base.OnEnabled();
 
             _animator = Get<Animator>();
+
+            _reloadBar = ObjectHolder.GetObject<ReloadBar>();
 
             StateEngine.AddState(
                 new FiringState(this),
@@ -97,6 +102,7 @@ namespace SWAT
         {
             private readonly Player _player;
 
+            private float _reloadingTimeNormalized;
             private float _currentReloadingTime;
 
             public ReloadingState(Player player) => _player = player;
@@ -104,12 +110,18 @@ namespace SWAT
             public void Enter()
             {
                 _player.SitDown();
-                _currentReloadingTime = _player.CurrentWeapon.ReloadTime;
+                _player._reloadBar.EnableBar();
+                _currentReloadingTime    = _player.CurrentWeapon.ReloadTime;
+                _reloadingTimeNormalized = 0f;
             }
 
             public void Run()
             {
                 _currentReloadingTime -= Time.deltaTime;
+
+                _reloadingTimeNormalized += Time.deltaTime;
+
+                _player._reloadBar.SetProgression(_reloadingTimeNormalized / _player.CurrentWeapon.ReloadTime);
 
                 if (_currentReloadingTime <= 0)
                     _player.StateEngine.SwitchState<IdleState>();
@@ -117,6 +129,7 @@ namespace SWAT
 
             public void Exit()
             {
+                _player._reloadBar.DisableBar();
                 _player.CurrentWeapon.Reload();
             }
         }

@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-namespace ZenStones.Utility
+namespace SWAT.Utility
 {
     public static class CSVReader
     {

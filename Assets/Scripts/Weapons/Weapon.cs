@@ -1,6 +1,7 @@
 ﻿using Controllers;
 using NTC.Global.Cache;
 using NTC.Global.Pool;
+using SWAT.Utility;
 using UnityEngine;
 
 namespace SWAT.Weapons

@@ -1,4 +1,4 @@
-﻿namespace SWAT
+﻿namespace SWAT.Utility
 {
     public static class Extras
     {
