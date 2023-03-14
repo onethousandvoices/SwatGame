@@ -3,7 +3,6 @@ using SWAT;
 using SWAT.Utility;
 using System.Collections.Generic;
 using System.Reflection;
-using UI;
 using UnityEngine;
 
 namespace Controllers
@@ -72,7 +71,6 @@ namespace Controllers
                 if (obj.gameObject.TryGetComponent(out Camera cam)) ObjectHolder.AddObject(cam);
                 if (obj.gameObject.GetComponent<Crosshair>() != null) ObjectHolder.AddObject(obj);
                 if (obj.gameObject.GetComponent<Player>()    != null) ObjectHolder.AddObject(obj);
-                if (obj.gameObject.GetComponent<ReloadBar>() != null) ObjectHolder.AddObject(obj);
             }
         }
 

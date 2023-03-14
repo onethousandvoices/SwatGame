@@ -1,7 +1,7 @@
 ﻿using Controllers;
 using SWAT.Behaviour;
 using SWAT.Utility;
-using UI;
+using System;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -18,7 +18,7 @@ namespace SWAT
         [SerializeField] private RotationConstraint _rotationConstraint;
 
         private Animator  _animator;
-        private ReloadBar _reloadBar;
+        private Crosshair _crosshair;
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
 
@@ -28,10 +28,12 @@ namespace SWAT
 
             _animator = Get<Animator>();
 
-            _reloadBar = ObjectHolder.GetObject<ReloadBar>();
+            _crosshair = ObjectHolder.GetObject<Crosshair>();
 
             StateEngine.AddState(
                 new FiringState(this),
+                new PreIdleState(this),
+                new PreReloadingState(this),
                 new ReloadingState(this),
                 new IdleState(this));
 
@@ -45,21 +47,18 @@ namespace SWAT
 
         private void SitDown()
         {
+            CurrentWeapon.SetFireState(false);
+            _rotationConstraint.constraintActive = false;
+            _rotationConstraint.weight           = 0f;
             _animator.SetBool(_isSit, true);
         }
 
         public void UnityEvent_FirePoseAnimationEnd()
         {
-            if (CurrentWeapon.FireState == false)
-            {
-                CurrentWeapon.SetFireState(true);
-                _rotationConstraint.constraintActive = true;
-            }
-            else
-            {
-                CurrentWeapon.SetFireState(false);
-                _rotationConstraint.constraintActive = false;
-            }
+            if (CurrentWeapon.FireState || StateEngine.CurrentState.GetType() == typeof(IdleState)) return;
+
+            CurrentWeapon.SetFireState(true);
+            _rotationConstraint.constraintActive = true;
         }
 
 #region States
@@ -72,7 +71,8 @@ namespace SWAT
             public void Enter()
             {
                 _player.GetUp();
-                _player.IsVulnerable = true;
+                _player.IsVulnerable               = true;
+                _player._rotationConstraint.weight = 1f;
             }
 
             public void Run()
@@ -85,17 +85,66 @@ namespace SWAT
                 if (Input.GetMouseButtonUp(0))
                 {
                     _player.CurrentWeapon.ResetFiringRate();
-                    _player.StateEngine.SwitchState<IdleState>();
+                    _player.StateEngine.SwitchState<PreIdleState>();
                 }
 
                 if (_player.CurrentWeapon.ClipIsEmpty)
-                    _player.StateEngine.SwitchState<ReloadingState>();
+                    _player.StateEngine.SwitchState<PreReloadingState>();
             }
 
             public void Exit()
             {
                 _player.IsVulnerable = false;
             }
+        }
+
+        private class PreReloadingState : IState
+        {
+            private readonly Player _player;
+
+            public PreReloadingState(Player player) => _player = player;
+
+            public void Enter()
+            {
+                _player.CurrentWeapon.SetFireState(false);
+            }
+
+            public void Run()
+            {
+                _player._rotationConstraint.weight -= Time.deltaTime * 2f;
+
+                if (_player._rotationConstraint.weight > 0.3f) return;
+
+                _player.StateEngine.SwitchState<ReloadingState>();
+            }
+
+            public void Exit()
+            {
+                _player.SitDown();
+            }
+        }
+
+        private class PreIdleState : IState
+        {
+            private readonly Player _player;
+
+            public PreIdleState(Player player) => _player = player;
+
+            public void Enter()
+            {
+                _player.CurrentWeapon.SetFireState(false);
+            }
+
+            public void Run()
+            {
+                _player._rotationConstraint.weight -= Time.deltaTime * 2f;
+
+                if (_player._rotationConstraint.weight > 0.3f) return;
+
+                _player.StateEngine.SwitchState<IdleState>();
+            }
+
+            public void Exit() { }
         }
 
         private class ReloadingState : IState
@@ -109,8 +158,7 @@ namespace SWAT
 
             public void Enter()
             {
-                _player.SitDown();
-                _player._reloadBar.EnableBar();
+                _player._crosshair.EnableBar();
                 _currentReloadingTime    = _player.CurrentWeapon.ReloadTime;
                 _reloadingTimeNormalized = 0f;
             }
@@ -121,7 +169,7 @@ namespace SWAT
 
                 _reloadingTimeNormalized += Time.deltaTime;
 
-                _player._reloadBar.SetProgression(_reloadingTimeNormalized / _player.CurrentWeapon.ReloadTime);
+                _player._crosshair.SetProgression(_reloadingTimeNormalized / _player.CurrentWeapon.ReloadTime);
 
                 if (_currentReloadingTime <= 0)
                     _player.StateEngine.SwitchState<IdleState>();
@@ -129,7 +177,7 @@ namespace SWAT
 
             public void Exit()
             {
-                _player._reloadBar.DisableBar();
+                _player._crosshair.DisableBar();
                 _player.CurrentWeapon.Reload();
             }
         }

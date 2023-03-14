@@ -24,6 +24,8 @@ namespace SWAT.Behaviour
             CurrentState?.Exit();
             CurrentState = _states[typeof(T)];
             CurrentState.Enter();
+            
+            // Debug.LogError($"Current state is {CurrentState}");
         }
     }
 }
