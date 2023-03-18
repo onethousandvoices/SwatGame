@@ -9,18 +9,23 @@ namespace Controllers
 {
     public class GameController : MonoCache
     {
-        
+        [SerializeField] private MonoCache test;
+
 #region CfgDictionaries
-        private readonly Dictionary<string, int> _playerCfg       = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _playerCfg = new Dictionary<string, int>();
         private readonly Dictionary<string, int> _playerWeaponCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemyCfg        = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemyWeaponCfg  = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _enemyCfg = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _enemyWeaponCfg = new Dictionary<string, int>();
 #endregion
-        
+
         protected override void OnEnabled()
         {
             ParseConfig();
             ConfigureObjects();
+            
+            ConfigObject(test);
+
+            Instantiate(test);
         }
 
         private void ParseConfig()
@@ -29,8 +34,8 @@ namespace Controllers
 
             for (int i = 0; i < config.Count; i++)
             {
-                Dictionary<string, object> dict  = config[i];
-                string                     first = dict["ID"].ToString();
+                Dictionary<string, object> dict = config[i];
+                string first = dict["ID"].ToString();
 
                 foreach (string key in dict.Keys)
                 {
@@ -48,7 +53,7 @@ namespace Controllers
                         case Extras.Enemy:
                             _enemyCfg.Add(key, (int)dict[key]);
                             break;
-                        case Extras.EnemyWeapon:
+                        case Extras.EnemyWeapon_Pistol:
                             _enemyWeaponCfg.Add(key, (int)dict[key]);
                             break;
                     }
@@ -65,12 +70,12 @@ namespace Controllers
             for (int i = 0; i < objects.Length; i++)
             {
                 MonoCache obj = objects[i];
-                
+
                 ConfigObject(obj);
 
                 if (obj.gameObject.TryGetComponent(out Camera cam)) ObjectHolder.AddObject(cam);
                 if (obj.gameObject.GetComponent<Crosshair>() != null) ObjectHolder.AddObject(obj);
-                if (obj.gameObject.GetComponent<Player>()    != null) ObjectHolder.AddObject(obj);
+                if (obj.gameObject.GetComponent<Player>() != null) ObjectHolder.AddObject(obj);
             }
         }
 
@@ -85,7 +90,7 @@ namespace Controllers
                 Config configRequest = fieldInfo.GetCustomAttribute<Config>();
                 if (configRequest == null) continue;
 
-                string id    = configRequest.Id;
+                string id = configRequest.Id;
                 string param = configRequest.Param;
 
                 switch (id)
@@ -99,7 +104,7 @@ namespace Controllers
                     case Extras.Enemy:
                         fieldInfo.SetValue(obj, _enemyCfg[param]);
                         break;
-                    case Extras.EnemyWeapon:
+                    case Extras.EnemyWeapon_Pistol:
                         fieldInfo.SetValue(obj, _enemyWeaponCfg[param]);
                         break;
                 }

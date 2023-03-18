@@ -1,23 +1,30 @@
 ﻿using Controllers;
 using SWAT.Behaviour;
 using SWAT.Utility;
-using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Animations;
 
 namespace SWAT
 {
-    public class Player : NPC
+    public class Player : BaseCharacter, ITarget
     {
         public bool IsVulnerable { get; private set; }
 
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
+        
+        [Config(Extras.PlayerWeapon, "A1")] private int _projectileDamage;
+        [Config(Extras.PlayerWeapon, "A2")] private int _firingRate;
+        [Config(Extras.PlayerWeapon, "A3")] private int _clipSize;
+        [Config(Extras.PlayerWeapon, "A4")] private int _reloadTime;
+        [Config(Extras.PlayerWeapon, "A5")] private int _totalAmmo;
 
         [SerializeField] private RotationConstraint _rotationConstraint;
+        [SerializeField] private HitPointsHolder _hitPointsHolder;
 
-        private Animator  _animator;
+        private Animator _animator;
         private Crosshair _crosshair;
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
@@ -26,6 +33,13 @@ namespace SWAT
         {
             base.OnEnabled();
 
+            CurrentWeapon.Configure(
+                _projectileDamage, 
+                _firingRate, 
+                _clipSize, 
+                _reloadTime, 
+                _totalAmmo);
+            
             _animator = Get<Animator>();
 
             _crosshair = ObjectHolder.GetObject<Crosshair>();
@@ -40,6 +54,19 @@ namespace SWAT
             StateEngine.SwitchState<IdleState>();
         }
 
+        public HitPoint RandomHitPoint()
+        {
+            int random = Random.Range(0, 100);
+
+            foreach (HitPoint hitPoint in _hitPointsHolder.HitPoints)
+            {
+                if (random < hitPoint.Value) return hitPoint;
+                random -= hitPoint.Value;
+            }
+
+            return new HitPoint();
+        }
+
         private void GetUp()
         {
             _animator.SetBool(_isSit, false);
@@ -49,7 +76,7 @@ namespace SWAT
         {
             CurrentWeapon.SetFireState(false);
             _rotationConstraint.constraintActive = false;
-            _rotationConstraint.weight           = 0f;
+            _rotationConstraint.weight = 0f;
             _animator.SetBool(_isSit, true);
         }
 
@@ -71,7 +98,7 @@ namespace SWAT
             public void Enter()
             {
                 _player.GetUp();
-                _player.IsVulnerable               = true;
+                _player.IsVulnerable = true;
                 _player._rotationConstraint.weight = 1f;
             }
 
@@ -159,7 +186,7 @@ namespace SWAT
             public void Enter()
             {
                 _player._crosshair.EnableBar();
-                _currentReloadingTime    = _player.CurrentWeapon.ReloadTime;
+                _currentReloadingTime = _player.CurrentWeapon.ReloadTime;
                 _reloadingTimeNormalized = 0f;
             }
 
@@ -204,5 +231,10 @@ namespace SWAT
             public void Exit() { }
         }
 #endregion
+
+        public Vector3 GetTarget()
+        {
+            return transform.position;
+        }
     }
 }

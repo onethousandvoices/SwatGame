@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace SWAT
 {
-    public abstract class NPC : MonoCache
+    public abstract class BaseCharacter : MonoCache
     {
         [SerializeField] protected Weapon CurrentWeapon;
 

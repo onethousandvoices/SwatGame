@@ -1,43 +1,67 @@
 ﻿using Controllers;
 using NTC.Global.Cache;
 using NTC.Global.Pool;
+using SWAT.Behaviour;
 using SWAT.Utility;
+using System;
 using UnityEngine;
 
 namespace SWAT.Weapons
 {
+    public enum WeaponCarrier : byte
+    {
+        None,
+        Player,
+        Enemy
+    }
+
     public class Weapon : MonoCache
     {
         public bool ClipIsEmpty { get; private set; }
-        public bool FireState   { get; private set; }
+        public bool FireState { get; private set; }
         // ReSharper disable once ConvertToAutoProperty
         public float ReloadTime => _reloadTime;
 
-        [SerializeField]                  private Projectile         _projectile;
-        [SerializeField]                  private Transform          _firePoint;
-        [SerializeField, Range(1f, 500f)] private float              _maxFireRange;
-        [SerializeField]                  private Transform          _rightHand;
-        [SerializeField]                  private Transform          _leftHand;
+        [SerializeField] private Projectile _projectile;
+        [SerializeField] private Transform _firePoint;
+        [SerializeField, Range(1f, 500f)] private float _maxFireRange;
+        [SerializeField] private Transform _rightHand;
+        [SerializeField] private Transform _leftHand;
+        [SerializeField] private WeaponCarrier _carrier;
 
-        [Config(Extras.PlayerWeapon, "A1")] private int _projectileDamage;
-        [Config(Extras.PlayerWeapon, "A2")] private int _firingRate;
-        [Config(Extras.PlayerWeapon, "A3")] private int _clipSize;
-        [Config(Extras.PlayerWeapon, "A4")] private int _reloadTime;
-        [Config(Extras.PlayerWeapon, "A5")] private int _totalAmmo;
+        private int _firingRate;
+        private int _clipSize;
+        private int _reloadTime;
+        private int _totalAmmo;
 
-        private Crosshair  _crosshair;
+        private ITarget _target;
         private RaycastHit _hit;
 
         private float _currentFiringRate;
         private float _currentClipSize;
 
         private int _obstaclesLayer;
-        
+
+        public void Configure(int projectileDamage, int firingRate, int clipSize, int reloadTime, int totalAmmo)
+        {
+            _projectile.Configure(projectileDamage);
+            _firingRate = firingRate;
+            _clipSize = clipSize;
+            _reloadTime = reloadTime;
+            _totalAmmo = totalAmmo;
+        }
+
         protected override void OnEnabled()
         {
-            _crosshair = ObjectHolder.GetObject<Crosshair>();
+            if (_carrier == WeaponCarrier.Player)
+            {
+                _target = ObjectHolder.GetObject<Crosshair>();
+            }
+            else if (_carrier == WeaponCarrier.Enemy)
+            {
+                _target = ObjectHolder.GetObject<Player>();
+            }
 
-            _projectile.Configure(_projectileDamage);
             _currentClipSize = _clipSize;
 
             ResetFiringRate();
@@ -46,7 +70,7 @@ namespace SWAT.Weapons
         public void Fire()
         {
             if (FireState == false) return;
-            
+
             _currentFiringRate -= Time.deltaTime;
 
             if (_currentFiringRate >= 0) return;
@@ -68,7 +92,7 @@ namespace SWAT.Weapons
 
             if (FireState)
             {
-                Vector3 direction = _crosshair.RayHit() - transform.position;
+                Vector3 direction = _target.GetTarget() - transform.position;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * 20f);
             }
             else
@@ -104,9 +128,9 @@ namespace SWAT.Weapons
 
         public void Reload()
         {
-            _totalAmmo       -= _clipSize;
-            _currentClipSize =  _clipSize;
-            ClipIsEmpty      =  false;
+            _totalAmmo -= _clipSize;
+            _currentClipSize = _clipSize;
+            ClipIsEmpty = false;
             ResetFiringRate();
         }
     }

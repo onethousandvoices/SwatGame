@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SWAT.Utility;
+using System;
 using UnityEngine;
 
 namespace SWAT
@@ -9,10 +10,10 @@ namespace SWAT
         [SerializeField]               public Transform Target;
         [SerializeField, Range(1, 96)] public int       Value;
 
-        public HitPoint(Transform target)
+        public HitPoint(Transform target, int value = 1)
         {
             Target = target;
-            Value  = 1;
+            Value  = value;
         }
     }
 }
