@@ -95,6 +95,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -7246871283785671233, guid: 8671830e1869abf4ea1389aa78b8286d, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: b9a9bcd9093abba4b853b12b47498355, type: 2}
+    - target: {fileID: -3877979398244186227, guid: 8671830e1869abf4ea1389aa78b8286d, type: 3}
+      propertyPath: m_Materials.Array.data[1]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3c320eb9639483e4c86533aa24e05204, type: 2}
     - target: {fileID: 919132149155446097, guid: 8671830e1869abf4ea1389aa78b8286d, type: 3}
       propertyPath: m_Name
       value: CoffeeShop
