@@ -9,8 +9,6 @@ namespace Controllers
 {
     public class GameController : MonoCache
     {
-        [SerializeField] private MonoCache test;
-
 #region CfgDictionaries
         private readonly Dictionary<string, int> _playerCfg = new Dictionary<string, int>();
         private readonly Dictionary<string, int> _playerWeaponCfg = new Dictionary<string, int>();

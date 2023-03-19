@@ -2,11 +2,7 @@
 using NTC.Global.Cache;
 using NTC.Global.Pool;
 using SWAT.Behaviour;
-using SWAT.Utility;
-using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SWAT.Weapons

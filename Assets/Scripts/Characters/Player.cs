@@ -165,7 +165,7 @@ namespace SWAT
 
             public void Run()
             {
-                _player._rotationConstraint.weight -= Time.deltaTime * 2f;
+                _player._rotationConstraint.weight -= Time.deltaTime * .2f;
 
                 if (_player._rotationConstraint.weight > 0.3f) return;
 
