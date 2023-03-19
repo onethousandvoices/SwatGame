@@ -98,7 +98,7 @@ PrefabInstance:
     - target: {fileID: -1707992212735795690, guid: e7e4f7dc39c35cc4488c5e0e60dc1e32, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7d35d551b15d77f4587578f70d30d8c9, type: 2}
+      objectReference: {fileID: 2100000, guid: aaf99621e187c744ea7aeab5b9bd39a4, type: 2}
     - target: {fileID: 919132149155446097, guid: e7e4f7dc39c35cc4488c5e0e60dc1e32, type: 3}
       propertyPath: m_Name
       value: Street Latern
@@ -106,7 +106,7 @@ PrefabInstance:
     - target: {fileID: 7821625320815587429, guid: e7e4f7dc39c35cc4488c5e0e60dc1e32, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: 7d35d551b15d77f4587578f70d30d8c9, type: 2}
+      objectReference: {fileID: 2100000, guid: aaf99621e187c744ea7aeab5b9bd39a4, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e7e4f7dc39c35cc4488c5e0e60dc1e32, type: 3}
 --- !u!4 &5172138013269508371 stripped
