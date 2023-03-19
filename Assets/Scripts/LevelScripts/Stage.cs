@@ -11,7 +11,8 @@ namespace SWAT.LevelScripts
         [field: SerializeField] public EnemyPositions EnemyPositions { get; private set; }
     }
 
-    public class Stage : MonoCache
+    [Serializable]
+    public class Stage
     {
         [field: SerializeField] public EnemyPath[] Enemies { get; private set; }
     }

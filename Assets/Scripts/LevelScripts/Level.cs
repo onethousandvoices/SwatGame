@@ -20,15 +20,7 @@ namespace SWAT.LevelScripts
         {
             _stages ??= new List<Stage>();
             
-            GameObject go = new GameObject("Stage", typeof(Stage))
-            {
-                transform =
-                {
-                    parent = transform
-                }
-            };
-            
-            _stages.Add(go.GetComponent<Stage>());
+            _stages.Add(new Stage());
         }
     }
 }
