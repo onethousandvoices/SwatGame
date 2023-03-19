@@ -1,8 +1,6 @@
 ﻿using Controllers;
 using SWAT.Behaviour;
 using SWAT.Utility;
-using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -16,17 +14,17 @@ namespace SWAT
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
-        
+
         [Config(Extras.PlayerWeapon, "A1")] private int _projectileDamage;
         [Config(Extras.PlayerWeapon, "A2")] private int _firingRate;
         [Config(Extras.PlayerWeapon, "A3")] private int _clipSize;
         [Config(Extras.PlayerWeapon, "A4")] private int _reloadTime;
         [Config(Extras.PlayerWeapon, "A5")] private int _totalAmmo;
 
+        [SerializeField] private Animator _animator;
         [SerializeField] private RotationConstraint _rotationConstraint;
         [SerializeField] private HitPointsHolder _hitPointsHolder;
 
-        private Animator _animator;
         private Crosshair _crosshair;
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
@@ -36,14 +34,12 @@ namespace SWAT
             base.OnEnabled();
 
             CurrentWeapon.Configure(
-                _projectileDamage, 
-                _firingRate, 
-                _clipSize, 
-                _reloadTime, 
+                _projectileDamage,
+                _firingRate,
+                _clipSize,
+                _reloadTime,
                 _totalAmmo);
             
-            _animator = Get<Animator>();
-
             _crosshair = ObjectHolder.GetObject<Crosshair>();
 
             StateEngine.AddState(
@@ -65,7 +61,7 @@ namespace SWAT
             }
             return new HitPoint();
         }
-        
+
         public async Task<HitPoint> GetTargetAsync()
         {
             int random = Random.Range(0, 100);
