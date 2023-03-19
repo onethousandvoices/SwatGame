@@ -1,7 +1,12 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Resources/Prefabs/Enemies.meta
 guid: 757204106fac67c41b7b3e161d903222
 folderAsset: yes
 DefaultImporter:
+========
+guid: c433476f989f8334db52c5b2a09c38ed
+NativeFormatImporter:
+>>>>>>>> Akhmed:Assets/Resources/Materials/OperativeMaterials.mat.meta
   externalObjects: {}
   userData: 
   assetBundleName: 

@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Scenes/MainScene/Main Camera Profile.asset.meta
 guid: fa39b11539f9ec246a246929202eca8b
+========
+guid: 3c320eb9639483e4c86533aa24e05204
+>>>>>>>> Akhmed:Assets/Resources/Materials/Bilboard.mat.meta
 NativeFormatImporter:
   externalObjects: {}
   mainObjectFileID: 11400000

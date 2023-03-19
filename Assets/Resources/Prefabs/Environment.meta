@@ -1,7 +1,12 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/Resources/Prefabs/Environment.meta
 guid: 4e1ee1990c682054faad99146ddfd20c
 folderAsset: yes
 DefaultImporter:
+========
+guid: b9a9bcd9093abba4b853b12b47498355
+NativeFormatImporter:
+>>>>>>>> Akhmed:Assets/Resources/Materials/Ven.mat.meta
   externalObjects: {}
   userData: 
   assetBundleName: 
