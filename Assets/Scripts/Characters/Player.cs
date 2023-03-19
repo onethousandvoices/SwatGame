@@ -2,12 +2,14 @@
 using SWAT.Behaviour;
 using SWAT.Utility;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
 
 namespace SWAT
 {
-    public class Player : BaseCharacter, ITarget
+    public class Player : BaseCharacter
     {
         public bool IsVulnerable { get; private set; }
 
@@ -54,17 +56,20 @@ namespace SWAT
             StateEngine.SwitchState<IdleState>();
         }
 
-        public HitPoint RandomHitPoint()
+        private HitPoint RandomHitPoint(int randomValue)
         {
-            int random = Random.Range(0, 100);
-
             foreach (HitPoint hitPoint in _hitPointsHolder.HitPoints)
             {
-                if (random < hitPoint.Value) return hitPoint;
-                random -= hitPoint.Value;
+                if (randomValue < hitPoint.Value) return hitPoint;
+                randomValue -= hitPoint.Value;
             }
-
             return new HitPoint();
+        }
+        
+        public async Task<HitPoint> GetTargetAsync()
+        {
+            int random = Random.Range(0, 100);
+            return await Task.Run(() => RandomHitPoint(random));
         }
 
         private void GetUp()
@@ -231,10 +236,5 @@ namespace SWAT
             public void Exit() { }
         }
 #endregion
-
-        public Vector3 GetTarget()
-        {
-            return transform.position;
-        }
     }
 }

@@ -4,6 +4,9 @@ using NTC.Global.Pool;
 using SWAT.Behaviour;
 using SWAT.Utility;
 using System;
+using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SWAT.Weapons
@@ -33,37 +36,47 @@ namespace SWAT.Weapons
         private int _clipSize;
         private int _reloadTime;
         private int _totalAmmo;
+        private int _lookSpeed;
 
+        private List<Vector3> _aimingPoints;
+        private Vector3 _currentAimingPoint;
         private ITarget _target;
         private RaycastHit _hit;
-
+        
         private float _currentFiringRate;
         private float _currentClipSize;
 
-        private int _obstaclesLayer;
-
-        public void Configure(int projectileDamage, int firingRate, int clipSize, int reloadTime, int totalAmmo)
+        public async void Configure(int projectileDamage, int firingRate, int clipSize, int reloadTime, int totalAmmo)
         {
             _projectile.Configure(projectileDamage);
             _firingRate = firingRate;
             _clipSize = clipSize;
             _reloadTime = reloadTime;
             _totalAmmo = totalAmmo;
-        }
 
-        protected override void OnEnabled()
-        {
-            if (_carrier == WeaponCarrier.Player)
+            switch (_carrier)
             {
-                _target = ObjectHolder.GetObject<Crosshair>();
-            }
-            else if (_carrier == WeaponCarrier.Enemy)
-            {
-                _target = ObjectHolder.GetObject<Player>();
+                case WeaponCarrier.Player:
+                    _lookSpeed = 20;
+                    _target = ObjectHolder.GetObject<Crosshair>();
+                    break;
+                case WeaponCarrier.Enemy:
+                    _lookSpeed = 50;
+                    Player player = ObjectHolder.GetObject<Player>();
+
+                    const int count = 50;
+                    _aimingPoints = new List<Vector3>();
+                    for (int i = 0; i < count; i++)
+                    {
+                        HitPoint hitPoint = await player.GetTargetAsync();
+                        _aimingPoints.Add(hitPoint.Target.position);
+                    }
+                    break;
             }
 
             _currentClipSize = _clipSize;
 
+            SetAimingPoint();
             ResetFiringRate();
         }
 
@@ -74,6 +87,12 @@ namespace SWAT.Weapons
             _currentFiringRate -= Time.deltaTime;
 
             if (_currentFiringRate >= 0) return;
+
+            if (_carrier == WeaponCarrier.Enemy)
+            {
+                RemoveAimingPoint();
+                SetAimingPoint();
+            }
 
             _currentFiringRate = 60f / _firingRate;
             _currentClipSize--;
@@ -86,22 +105,44 @@ namespace SWAT.Weapons
             }
         }
 
+        private void SetAimingPoint()
+        {
+            if (_aimingPoints.Count < 1) return;
+            _currentAimingPoint = _aimingPoints[0];
+        }
+
+        private void RemoveAimingPoint()
+        {
+            if (_aimingPoints.Count < 1) return;
+            _aimingPoints.RemoveAt(0);
+        }
+
         protected override void Run()
         {
             transform.position = _rightHand.position;
 
             if (FireState)
             {
-                Vector3 direction = _target.GetTarget() - transform.position;
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * 20f);
+                if (_carrier == WeaponCarrier.Player)
+                    _currentAimingPoint = _target.GetTarget();
+
+                Vector3 direction = _currentAimingPoint - transform.position;
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
             }
             else
             {
-                transform.LookAt(_leftHand.transform.position);
+                if (_leftHand != null)
+                {
+                    transform.LookAt(_leftHand.transform.position);
+                }
+                else
+                {
+                    transform.rotation = _rightHand.rotation;
+                }
             }
 
 #if UNITY_EDITOR
-            Debug.DrawRay(transform.position, transform.forward * 100f, Color.cyan);
+            Debug.DrawRay(_firePoint.position, transform.forward * 100f, Color.cyan);
 #endif
         }
 
@@ -109,10 +150,7 @@ namespace SWAT.Weapons
 
         private float FlyTime()
         {
-            if (_obstaclesLayer == 0)
-                _obstaclesLayer = LayerMask.GetMask("Obstacle");
-
-            Physics.Raycast(transform.position, transform.forward, out _hit, _maxFireRange, _obstaclesLayer);
+            Physics.Raycast(_firePoint.position, transform.forward, out _hit, _maxFireRange);
 
             float distance = _hit.transform == null
                 ? _maxFireRange

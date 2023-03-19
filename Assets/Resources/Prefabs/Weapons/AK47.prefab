@@ -27,7 +27,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3908626808410046526}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 1.592}
+  m_LocalPosition: {x: -0.045, y: 0.0092, z: 1.592}
   m_LocalScale: {x: 0.01, y: 0.01, z: 0.01}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -145,10 +145,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _projectile: {fileID: 1375463690335951632, guid: bf8cc944f4983114180879b977a55490, type: 3}
   _firePoint: {fileID: 3908626808410046527}
-  _firingRate: 0.31
-  _clipSize: 60
   _maxFireRange: 100
-  <ReloadTime>k__BackingField: 1
+  _rightHand: {fileID: 0}
+  _leftHand: {fileID: 0}
+  _carrier: 0
 --- !u!1001 &3908626808745558800
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -22,15 +22,16 @@ namespace Controllers
         {
             ParseConfig();
             ConfigureObjects();
-            
-            ConfigObject(test);
-
-            Instantiate(test);
         }
 
         private void ParseConfig()
         {
             List<Dictionary<string, object>> config = CSVReader.Read("BasicEntityCfg");
+            
+            _playerCfg.Clear();
+            _playerWeaponCfg.Clear();
+            _enemyCfg.Clear();
+            _enemyWeaponCfg.Clear();
 
             for (int i = 0; i < config.Count; i++)
             {
@@ -79,8 +80,12 @@ namespace Controllers
             }
         }
 
-        private void ConfigObject(MonoCache obj)
+        public void ConfigObject(MonoCache obj)
         {
+#if UNITY_EDITOR
+            ParseConfig();
+#endif
+            
             FieldInfo[] fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             for (int j = 0; j < fields.Length; j++)

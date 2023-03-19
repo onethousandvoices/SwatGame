@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
+﻿using SWAT.Utility;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 namespace SWAT.Editor
 {
@@ -94,32 +89,25 @@ namespace SWAT.Editor
             EditorGUILayout.LabelField($"Remaining points {100 - _sum}", _default);
             EditorGUILayout.LabelField("--------------------------------------------------------------------------------------------------------------------------------");
 
-            EditorGUILayout.LabelField(BreakCamelCase(_hitPoint0.name), _default);
+            EditorGUILayout.LabelField(Extras.BreakCamelCase(_hitPoint0.name), _default);
             EditorGUILayout.IntSlider(_hitPoint0Value, 1, 96, "Value");
             EditorGUILayout.LabelField("");
-            EditorGUILayout.LabelField(BreakCamelCase(_hitPoint1.name), _default);
+            EditorGUILayout.LabelField(Extras.BreakCamelCase(_hitPoint1.name), _default);
             EditorGUILayout.IntSlider(_hitPoint1Value, 1, 96, "Value");
             EditorGUILayout.LabelField("");
-            EditorGUILayout.LabelField(BreakCamelCase(_hitPoint2.name), _default);
+            EditorGUILayout.LabelField(Extras.BreakCamelCase(_hitPoint2.name), _default);
             EditorGUILayout.IntSlider(_hitPoint2Value, 1, 96, "Value");
             EditorGUILayout.LabelField("");
-            EditorGUILayout.LabelField(BreakCamelCase(_hitPoint3.name), _default);
+            EditorGUILayout.LabelField(Extras.BreakCamelCase(_hitPoint3.name), _default);
             EditorGUILayout.IntSlider(_hitPoint3Value, 1, 96, "Value");
             EditorGUILayout.LabelField("");
-            EditorGUILayout.LabelField(BreakCamelCase(_hitPoint4.name), _default);
+            EditorGUILayout.LabelField(Extras.BreakCamelCase(_hitPoint4.name), _default);
             EditorGUILayout.IntSlider(_hitPoint4Value, 1, 96, "Value");
             EditorGUILayout.LabelField("");
 
             EditorGUILayout.EndVertical();
 
             serializedObject.ApplyModifiedProperties();
-        }
-
-        private static string BreakCamelCase(string str)
-        {
-            TextInfo text     = new CultureInfo("en-US", false).TextInfo;
-            string   replaced = string.Concat(string.Concat(str.Split('_')).Select(c => char.IsUpper(c) || char.IsDigit(c) ? " " + c : c.ToString()));
-            return text.ToTitleCase(replaced);
         }
     }
 }
