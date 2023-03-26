@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Controllers;
+using System;
 using System.IO;
 using System.Net;
 using UnityEditor;
@@ -10,7 +11,7 @@ namespace SWAT.Utility
     public abstract class GDPDownloader
     {
         private const string _fileName = "BasicEntityCfg";
-        private const string _uri      = "https://docs.google.com/spreadsheets/d/11kXljn6Jm78n6UL-Y7KuIKvCZVRIqHqqkapolvSeTF4/export?format=csv";
+        private const string _uri = "https://docs.google.com/spreadsheets/d/11kXljn6Jm78n6UL-Y7KuIKvCZVRIqHqqkapolvSeTF4/export?format=csv";
 
         private static string _filePath => Application.dataPath + "/Resources/BasicEntityCfg.csv";
 
@@ -29,6 +30,7 @@ namespace SWAT.Utility
             await downloader.DownloadFileTaskAsync(new Uri(_uri), _filePath);
 
             Debug.LogError("Download completed!");
+            Object.FindObjectOfType<GameController>().ConfigPrefabs();
         }
     }
 }

@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SWAT.Weapons
-{
+{ 
+    // ReSharper disable once ConvertToAutoProperty
+    
     public enum WeaponCarrier : byte
     {
         None,
@@ -18,7 +20,6 @@ namespace SWAT.Weapons
     {
         public bool ClipIsEmpty { get; private set; }
         public bool FireState { get; private set; }
-        // ReSharper disable once ConvertToAutoProperty
         public float ReloadTime => _reloadTime;
 
         [SerializeField] private Projectile _projectile;
@@ -33,6 +34,7 @@ namespace SWAT.Weapons
         private int _reloadTime;
         private int _totalAmmo;
         private int _lookSpeed;
+        private int _projectileDamage;
 
         private List<Vector3> _aimingPoints;
         private Vector3 _currentAimingPoint;
@@ -44,7 +46,7 @@ namespace SWAT.Weapons
 
         public async void Configure(int projectileDamage, int firingRate, int clipSize, int reloadTime, int totalAmmo)
         {
-            _projectile.Configure(projectileDamage);
+            _projectileDamage = projectileDamage;
             _firingRate = firingRate;
             _clipSize = clipSize;
             _reloadTime = reloadTime;
@@ -93,7 +95,8 @@ namespace SWAT.Weapons
             _currentFiringRate = 60f / _firingRate;
             _currentClipSize--;
 
-            NightPool.Despawn(NightPool.Spawn(_projectile, _firePoint.position, transform.rotation), FlyTime());
+            Projectile projectile = NightPool.Spawn(_projectile, _firePoint.position, transform.rotation);
+            projectile.Configure(_projectileDamage);
 
             if (_currentClipSize <= 0)
             {
@@ -128,13 +131,9 @@ namespace SWAT.Weapons
             else
             {
                 if (_leftHand != null)
-                {
                     transform.LookAt(_leftHand.transform.position);
-                }
                 else
-                {
                     transform.rotation = _rightHand.rotation;
-                }
             }
 
 #if UNITY_EDITOR
@@ -144,16 +143,16 @@ namespace SWAT.Weapons
 
         public void SetFireState(bool state) => FireState = state;
 
-        private float FlyTime()
-        {
-            Physics.Raycast(_firePoint.position, transform.forward, out _hit, _maxFireRange);
-
-            float distance = _hit.transform == null
-                ? _maxFireRange
-                : Vector3.Distance(_firePoint.position, _hit.point);
-
-            return distance / _projectile.FlySpeed;
-        }
+        // private float FlyTime()
+        // {
+        //     Physics.Raycast(_firePoint.position, transform.forward, out _hit, _maxFireRange);
+        //
+        //     float distance = _hit.transform == null
+        //         ? _maxFireRange
+        //         : Vector3.Distance(_firePoint.position, _hit.point);
+        //
+        //     return distance / _projectile.FlySpeed;
+        // }
 
         public void ResetFiringRate()
         {

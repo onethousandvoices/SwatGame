@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 1220940522088215842}
   - component: {fileID: 2690061021636189385}
   - component: {fileID: 1220940522088215870}
+  - component: {fileID: 5449696339571014297}
   m_Layer: 8
   m_Name: Enemy_Thug
   m_TagString: Untagged
@@ -132,7 +133,7 @@ MonoBehaviour:
   CurrentWeapon: {fileID: 1399281794023716657}
   _positions: {fileID: 0}
   _maxHealth: 100
-  _maxArmour: 0
+  _maxArmour: 50
   _speed: 10
   _firingTime: 5
   _projectileDamage: 20
@@ -140,6 +141,19 @@ MonoBehaviour:
   _clipSize: 20000
   _reloadTime: 1
   _totalAmmo: 20000
+--- !u!114 &5449696339571014297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1220940522088215843}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6d3bc80ab4d4cb9800c402e1a800bdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _character: {fileID: 1220940522088215870}
 --- !u!1001 &2690061022880730079
 PrefabInstance:
   m_ObjectHideFlags: 0

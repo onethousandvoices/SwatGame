@@ -1,16 +1,16 @@
 ﻿using Controllers;
 using SWAT.Behaviour;
+using SWAT.Events;
 using SWAT.Utility;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
+using Random = UnityEngine.Random;
 
 namespace SWAT
 {
     public class Player : BaseCharacter
     {
-        public bool IsVulnerable { get; private set; }
-
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
@@ -25,14 +25,17 @@ namespace SWAT
         [SerializeField] private RotationConstraint _rotationConstraint;
         [SerializeField] private HitPointsHolder _hitPointsHolder;
 
-        private Crosshair _crosshair;
-
         private static readonly int _isSit = Animator.StringToHash("IsSit");
-
+        
+        private Crosshair _crosshair;
+        
         protected override void OnEnabled()
         {
             base.OnEnabled();
 
+            CurrentHealth = _maxHealth;
+            CurrentArmour = _maxArmour;
+            
             CurrentWeapon.Configure(
                 _projectileDamage,
                 _firingRate,
@@ -87,6 +90,11 @@ namespace SWAT
 
             CurrentWeapon.SetFireState(true);
             _rotationConstraint.constraintActive = true;
+        }
+
+        protected override void Dead()
+        {
+            GameEvents.Call(new PlayerKilledEvent(this));
         }
 
 #region States
@@ -165,7 +173,7 @@ namespace SWAT
 
             public void Run()
             {
-                _player._rotationConstraint.weight -= Time.deltaTime * .2f;
+                _player._rotationConstraint.weight -= Time.deltaTime * 2f;
 
                 if (_player._rotationConstraint.weight > 0.3f) return;
 

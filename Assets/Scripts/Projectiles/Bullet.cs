@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using NTC.Global.Pool;
+using SWAT.Behaviour;
+using UnityEngine;
 
 namespace SWAT.Weapons
 {
@@ -6,18 +8,13 @@ namespace SWAT.Weapons
     {
         public override void OnSpawn() { }
 
-        public override void OnDespawn()
+        public override void OnDespawn() { }
+
+        private void OnTriggerEnter(Collider other)
         {
-            Debug.Log("Contact");
-
-            Collider[] results = new Collider[1];
-            // Physics.OverlapSphereNonAlloc(transform.position, Collider.radius, results);
-
-            for (int i = 0; i < results.Length; i++)
-            {
-                Collider col = results[i];
-                // Debug.Log(col);
-            }
+            if (other.TryGetComponent(out HitBox hitBox))
+                hitBox.DoDamage(Damage);
+            NightPool.Despawn(this);
         }
     }
 }

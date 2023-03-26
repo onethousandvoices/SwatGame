@@ -1,9 +1,10 @@
 ﻿using Controllers;
-using SWAT.Behaviour;
+using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.Utility;
 using System;
 using UnityEngine;
+using IState = SWAT.Behaviour.IState;
 
 namespace SWAT
 {
@@ -23,11 +24,16 @@ namespace SWAT
         [SerializeField, Config(Extras.EnemyWeapon_Pistol, "A5")] private int _totalAmmo;
 
         private Rigidbody _rb;
-
+        
         protected override void OnEnabled()
         {
             base.OnEnabled();
 
+            IsVulnerable = true;
+            
+            CurrentHealth = _maxHealth;
+            CurrentArmour = _maxArmour;
+            
             _rb = Get<Rigidbody>();
             
             CurrentWeapon.Configure(
@@ -39,9 +45,22 @@ namespace SWAT
 
             StateEngine.AddState(
                 new FiringState(this),
-                new RunState(this));
+                new RunState(this),
+                new DeadState());
+        }
 
+        public void SetPositions(EnemyPositions positions)
+        {
+            _positions = positions;
             StateEngine.SwitchState<RunState>();
+        }
+
+        protected override void Dead()
+        {
+            GameEvents.Call(new EnemyKilledEvent(this));
+            
+            StateEngine.SwitchState<DeadState>();
+            //todo death animation
         }
 
 #region States
@@ -87,6 +106,8 @@ namespace SWAT
             public void Enter()
             {
                 _enemy.CurrentWeapon.SetFireState(false);
+                
+                _positionIndex++;
 
                 if (_positionIndex >= _enemy._positions.TargetPositions.Length)
                     _positionIndex = 0;
@@ -140,6 +161,21 @@ namespace SWAT
             public void Exit()
             {
                 _positionIndex++;
+            }
+        }
+
+        private class DeadState : IState
+        {
+            public void Enter()
+            {
+            }
+
+            public void Run()
+            {
+            }
+
+            public void Exit()
+            {
             }
         }
 #endregion

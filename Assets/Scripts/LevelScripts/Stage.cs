@@ -1,5 +1,4 @@
-﻿using NTC.Global.Cache;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace SWAT.LevelScripts

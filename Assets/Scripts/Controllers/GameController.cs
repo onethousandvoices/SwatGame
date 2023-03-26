@@ -1,5 +1,7 @@
 ﻿using NTC.Global.Cache;
 using SWAT;
+using SWAT.Events;
+using SWAT.LevelScripts;
 using SWAT.Utility;
 using System.Collections.Generic;
 using System.Reflection;
@@ -20,6 +22,14 @@ namespace Controllers
         {
             ParseConfig();
             ConfigureObjects();
+            
+            ObjectHolder.AddObject(new LevelController(FindObjectOfType<Level>()));
+        }
+
+        protected override void OnDisabled()
+        {
+            base.OnDisabled();
+            GameEvents.UnregisterAll();
         }
 
         private void ParseConfig()
@@ -75,6 +85,16 @@ namespace Controllers
                 if (obj.gameObject.TryGetComponent(out Camera cam)) ObjectHolder.AddObject(cam);
                 if (obj.gameObject.GetComponent<Crosshair>() != null) ObjectHolder.AddObject(obj);
                 if (obj.gameObject.GetComponent<Player>() != null) ObjectHolder.AddObject(obj);
+            }
+        }
+
+        public void ConfigPrefabs()
+        {
+            MonoCache[] prefabs = Resources.LoadAll<MonoCache>($"Prefabs");
+
+            foreach (MonoCache prefab in prefabs)
+            {
+                ConfigObject(prefab);
             }
         }
 

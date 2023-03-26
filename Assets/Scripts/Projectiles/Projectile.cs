@@ -6,8 +6,8 @@ namespace SWAT.Weapons
 {
     public abstract class Projectile : MonoCache, IPoolItem
     {
-        [field: SerializeField] public Collider Collider { get; private set; }
-        [field: SerializeField] public float    FlySpeed { get; private set; }
+        [field: SerializeField] public BoxCollider Collider { get; private set; }
+        [field: SerializeField] public float FlySpeed { get; private set; }
 
         public int Damage { get; private set; }
 
