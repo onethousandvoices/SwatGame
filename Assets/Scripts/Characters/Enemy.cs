@@ -10,7 +10,7 @@ namespace SWAT
 {
     public class Enemy : BaseCharacter
     {
-        [SerializeField] private EnemyPositions _positions;
+        [SerializeField] private CharacterPositions _positions;
 
         [SerializeField, Config(Extras.Enemy, "A1")] private int _maxHealth;
         [SerializeField, Config(Extras.Enemy, "A2")] private int _maxArmour;
@@ -24,7 +24,14 @@ namespace SWAT
         [SerializeField, Config(Extras.EnemyWeapon_Pistol, "A5")] private int _totalAmmo;
 
         private Rigidbody _rb;
+        private Animator _animator;
+        private Player _player;
+
+        private bool _isFirePos;
         
+        private static readonly int _fireTrigger = Animator.StringToHash("Fire");
+        private static readonly int _runTrigger = Animator.StringToHash("Run");
+
         protected override void OnEnabled()
         {
             base.OnEnabled();
@@ -33,8 +40,11 @@ namespace SWAT
             
             CurrentHealth = _maxHealth;
             CurrentArmour = _maxArmour;
+
+            _player = ObjectHolder.GetObject<Player>();
             
             _rb = Get<Rigidbody>();
+            _animator = Get<Animator>();
             
             CurrentWeapon.Configure(
                 _projectileDamage,
@@ -49,7 +59,7 @@ namespace SWAT
                 new DeadState());
         }
 
-        public void SetPositions(EnemyPositions positions)
+        public void SetPositions(CharacterPositions positions)
         {
             _positions = positions;
             StateEngine.SwitchState<RunState>();
@@ -63,6 +73,11 @@ namespace SWAT
             //todo death animation
         }
 
+        public void UnityEvent_FirePoseReached()
+        {
+            CurrentWeapon.SetFireState(true);
+        }
+
 #region States
         private class FiringState : IState
         {
@@ -73,9 +88,9 @@ namespace SWAT
 
             public void Enter()
             {
+                _enemy._animator.SetTrigger(_fireTrigger);
                 _currentFiringTime = _enemy._firingTime;
-                _enemy.CurrentWeapon.SetFireState(true);
-                _enemy.CurrentWeapon.transform.LookAt(ObjectHolder.GetObject<Player>().transform.position);
+                _enemy.transform.LookAt(_enemy._player.transform.position);
             }
 
             public void Run()
@@ -88,7 +103,8 @@ namespace SWAT
                 _enemy.StateEngine.SwitchState<RunState>();
             }
 
-            public void Exit() { }
+            public void Exit()
+            { }
         }
 
         private class RunState : IState
@@ -105,13 +121,15 @@ namespace SWAT
 
             public void Enter()
             {
+                _enemy._animator.SetTrigger(_runTrigger);
+
                 _enemy.CurrentWeapon.SetFireState(false);
                 
                 _positionIndex++;
 
                 if (_positionIndex >= _enemy._positions.TargetPositions.Length)
                     _positionIndex = 0;
-                _targetPosition = _enemy._positions.TargetPositions[_positionIndex];
+                _targetPosition = _enemy._positions.TargetPositions[_positionIndex].transform;
 
                 _path = _enemy._positions.GetPath(_targetPosition);
                 _pathIndex = 0;
@@ -126,7 +144,7 @@ namespace SWAT
 
             private void UpdatePathIndex()
             {
-                if (_currentPathPoint == _path.End.position)
+                if (_currentPathPoint == _path.End.Position)
                 {
                     _enemy.StateEngine.SwitchState<FiringState>();
                     return;
@@ -134,7 +152,7 @@ namespace SWAT
                 
                 if (_pathIndex >= _path.PathPoints.Count)
                 {
-                    _currentPathPoint = _path.End.position;
+                    _currentPathPoint = _path.End.Position;
                     return;
                 }
                 _currentPathPoint = _path.PathPoints[_pathIndex].transform.position;

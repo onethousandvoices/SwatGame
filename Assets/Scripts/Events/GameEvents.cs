@@ -22,7 +22,7 @@ namespace SWAT.Events
             {
                 _events[typeof(T)].Remove(callback);
 
-                if (_events[typeof(T)].Count == 0) 
+                if (_events[typeof(T)].Count == 0)
                     _events.Remove(typeof(T));
             }
             else

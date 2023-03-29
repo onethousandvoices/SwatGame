@@ -7,7 +7,7 @@ namespace SWAT.LevelScripts
     public struct EnemyPath
     {
         [field: SerializeField] public Enemy Enemy { get; private set; }
-        [field: SerializeField] public EnemyPositions EnemyPositions { get; private set; }
+        [field: SerializeField] public CharacterPositions CharacterPositions { get; private set; }
     }
 
     [Serializable]

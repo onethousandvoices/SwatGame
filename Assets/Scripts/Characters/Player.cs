@@ -1,7 +1,9 @@
 ﻿using Controllers;
 using SWAT.Behaviour;
 using SWAT.Events;
+using SWAT.LevelScripts;
 using SWAT.Utility;
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -11,6 +13,8 @@ namespace SWAT
 {
     public class Player : BaseCharacter
     {
+        [SerializeField] private CharacterPositions _positions;
+        
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
@@ -26,7 +30,10 @@ namespace SWAT
         [SerializeField] private HitPointsHolder _hitPointsHolder;
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
-        
+        private static readonly int _runTrigger = Animator.StringToHash("Run");
+        private static readonly int _firingTrigger = Animator.StringToHash("Firing");
+
+        private Rigidbody _rb;
         private Crosshair _crosshair;
         
         protected override void OnEnabled()
@@ -35,6 +42,8 @@ namespace SWAT
 
             CurrentHealth = _maxHealth;
             CurrentArmour = _maxArmour;
+
+            _rb = Get<Rigidbody>();
             
             CurrentWeapon.Configure(
                 _projectileDamage,
@@ -50,7 +59,8 @@ namespace SWAT
                 new PreIdleState(this),
                 new PreReloadingState(this),
                 new ReloadingState(this),
-                new IdleState(this));
+                new IdleState(this),
+                new RunState(this));
 
             StateEngine.SwitchState<IdleState>();
         }
@@ -98,6 +108,83 @@ namespace SWAT
         }
 
 #region States
+        private class RunState : IState
+        {
+            private readonly Player _player;
+
+            private Path _path;
+            private Transform _targetPosition;
+            private Vector3 _currentPathPoint;
+            private int _pathIndex;
+            private int _positionIndex;
+
+            public RunState(Player player) => _player = player;
+
+            public void Enter()
+            {
+                _player.GetUp();
+                _player._animator.SetTrigger(_runTrigger);
+
+                _player.CurrentWeapon.SetFireState(false);
+                
+                if (_positionIndex >= _player._positions.TargetPositions.Length)
+                    _positionIndex = 0;
+                _targetPosition = _player._positions.TargetPositions[_positionIndex].transform;
+
+                _positionIndex++;
+                
+                _path = _player._positions.GetPath(_targetPosition);
+                _pathIndex = 0;
+                
+                if (_path == null)
+                {
+                    throw new Exception($"{_player.name} can't find path to {_targetPosition}");
+                }
+
+                UpdatePathIndex();
+            }
+
+            private void UpdatePathIndex()
+            {
+                if (_currentPathPoint == _path.End.Position)
+                {
+                    _player.StateEngine.SwitchState<IdleState>();
+                    return;
+                }
+                
+                if (_pathIndex >= _path.PathPoints.Count)
+                {
+                    _currentPathPoint = _path.End.Position;
+                    return;
+                }
+                _currentPathPoint = _path.PathPoints[_pathIndex].transform.position;
+            }
+
+            public void Run()
+            {
+                Vector3 enemyPos = _player.transform.position;
+                Vector3 direction = _currentPathPoint - enemyPos;
+                direction.y = 0;
+                Quaternion rotation = Quaternion.LookRotation(direction);
+                _player.transform.rotation = Quaternion.Slerp(_player.transform.rotation, rotation, Time.deltaTime * 20f);
+                
+                //todo constrain velocty
+
+                _player._rb.AddForce(_player.transform.forward * _player._speed, ForceMode.Force);
+                
+                if ((_currentPathPoint - enemyPos).sqrMagnitude > 2f) return;
+
+                _pathIndex++;
+                UpdatePathIndex();
+            }
+
+            public void Exit()
+            {
+                _positionIndex++;
+                _player.transform.rotation = _targetPosition.rotation;
+            }
+        }
+        
         private class FiringState : IState
         {
             private readonly Player _player;
@@ -107,6 +194,7 @@ namespace SWAT
             public void Enter()
             {
                 _player.GetUp();
+                _player._animator.SetTrigger(_firingTrigger);
                 _player.IsVulnerable = true;
                 _player._rotationConstraint.weight = 1f;
             }

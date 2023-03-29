@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using UnityEngine;
 
 namespace SWAT.Weapons
-{ 
+{
     // ReSharper disable once ConvertToAutoProperty
-    
+
     public enum WeaponCarrier : byte
     {
         None,
@@ -40,7 +40,7 @@ namespace SWAT.Weapons
         private Vector3 _currentAimingPoint;
         private ITarget _target;
         private RaycastHit _hit;
-        
+
         private float _currentFiringRate;
         private float _currentClipSize;
 
@@ -118,17 +118,20 @@ namespace SWAT.Weapons
 
         protected override void Run()
         {
-            transform.position = _rightHand.position;
+            if (_carrier == WeaponCarrier.Player)
+                transform.position = _rightHand.position;
 
             if (FireState)
             {
                 if (_carrier == WeaponCarrier.Player)
                     _currentAimingPoint = _target.GetTarget();
+                else
+                    transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f);
 
                 Vector3 direction = _currentAimingPoint - transform.position;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
             }
-            else
+            else if (_carrier == WeaponCarrier.Player)
             {
                 if (_leftHand != null)
                     transform.LookAt(_leftHand.transform.position);

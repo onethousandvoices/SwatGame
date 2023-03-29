@@ -10,6 +10,8 @@ namespace SWAT.LevelScripts
         private void OnDrawGizmos()
         {
             Path path = GetComponentInParent<Path>();
+            
+            if (path == null) return;
 
             if (path.PathPoints.Contains(this) == false)
             {

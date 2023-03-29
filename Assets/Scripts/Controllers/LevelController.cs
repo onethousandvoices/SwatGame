@@ -22,13 +22,14 @@ namespace Controllers
 
         private void Init()
         {
+            // return;
             _index = 0;
             _enemiesToKill = new List<Enemy>();
 
             foreach (EnemyPath path in _level.Stages[_index].Enemies)
             {
-                Enemy enemy = NightPool.Spawn(path.Enemy, path.EnemyPositions.TargetPositions[0].position + new Vector3(0f, 2f, 0f));
-                enemy.SetPositions(path.EnemyPositions);
+                Enemy enemy = NightPool.Spawn(path.Enemy, path.CharacterPositions.TargetPositions[0].transform.position + new Vector3(0f, 2f, 0f));
+                enemy.SetPositions(path.CharacterPositions);
                 
                 _enemiesToKill.Add(enemy);
             }
