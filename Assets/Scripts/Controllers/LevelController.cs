@@ -28,8 +28,8 @@ namespace Controllers
 
             foreach (EnemyPath path in _level.Stages[_index].Enemies)
             {
-                Enemy enemy = NightPool.Spawn(path.Enemy, path.CharacterPositions.TargetPositions[0].transform.position + new Vector3(0f, 2f, 0f));
-                enemy.SetPositions(path.CharacterPositions);
+                Enemy enemy = NightPool.Spawn(path.Enemy, path.Path.Start.transform.position + new Vector3(0f, 2f, 0f));
+                enemy.SetPositions(path.Path);
                 
                 _enemiesToKill.Add(enemy);
             }
@@ -50,6 +50,7 @@ namespace Controllers
             
             if (_enemiesToKill.Count > 0) return;
             Debug.LogError("change stage. all dead...");
+            GameEvents.Call(new StageEnemiesDeadEvent());
         }
     }
 }

@@ -2,8 +2,8 @@
 using SWAT.Behaviour;
 using SWAT.Events;
 using SWAT.LevelScripts;
+using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
-using System;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -13,7 +13,7 @@ namespace SWAT
 {
     public class Player : BaseCharacter
     {
-        [SerializeField] private CharacterPositions _positions;
+        [SerializeField] private Path _path;
         
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
@@ -63,6 +63,13 @@ namespace SWAT
                 new RunState(this));
 
             StateEngine.SwitchState<IdleState>();
+            
+            GameEvents.Register<StageEnemiesDeadEvent>(OnStageEnemiesDeath);
+        }
+
+        private void OnStageEnemiesDeath(StageEnemiesDeadEvent obj)
+        {
+            StateEngine.SwitchState<RunState>();
         }
 
         private HitPoint RandomHitPoint(int randomValue)
@@ -111,59 +118,31 @@ namespace SWAT
         private class RunState : IState
         {
             private readonly Player _player;
-
-            private Path _path;
-            private Transform _targetPosition;
-            private Vector3 _currentPathPoint;
-            private int _pathIndex;
-            private int _positionIndex;
-
+            private PathPoint _targetPathPoint;
             public RunState(Player player) => _player = player;
 
             public void Enter()
             {
                 _player.GetUp();
                 _player._animator.SetTrigger(_runTrigger);
-
                 _player.CurrentWeapon.SetFireState(false);
-                
-                if (_positionIndex >= _player._positions.TargetPositions.Length)
-                    _positionIndex = 0;
-                _targetPosition = _player._positions.TargetPositions[_positionIndex].transform;
-
-                _positionIndex++;
-                
-                _path = _player._positions.GetPath(_targetPosition);
-                _pathIndex = 0;
-                
-                if (_path == null)
-                {
-                    throw new Exception($"{_player.name} can't find path to {_targetPosition}");
-                }
-
-                UpdatePathIndex();
+                _targetPathPoint = _player._path.GetPoint();
             }
 
             private void UpdatePathIndex()
             {
-                if (_currentPathPoint == _path.End.Position)
+                if (_targetPathPoint.IsStopPoint)
                 {
                     _player.StateEngine.SwitchState<IdleState>();
                     return;
                 }
-                
-                if (_pathIndex >= _path.PathPoints.Count)
-                {
-                    _currentPathPoint = _path.End.Position;
-                    return;
-                }
-                _currentPathPoint = _path.PathPoints[_pathIndex].transform.position;
+                _targetPathPoint = _player._path.GetPoint();
             }
 
             public void Run()
             {
-                Vector3 enemyPos = _player.transform.position;
-                Vector3 direction = _currentPathPoint - enemyPos;
+                Vector3 playerPos = _player.transform.position;
+                Vector3 direction = _targetPathPoint.transform.position - playerPos;
                 direction.y = 0;
                 Quaternion rotation = Quaternion.LookRotation(direction);
                 _player.transform.rotation = Quaternion.Slerp(_player.transform.rotation, rotation, Time.deltaTime * 20f);
@@ -172,16 +151,14 @@ namespace SWAT
 
                 _player._rb.AddForce(_player.transform.forward * _player._speed, ForceMode.Force);
                 
-                if ((_currentPathPoint - enemyPos).sqrMagnitude > 2f) return;
+                if ((_targetPathPoint.transform.position - playerPos).sqrMagnitude > 2f) return;
 
-                _pathIndex++;
                 UpdatePathIndex();
             }
 
             public void Exit()
             {
-                _positionIndex++;
-                _player.transform.rotation = _targetPosition.rotation;
+                _player.transform.rotation = _targetPathPoint.transform.rotation;
             }
         }
         

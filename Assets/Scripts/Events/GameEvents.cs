@@ -50,6 +50,13 @@ namespace SWAT.Events
         }
     }
 
+#region Events
+
+    public class StageEnemiesDeadEvent
+    {
+        
+    }
+    
     public class EnemyKilledEvent
     {
         public Enemy Enemy { get; }
@@ -69,4 +76,5 @@ namespace SWAT.Events
             Player = player;
         }
     }
+#endregion
 }

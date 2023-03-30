@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SWAT.LevelScripts.Navigation;
+using System;
 using UnityEngine;
 
 namespace SWAT.LevelScripts
@@ -7,7 +8,7 @@ namespace SWAT.LevelScripts
     public struct EnemyPath
     {
         [field: SerializeField] public Enemy Enemy { get; private set; }
-        [field: SerializeField] public CharacterPositions CharacterPositions { get; private set; }
+        [field: SerializeField] public Path Path { get; private set; }
     }
 
     [Serializable]

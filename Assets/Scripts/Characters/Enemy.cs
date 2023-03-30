@@ -1,6 +1,7 @@
 ﻿using Controllers;
 using SWAT.Events;
 using SWAT.LevelScripts;
+using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
 using System;
 using UnityEngine;
@@ -10,7 +11,7 @@ namespace SWAT
 {
     public class Enemy : BaseCharacter
     {
-        [SerializeField] private CharacterPositions _positions;
+        [SerializeField] private Path _path;
 
         [SerializeField, Config(Extras.Enemy, "A1")] private int _maxHealth;
         [SerializeField, Config(Extras.Enemy, "A2")] private int _maxArmour;
@@ -59,9 +60,9 @@ namespace SWAT
                 new DeadState());
         }
 
-        public void SetPositions(CharacterPositions positions)
+        public void SetPositions(Path path)
         {
-            _positions = positions;
+            _path = path;
             StateEngine.SwitchState<RunState>();
         }
 
@@ -110,58 +111,31 @@ namespace SWAT
         private class RunState : IState
         {
             private readonly Enemy _enemy;
-
-            private Path _path;
-            private Transform _targetPosition;
-            private Vector3 _currentPathPoint;
-            private int _pathIndex;
-            private int _positionIndex;
-
+            private PathPoint _targetPathPoint;
             public RunState(Enemy enemy) => _enemy = enemy;
 
             public void Enter()
             {
                 _enemy._animator.SetTrigger(_runTrigger);
-
                 _enemy.CurrentWeapon.SetFireState(false);
-                
-                _positionIndex++;
-
-                if (_positionIndex >= _enemy._positions.TargetPositions.Length)
-                    _positionIndex = 0;
-                _targetPosition = _enemy._positions.TargetPositions[_positionIndex].transform;
-
-                _path = _enemy._positions.GetPath(_targetPosition);
-                _pathIndex = 0;
-                
-                if (_path == null)
-                {
-                    throw new Exception($"{_enemy.name} can't find path to {_targetPosition}");
-                }
-
-                UpdatePathIndex();
+                _targetPathPoint = _enemy._path.GetPoint();
             }
 
             private void UpdatePathIndex()
             {
-                if (_currentPathPoint == _path.End.Position)
+                if (_targetPathPoint.IsStopPoint)
                 {
                     _enemy.StateEngine.SwitchState<FiringState>();
                     return;
                 }
-                
-                if (_pathIndex >= _path.PathPoints.Count)
-                {
-                    _currentPathPoint = _path.End.Position;
-                    return;
-                }
-                _currentPathPoint = _path.PathPoints[_pathIndex].transform.position;
+
+                _targetPathPoint = _enemy._path.GetPoint();
             }
 
             public void Run()
             {
                 Vector3 enemyPos = _enemy.transform.position;
-                Vector3 direction = _currentPathPoint - enemyPos;
+                Vector3 direction = _targetPathPoint.transform.position - enemyPos;
                 direction.y = 0;
                 Quaternion rotation = Quaternion.LookRotation(direction);
                 _enemy.transform.rotation = Quaternion.Slerp(_enemy.transform.rotation, rotation, Time.deltaTime * 20f);
@@ -170,15 +144,13 @@ namespace SWAT
 
                 _enemy._rb.AddForce(_enemy.transform.forward * _enemy._speed, ForceMode.Force);
                 
-                if ((_currentPathPoint - enemyPos).sqrMagnitude > 2f) return;
+                if ((_targetPathPoint.transform.position - enemyPos).sqrMagnitude > 2f) return;
 
-                _pathIndex++;
                 UpdatePathIndex();
             }
 
             public void Exit()
             {
-                _positionIndex++;
             }
         }
 
