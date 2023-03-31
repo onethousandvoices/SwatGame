@@ -9,6 +9,9 @@ namespace SWAT.Utility
         public const string PlayerWeapon = "weapon.operative";
         public const string Enemy = "enemy1";
         public const string EnemyWeapon_Pistol = "enemy.pistol";
+        public const string EnemySniper = "enemy.sniper";
+        public const string EnemyWeapon_SniperRifle = "enemy.sniperrifle";
+        
 
         public static string BreakCamelCase(string str)
         {

@@ -25,9 +25,13 @@ namespace SWAT
         [Config(Extras.PlayerWeapon, "A4")] private int _reloadTime;
         [Config(Extras.PlayerWeapon, "A5")] private int _totalAmmo;
 
+        [SerializeField] private Hud _playerHud;
         [SerializeField] private Animator _animator;
         [SerializeField] private RotationConstraint _rotationConstraint;
         [SerializeField] private HitPointsHolder _hitPointsHolder;
+
+        protected override int BaseMaxArmour => _maxArmour;
+        protected override int BaseMaxHealth => _maxHealth;
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
@@ -40,6 +44,9 @@ namespace SWAT
         {
             base.OnEnabled();
 
+            SetHud(_playerHud);
+            _playerHud.PlayerCarry();
+            
             CurrentHealth = _maxHealth;
             CurrentArmour = _maxArmour;
 
@@ -163,6 +170,7 @@ namespace SWAT
             {
                 _player.transform.rotation = _targetPathPoint.transform.rotation;
                 _player.CurrentWeapon.Lower();
+                GameEvents.Call(new PlayerChangedPositionEvent());
             }
         }
         

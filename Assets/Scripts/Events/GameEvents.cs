@@ -51,12 +51,22 @@ namespace SWAT.Events
     }
 
 #region Events
-
-    public class StageEnemiesDeadEvent
+    public class EnemiesSpawnedEvent
     {
-        
+        public Enemy[] Enemies { get; }
+
+        public EnemiesSpawnedEvent(Enemy[] enemies)
+        {
+            Enemies = enemies;
+        }
     }
     
+    public class StageEnemiesDeadEvent { }
+    
+    public class PlayerChangedPositionEvent { }
+    
+    public class LevelCompletedEvent { }
+
     public class EnemyKilledEvent
     {
         public Enemy Enemy { get; }

@@ -3,6 +3,8 @@ using SWAT;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.Utility;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
@@ -14,8 +16,10 @@ namespace Controllers
 #region CfgDictionaries
         private readonly Dictionary<string, int> _playerCfg = new Dictionary<string, int>();
         private readonly Dictionary<string, int> _playerWeaponCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemyCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemyWeaponCfg = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _enemyThugCfg = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _enemyPistolCfg = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _enemySniperCfg = new Dictionary<string, int>();
+        private readonly Dictionary<string, int> _enemySniperRifleCfg = new Dictionary<string, int>();
 #endregion
 
         protected override void OnEnabled()
@@ -23,6 +27,11 @@ namespace Controllers
             ParseConfig();
             ConfigureObjects();
             
+        }
+
+        private IEnumerator Start() //todo kostbl
+        {
+            yield return new WaitForSeconds(1f);
             ObjectHolder.AddObject(new LevelController(FindObjectOfType<Level>()));
         }
 
@@ -38,8 +47,10 @@ namespace Controllers
             
             _playerCfg.Clear();
             _playerWeaponCfg.Clear();
-            _enemyCfg.Clear();
-            _enemyWeaponCfg.Clear();
+            _enemyThugCfg.Clear();
+            _enemyPistolCfg.Clear();
+            _enemySniperCfg.Clear();
+            _enemySniperRifleCfg.Clear();
 
             for (int i = 0; i < config.Count; i++)
             {
@@ -60,10 +71,16 @@ namespace Controllers
                             _playerWeaponCfg.Add(key, (int)dict[key]);
                             break;
                         case Extras.Enemy:
-                            _enemyCfg.Add(key, (int)dict[key]);
+                            _enemyThugCfg.Add(key, (int)dict[key]);
                             break;
                         case Extras.EnemyWeapon_Pistol:
-                            _enemyWeaponCfg.Add(key, (int)dict[key]);
+                            _enemyPistolCfg.Add(key, (int)dict[key]);
+                            break;
+                        case Extras.EnemySniper:
+                            _enemySniperCfg.Add(key, (int)dict[key]);
+                            break;
+                        case Extras.EnemyWeapon_SniperRifle:
+                            _enemySniperRifleCfg.Add(key, (int)dict[key]);
                             break;
                     }
                 }
@@ -125,10 +142,16 @@ namespace Controllers
                         fieldInfo.SetValue(obj, _playerWeaponCfg[param]);
                         break;
                     case Extras.Enemy:
-                        fieldInfo.SetValue(obj, _enemyCfg[param]);
+                        fieldInfo.SetValue(obj, _enemyThugCfg[param]);
                         break;
                     case Extras.EnemyWeapon_Pistol:
-                        fieldInfo.SetValue(obj, _enemyWeaponCfg[param]);
+                        fieldInfo.SetValue(obj, _enemyPistolCfg[param]);
+                        break;
+                    case Extras.EnemySniper:
+                        fieldInfo.SetValue(obj, _enemySniperCfg[param]);
+                        break;
+                    case Extras.EnemyWeapon_SniperRifle:
+                        fieldInfo.SetValue(obj, _enemySniperRifleCfg[param]);
                         break;
                 }
             }

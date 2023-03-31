@@ -28,6 +28,7 @@ namespace SWAT.Weapons
         [SerializeField] private Transform _rightHand;
         [SerializeField] private Transform _leftHand;
         [SerializeField] private WeaponCarrier _carrier;
+        [SerializeField] private Vector3 _posOffset;
 
         private int _firingRate;
         private int _clipSize;
@@ -128,7 +129,7 @@ namespace SWAT.Weapons
                 if (_carrier == WeaponCarrier.Player)
                     _currentAimingPoint = _target.GetTarget();
                 else
-                    transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f);
+                    transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
 
                 Vector3 direction = _currentAimingPoint - transform.position;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);

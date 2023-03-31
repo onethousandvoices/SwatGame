@@ -28,6 +28,7 @@ namespace SWAT.Utility
                 Dictionary<string, object> entry = new Dictionary<string, object>();
                 for (int j = 0; j < header.Length && j < values.Length; j++)
                 {
+                    if (header[j] == "Description") continue;
                     string value = values[j];
                     value = value.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
                     object finalValue = value;
