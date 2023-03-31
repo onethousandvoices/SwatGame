@@ -55,6 +55,7 @@ namespace SWAT.Weapons
             _clipSize = clipSize;
             _reloadTime = reloadTime;
             _totalAmmo = totalAmmo;
+            _player = ObjectHolder.GetObject<Player>();
 
             switch (_carrier)
             {
@@ -64,15 +65,15 @@ namespace SWAT.Weapons
                     break;
                 case WeaponCarrier.Enemy:
                     _lookSpeed = 50;
-                    _player = ObjectHolder.GetObject<Player>();
-
-                    const int count = 50;
-                    _aimingPoints = new List<Vector3>();
-                    for (int i = 0; i < count; i++)
-                    {
-                        HitPoint hitPoint = await _player.GetTargetAsync();
-                        _aimingPoints.Add(hitPoint.Target.position);
-                    }
+                    // _player = ObjectHolder.GetObject<Player>();
+                    //
+                    // const int count = 50;
+                    // _aimingPoints = new List<Vector3>();
+                    // for (int i = 0; i < count; i++)
+                    // {
+                    //     HitPoint hitPoint = await _player.GetTargetAsync();
+                    //     _aimingPoints.Add(hitPoint.Target.position);
+                    // }
                     break;
             }
 
@@ -113,6 +114,8 @@ namespace SWAT.Weapons
         {
             // if (_aimingPoints.Count < 1) return;
             // _currentAimingPoint = _aimingPoints[0];
+            if (_player == null)
+                _player = ObjectHolder.GetObject<Player>();
             HitPoint hitPoint = await _player.GetTargetAsync();
             _currentAimingPoint = hitPoint.Target.position;
         }
