@@ -41,6 +41,7 @@ namespace SWAT.Weapons
         private Vector3 _currentAimingPoint;
         private ITarget _target;
         private RaycastHit _hit;
+        private Player _player;
 
         private float _currentFiringRate;
         private float _currentClipSize;
@@ -63,13 +64,13 @@ namespace SWAT.Weapons
                     break;
                 case WeaponCarrier.Enemy:
                     _lookSpeed = 50;
-                    Player player = ObjectHolder.GetObject<Player>();
+                    _player = ObjectHolder.GetObject<Player>();
 
                     const int count = 50;
                     _aimingPoints = new List<Vector3>();
                     for (int i = 0; i < count; i++)
                     {
-                        HitPoint hitPoint = await player.GetTargetAsync();
+                        HitPoint hitPoint = await _player.GetTargetAsync();
                         _aimingPoints.Add(hitPoint.Target.position);
                     }
                     break;
@@ -91,7 +92,7 @@ namespace SWAT.Weapons
 
             if (_carrier == WeaponCarrier.Enemy)
             {
-                RemoveAimingPoint();
+                // RemoveAimingPoint();
                 SetAimingPoint();
             }
 
@@ -105,12 +106,15 @@ namespace SWAT.Weapons
             {
                 ClipIsEmpty = true;
             }
+            SetAimingPoint();
         }
 
-        private void SetAimingPoint()
+        private async void SetAimingPoint()
         {
-            if (_aimingPoints.Count < 1) return;
-            _currentAimingPoint = _aimingPoints[0];
+            // if (_aimingPoints.Count < 1) return;
+            // _currentAimingPoint = _aimingPoints[0];
+            HitPoint hitPoint = await _player.GetTargetAsync();
+            _currentAimingPoint = hitPoint.Target.position;
         }
 
         private void RemoveAimingPoint()
@@ -131,7 +135,7 @@ namespace SWAT.Weapons
                 else
                     transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
 
-                Vector3 direction = _currentAimingPoint - transform.position;
+                Vector3 direction = _currentAimingPoint - transform.position + _posOffset;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
             }
             else if (_carrier == WeaponCarrier.Player && _isRiseUp == false)
