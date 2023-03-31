@@ -69,7 +69,7 @@ namespace SWAT
         protected override void Dead()
         {
             GameEvents.Call(new EnemyKilledEvent(this));
-            
+
             StateEngine.SwitchState<DeadState>();
             //todo death animation
         }

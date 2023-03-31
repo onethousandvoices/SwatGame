@@ -44,6 +44,8 @@ namespace SWAT.Weapons
         private float _currentFiringRate;
         private float _currentClipSize;
 
+        private bool _isRiseUp;
+
         public async void Configure(int projectileDamage, int firingRate, int clipSize, int reloadTime, int totalAmmo)
         {
             _projectileDamage = projectileDamage;
@@ -131,7 +133,7 @@ namespace SWAT.Weapons
                 Vector3 direction = _currentAimingPoint - transform.position;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
             }
-            else if (_carrier == WeaponCarrier.Player)
+            else if (_carrier == WeaponCarrier.Player && _isRiseUp == false)
             {
                 if (_leftHand != null)
                     transform.LookAt(_leftHand.transform.position);
@@ -144,18 +146,18 @@ namespace SWAT.Weapons
 #endif
         }
 
-        public void SetFireState(bool state) => FireState = state;
+        public void RiseUp()
+        {
+            _isRiseUp = true;
+            transform.localEulerAngles = new Vector3(-90f, 0f, 0f);
+        }
 
-        // private float FlyTime()
-        // {
-        //     Physics.Raycast(_firePoint.position, transform.forward, out _hit, _maxFireRange);
-        //
-        //     float distance = _hit.transform == null
-        //         ? _maxFireRange
-        //         : Vector3.Distance(_firePoint.position, _hit.point);
-        //
-        //     return distance / _projectile.FlySpeed;
-        // }
+        public void Lower()
+        {
+            _isRiseUp = false;
+        }
+
+        public void SetFireState(bool state) => FireState = state;
 
         public void ResetFiringRate()
         {

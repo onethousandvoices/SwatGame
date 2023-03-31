@@ -127,6 +127,9 @@ namespace SWAT
                 _player._animator.SetTrigger(_runTrigger);
                 _player.CurrentWeapon.SetFireState(false);
                 _targetPathPoint = _player._path.GetPoint();
+                _player._rotationConstraint.weight = 0f;
+                _player._rotationConstraint.constraintActive = false;
+                _player.CurrentWeapon.RiseUp();
             }
 
             private void UpdatePathIndex()
@@ -159,6 +162,7 @@ namespace SWAT
             public void Exit()
             {
                 _player.transform.rotation = _targetPathPoint.transform.rotation;
+                _player.CurrentWeapon.Lower();
             }
         }
         

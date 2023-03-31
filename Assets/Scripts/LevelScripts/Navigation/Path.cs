@@ -7,8 +7,17 @@ namespace SWAT.LevelScripts.Navigation
 {
     public class Path : MonoCache
     {
-        public PathPoint Start { get; private set; }
-        private PathPoint[] _pathPoints;
+        public PathPoint Start
+        {
+            get
+            {
+                _pathPoints ??= GetComponentsInChildren<PathPoint>();
+                return _pathPoints[0];
+            }
+        }
+
+        [SerializeField, HideInInspector] private PathPoint[] _pathPoints;
+        
         private int _index;
         private int _mod = 1;
         private bool _isRecursive;
@@ -48,15 +57,15 @@ namespace SWAT.LevelScripts.Navigation
             _wasRecursive = true;
             _pathPoints.Last().transform.position = _pathPoints.First().transform.position;
         }
-        
+
         [ShowIf("_isRecursiveAble"), Button("Set Path Non-Recursive")]
         private void UnsetRecursive()
         {
             _isRecursive = false;
-            
+
             if (_wasRecursive == false) return;
             _wasRecursive = false;
-            
+
             _pathPoints.Last().transform.position = _pathPoints.First().transform.position + new Vector3(0f, 0f, 2f);
         }
 
@@ -80,8 +89,6 @@ namespace SWAT.LevelScripts.Navigation
                 _isRecursive = false;
                 UnsetRecursive();
             }
-            
-            Start = _pathPoints[0];
 
             Color cyan = Color.cyan;
             cyan.a = 0.5f;
@@ -104,7 +111,7 @@ namespace SWAT.LevelScripts.Navigation
                 {
                     point.transform.SetSiblingIndex(transform.childCount);
                 }
-                
+
                 point.Draw();
                 Gizmos.color = cyan;
                 Gizmos.DrawLine(_pathPoints[i - 1].transform.position, point.transform.position);
