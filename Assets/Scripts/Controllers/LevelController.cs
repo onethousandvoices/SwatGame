@@ -72,7 +72,6 @@ namespace Controllers
             _enemiesToKill.Remove(killedEvent.Enemy);
             
             if (_enemiesToKill.Count > 0) return;
-            Debug.LogError("change stage. all dead...");
             GameEvents.Call(new StageEnemiesDeadEvent());
         }
     }

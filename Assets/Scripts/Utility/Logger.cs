@@ -10,7 +10,7 @@ namespace Utility
 
         private void OnEnable()
         {
-            _text                          =  GetComponent<Text>();
+            _text = GetComponent<Text>();
             Application.logMessageReceived += Log;
         }
 

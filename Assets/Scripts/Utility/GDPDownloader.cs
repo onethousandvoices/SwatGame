@@ -14,7 +14,7 @@ namespace SWAT.Utility
         private const string _uri = "https://docs.google.com/spreadsheets/d/11kXljn6Jm78n6UL-Y7KuIKvCZVRIqHqqkapolvSeTF4/export?format=csv";
 
         private static string _filePath => Application.dataPath + "/Resources/BasicEntityCfg.csv";
-
+#if UNITY_EDITOR
         [MenuItem("Tools/DownloadGDP")]
         private static async void DownloadGdp()
         {
@@ -32,5 +32,6 @@ namespace SWAT.Utility
             Debug.LogError("Download completed!");
             Object.FindObjectOfType<GameController>().ConfigPrefabs();
         }
+#endif
     }
 }

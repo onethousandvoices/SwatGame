@@ -1,5 +1,6 @@
 ﻿using NaughtyAttributes;
 using NTC.Global.Cache;
+using System;
 using System.Linq;
 using UnityEngine;
 
@@ -48,6 +49,11 @@ namespace SWAT.LevelScripts.Navigation
             }
 
             return _pathPoints[_index];
+        }
+
+        private void OnValidate()
+        {
+            _pathPoints = GetComponentsInChildren<PathPoint>();
         }
 
         [ShowIf("_isRecursiveAble"), Button("Set Path Recursive")]
