@@ -24,9 +24,9 @@ namespace Controllers
 
         protected override void OnEnabled()
         {
+            Application.targetFrameRate = 60;
             ParseConfig();
             ConfigureObjects();
-            
         }
 
         private IEnumerator Start() //todo kostbl
