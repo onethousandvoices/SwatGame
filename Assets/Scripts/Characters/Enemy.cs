@@ -169,7 +169,7 @@ namespace SWAT
 
                 //todo constrain velocty
 
-                _enemy._rb.AddForce(_enemy.transform.forward * _enemy.Speed, ForceMode.Force);
+                _enemy._rb.AddForce(_enemy.transform.forward * (_enemy.Speed * 100 * Time.deltaTime), ForceMode.Force);
 
                 if ((_targetPathPoint.transform.position - enemyPos).sqrMagnitude > 2f) return;
 

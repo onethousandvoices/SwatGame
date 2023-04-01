@@ -159,7 +159,7 @@ namespace SWAT
                 
                 //todo constrain velocty
 
-                _player._rb.AddForce(_player.transform.forward * _player._speed, ForceMode.Force);
+                _player._rb.AddForce(_player.transform.forward * (_player._speed * 100 * Time.deltaTime), ForceMode.Force);
                 
                 if ((_targetPathPoint.transform.position - playerPos).sqrMagnitude > 2f) return;
 
