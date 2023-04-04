@@ -17,7 +17,7 @@ namespace SWAT
         [SerializeField, Config(Extras.EnemyWeapon_Pistol, "A3")] private int _clipSize;
         [SerializeField, Config(Extras.EnemyWeapon_Pistol, "A4")] private int _reloadTime;
         [SerializeField, Config(Extras.EnemyWeapon_Pistol, "A5")] private int _totalAmmo;
-
+        
         protected override int ChildMaxArmour => _maxArmour;
         protected override int ChildMaxHealth => _maxHealth;
         protected override int ProjectileDamage => _projectileDamage;

@@ -4,10 +4,8 @@ using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
-using Random = UnityEngine.Random;
 
 namespace SWAT
 {
@@ -28,10 +26,7 @@ namespace SWAT
         [SerializeField] private Hud _playerHud;
         [SerializeField] private Animator _animator;
         [SerializeField] private RotationConstraint _rotationConstraint;
-        [SerializeField] private HitPointsHolder _hitPointsHolder;
-
-        protected override int BaseMaxArmour => _maxArmour;
-        protected override int BaseMaxHealth => _maxHealth;
+        [field: SerializeField] public HitPointsHolder HitPointsHolder { get; private set; }
 
         private static readonly int _isSit = Animator.StringToHash("IsSit");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
@@ -39,11 +34,16 @@ namespace SWAT
 
         private Rigidbody _rb;
         private Crosshair _crosshair;
+
+        public override CharacterType Type => CharacterType.Player;
+        
+        protected override int BaseMaxArmour => _maxArmour;
+        protected override int BaseMaxHealth => _maxHealth;
         
         protected override void OnEnabled()
         {
             base.OnEnabled();
-
+            
             SetHud(_playerHud);
             _playerHud.PlayerCarry();
             
@@ -78,23 +78,7 @@ namespace SWAT
         {
             StateEngine.SwitchState<RunState>();
         }
-
-        private HitPoint RandomHitPoint(int randomValue)
-        {
-            foreach (HitPoint hitPoint in _hitPointsHolder.HitPoints)
-            {
-                if (randomValue < hitPoint.Value) return hitPoint;
-                randomValue -= hitPoint.Value;
-            }
-            return new HitPoint();
-        }
-
-        public async Task<HitPoint> GetTargetAsync()
-        {
-            int random = Random.Range(0, 100);
-            return await Task.Run(() => RandomHitPoint(random));
-        }
-
+        
         private void GetUp()
         {
             _animator.SetBool(_isSit, false);

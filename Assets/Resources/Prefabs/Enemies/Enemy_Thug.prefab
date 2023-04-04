@@ -236,7 +236,7 @@ GameObject:
   - component: {fileID: 7078499641555773050}
   - component: {fileID: 4819959999499673635}
   - component: {fileID: 4397499538986044473}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: HudHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -564,7 +564,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d3bc80ab4d4cb9800c402e1a800bdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _character: {fileID: 7608551520157141184}
+  <Character>k__BackingField: {fileID: 7608551520157141184}
 --- !u!1 &5039117192430562780
 GameObject:
   m_ObjectHideFlags: 0
@@ -850,7 +850,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d3bc80ab4d4cb9800c402e1a800bdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _character: {fileID: 7608551520157141184}
+  <Character>k__BackingField: {fileID: 7608551520157141184}
 --- !u!1 &8193300903099530255
 GameObject:
   m_ObjectHideFlags: 0
@@ -863,7 +863,7 @@ GameObject:
   - component: {fileID: 6223914418823304688}
   - component: {fileID: 4456290824686724338}
   - component: {fileID: 3276011534395564521}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1059,6 +1059,7 @@ GameObject:
   - component: {fileID: 8868359810479168402}
   - component: {fileID: 8868359810479168400}
   - component: {fileID: 7608551520157141184}
+  - component: {fileID: 3271996111289925791}
   m_Layer: 6
   m_Name: Enemy_Thug
   m_TagString: Untagged
@@ -1135,7 +1136,7 @@ MonoBehaviour:
   CurrentWeapon: {fileID: 2042495703607040050}
   _enemyHud: {fileID: 5574771424511534825}
   _hudHolder: {fileID: 4397499538986044473}
-  _path: {fileID: 0}
+  _hitPointsValues: {fileID: 3271996111289925791}
   _maxHealth: 100
   _maxArmour: 0
   _speed: 10
@@ -1145,6 +1146,25 @@ MonoBehaviour:
   _clipSize: 20000
   _reloadTime: 1
   _totalAmmo: 20000
+--- !u!114 &3271996111289925791
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8868359810479168403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c37ec5a773c84fb7984ece79c14c84dd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _sumTarget: 100
+  _sum: 100
+  _hitPoint1Value: 20
+  _hitPoint2Value: 20
+  _hitPoint3Value: 20
+  _hitPoint4Value: 20
+  _hitPoint5Value: 20
 --- !u!1 &8962079829574358182
 GameObject:
   m_ObjectHideFlags: 0
@@ -1276,7 +1296,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d6d3bc80ab4d4cb9800c402e1a800bdd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _character: {fileID: 7608551520157141184}
+  <Character>k__BackingField: {fileID: 7608551520157141184}
 --- !u!1001 &6366192216648824874
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1298,8 +1318,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4900238629767995416, guid: 03a3a5705e3cc1f46b76b16be985ac34, type: 3}
       propertyPath: _carrier
-      value: 2
-      objectReference: {fileID: 0}
+      value: 
+      objectReference: {fileID: 7608551520157141184}
     - target: {fileID: 4900238629767995416, guid: 03a3a5705e3cc1f46b76b16be985ac34, type: 3}
       propertyPath: _leftHand
       value: 
@@ -1393,6 +1413,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 8327868149711738311}
     m_Modifications:
+    - target: {fileID: 2066038864874152912, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 2066038865926555541, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 4020076961881910698, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1480,6 +1508,50 @@ PrefabInstance:
     - target: {fileID: 4020076961881910699, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
       propertyPath: m_Name
       value: Hud
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076961881910699, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076962108776256, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076962823938598, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076962834419682, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076963139833733, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076963187238367, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076963239266446, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076963240542916, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076963330272922, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076963362519021, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4020076963467908060, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}
+      propertyPath: m_Layer
+      value: 6
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e9931ced1a056bc41a266b0ef23dda58, type: 3}

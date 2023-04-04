@@ -12,7 +12,6 @@ namespace SWAT.Utility
         public const string EnemySniper = "enemy.sniper";
         public const string EnemyWeapon_SniperRifle = "enemy.sniperrifle";
         
-
         public static string BreakCamelCase(string str)
         {
             TextInfo text = new CultureInfo("en-US", false).TextInfo;

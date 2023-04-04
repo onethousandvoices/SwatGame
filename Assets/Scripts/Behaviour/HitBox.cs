@@ -6,12 +6,12 @@ namespace SWAT.Behaviour
 {
     public class HitBox : MonoCache
     {
-        [SerializeField] private BaseCharacter _character;
+        [field: SerializeField] public BaseCharacter Character { get; private set; }
 
         public void DoDamage(int damage)
         {
-            if (_character != null) 
-                _character.DoDamage(damage);
+            if (Character != null) 
+                Character.DoDamage(damage);
             else
                 Debug.LogError($"{name} character is not assigned!");
         }

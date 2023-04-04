@@ -5,10 +5,20 @@ using UnityEngine;
 
 namespace SWAT
 {
+    public enum CharacterType : byte
+    {
+        None,
+        Player,
+        Enemy,
+        Boss
+    }
+    
     public abstract class BaseCharacter : MonoCache
     {
         [SerializeField] protected Weapon CurrentWeapon;
 
+        public abstract CharacterType Type { get; }
+        
         protected abstract int BaseMaxArmour { get; }
         protected abstract int BaseMaxHealth { get; }
         

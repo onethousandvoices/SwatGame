@@ -9,7 +9,8 @@ namespace SWAT.Weapons
         [field: SerializeField] public BoxCollider Collider { get; private set; }
         [field: SerializeField] public float FlySpeed { get; private set; }
 
-        public int Damage { get; private set; }
+        protected CharacterType Carrier { get; private set; }
+        protected int Damage { get; private set; }
 
         public abstract void OnSpawn();
         public abstract void OnDespawn();
@@ -19,9 +20,10 @@ namespace SWAT.Weapons
             transform.Translate(Vector3.forward * (FlySpeed * Time.deltaTime));
         }
 
-        public void Configure(int damage)
+        public void Configure(int damage, CharacterType type)
         {
             Damage = damage;
+            Carrier = type;
         }
     }
 }

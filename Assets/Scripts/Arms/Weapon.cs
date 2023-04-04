@@ -2,20 +2,11 @@
 using NTC.Global.Cache;
 using NTC.Global.Pool;
 using SWAT.Behaviour;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace SWAT.Weapons
 {
-    // ReSharper disable once ConvertToAutoProperty
-
-    public enum WeaponCarrier : byte
-    {
-        None,
-        Player,
-        Enemy
-    }
-
     public class Weapon : MonoCache
     {
         public bool ClipIsEmpty { get; private set; }
@@ -27,8 +18,8 @@ namespace SWAT.Weapons
         [SerializeField, Range(1f, 500f)] private float _maxFireRange;
         [SerializeField] private Transform _rightHand;
         [SerializeField] private Transform _leftHand;
-        [SerializeField] private WeaponCarrier _carrier;
         [SerializeField] private Vector3 _posOffset;
+        [SerializeField] private BaseCharacter _carrier;
 
         private int _firingRate;
         private int _clipSize;
@@ -37,103 +28,85 @@ namespace SWAT.Weapons
         private int _lookSpeed;
         private int _projectileDamage;
 
-        private List<Vector3> _aimingPoints;
         private Vector3 _currentAimingPoint;
         private ITarget _target;
         private RaycastHit _hit;
-        private Player _player;
 
         private float _currentFiringRate;
         private float _currentClipSize;
 
         private bool _isRiseUp;
 
-        public async void Configure(int projectileDamage, int firingRate, int clipSize, int reloadTime, int totalAmmo)
+        public void Configure(int projectileDamage, int firingRate, int clipSize, int reloadTime, int totalAmmo)
         {
             _projectileDamage = projectileDamage;
             _firingRate = firingRate;
             _clipSize = clipSize;
             _reloadTime = reloadTime;
             _totalAmmo = totalAmmo;
-            _player = ObjectHolder.GetObject<Player>();
+            
+            _carrier.TryGetComponent(out Player player);
 
-            switch (_carrier)
+            if (player != null)
             {
-                case WeaponCarrier.Player:
-                    _lookSpeed = 20;
-                    _target = ObjectHolder.GetObject<Crosshair>();
-                    break;
-                case WeaponCarrier.Enemy:
-                    _lookSpeed = 50;
-                    // _player = ObjectHolder.GetObject<Player>();
-                    //
-                    // const int count = 50;
-                    // _aimingPoints = new List<Vector3>();
-                    // for (int i = 0; i < count; i++)
-                    // {
-                    //     HitPoint hitPoint = await _player.GetTargetAsync();
-                    //     _aimingPoints.Add(hitPoint.Target.position);
-                    // }
-                    break;
+                _lookSpeed = 20;
+                _target = ObjectHolder.GetObject<Crosshair>();
             }
-
-            _currentClipSize = _clipSize;
-
-            SetAimingPoint();
-            ResetFiringRate();
-        }
-
-        public void Fire()
-        {
-            if (FireState == false) return;
-
-            _currentFiringRate -= Time.deltaTime;
-
-            if (_currentFiringRate >= 0) return;
-
-            if (_carrier == WeaponCarrier.Enemy)
+            else
             {
-                // RemoveAimingPoint();
+                _lookSpeed = 150;
                 SetAimingPoint();
             }
 
+            _currentClipSize = _clipSize;
+            
+            ResetFiringRate();
+        }
+
+        public async void Fire()
+        {
+            if (FireState == false) return;
+            _currentFiringRate -= Time.deltaTime;
+
+            if (_currentFiringRate >= 0) return;
             _currentFiringRate = 60f / _firingRate;
+
+            if (_carrier is Enemy)
+            {
+                await SetAimingPoint();
+                FireInner();
+                return;
+            }
+
+            FireInner();
+        }
+
+        private void FireInner()
+        {
             _currentClipSize--;
 
             Projectile projectile = NightPool.Spawn(_projectile, _firePoint.position, transform.rotation);
-            projectile.Configure(_projectileDamage);
+            projectile.Configure(_projectileDamage, _carrier.Type);
 
             if (_currentClipSize <= 0)
-            {
                 ClipIsEmpty = true;
-            }
-            SetAimingPoint();
         }
 
-        private async void SetAimingPoint()
+        private async Task SetAimingPoint()
         {
-            // if (_aimingPoints.Count < 1) return;
-            // _currentAimingPoint = _aimingPoints[0];
-            if (_player == null)
-                _player = ObjectHolder.GetObject<Player>();
-            HitPoint hitPoint = await _player.GetTargetAsync();
+            Enemy enemy = (Enemy)_carrier;
+            HitPoint hitPoint = await enemy.GetTargetAsync();
             _currentAimingPoint = hitPoint.Target.position;
-        }
-
-        private void RemoveAimingPoint()
-        {
-            if (_aimingPoints.Count < 1) return;
-            _aimingPoints.RemoveAt(0);
         }
 
         protected override void Run()
         {
-            if (_carrier == WeaponCarrier.Player)
+            if (_carrier is Player)
                 transform.position = _rightHand.position;
 
             if (FireState)
             {
-                if (_carrier == WeaponCarrier.Player)
+                if (_carrier is Player)
                     _currentAimingPoint = _target.GetTarget();
                 else
                     transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
@@ -141,7 +114,7 @@ namespace SWAT.Weapons
                 Vector3 direction = _currentAimingPoint - transform.position + _posOffset;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
             }
-            else if (_carrier == WeaponCarrier.Player && _isRiseUp == false)
+            else if (_carrier is Player && _isRiseUp == false)
             {
                 if (_leftHand != null)
                     transform.LookAt(_leftHand.transform.position);

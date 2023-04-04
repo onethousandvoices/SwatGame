@@ -23,7 +23,6 @@ namespace Controllers
 
         private void Init()
         {
-            // return;
             _index = 0;
 
             SpawnStageEnemies();

@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1375463690335951633}
   - component: {fileID: 605033036016228144}
-  - component: {fileID: 2614864300084634106}
+  - component: {fileID: 1882737276656816602}
   - component: {fileID: 1375463690335951632}
   m_Layer: 7
   m_Name: Bullet
@@ -48,7 +48,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.060028575, y: 0.05786399, z: 0.042372584}
   m_Center: {x: 0, y: 0, z: 0.16172123}
---- !u!54 &2614864300084634106
+--- !u!54 &1882737276656816602
 Rigidbody:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

@@ -13,7 +13,10 @@ namespace SWAT.Weapons
         private void OnTriggerEnter(Collider other)
         {
             if (other.TryGetComponent(out HitBox hitBox))
-                hitBox.DoDamage(Damage);
+            {
+                if (hitBox.Character.Type != Carrier)
+                    hitBox.DoDamage(Damage);
+            }
             NightPool.Despawn(this);
         }
     }

@@ -1,9 +1,12 @@
-﻿using Controllers;
+﻿using Arms;
+using Controllers;
 using NaughtyAttributes;
 using NTC.Global.Pool;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.LevelScripts.Navigation;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 using IState = SWAT.Behaviour.IState;
 
@@ -13,18 +16,23 @@ namespace SWAT
     {
         [SerializeField] private Hud _enemyHud;
         [SerializeField] private EnemyHudHolder _hudHolder;
-        [SerializeField] private Path _path;
+        [SerializeField] private HitPointsValues _hitPointsValues;
 
         private Rigidbody _rb;
         private Animator _animator;
         private Player _player;
         private Camera _camera;
+        private Path _path;
+        private List<HitPoint> _hitPoints;
 
         private bool _isFirePos;
 
+
         private static readonly int _fireTrigger = Animator.StringToHash("Fire");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
-
+        
+        public override CharacterType Type => CharacterType.Enemy;
+        
         protected override int BaseMaxArmour => ChildMaxArmour;
         protected override int BaseMaxHealth => ChildMaxHealth;
 
@@ -37,7 +45,7 @@ namespace SWAT
         protected abstract int TotalAmmo { get; }
         protected abstract int Speed { get; }
         protected abstract int FiringTime { get; }
-        
+
         protected override void OnEnabled()
         {
             base.OnEnabled();
@@ -52,6 +60,14 @@ namespace SWAT
             _player = ObjectHolder.GetObject<Player>();
             _camera = ObjectHolder.GetObject<Camera>();
 
+            _hitPoints = new List<HitPoint>();
+
+            for (int i = 0; i < 5; i++)
+            {
+                HitPoint point = new HitPoint(_player.HitPointsHolder.HitPoints[i], _hitPointsValues.Values[i]);
+                _hitPoints.Add(point);
+            }
+            
             _rb = Get<Rigidbody>();
             _animator = Get<Animator>();
 
@@ -66,6 +82,23 @@ namespace SWAT
                 new FiringState(this),
                 new RunState(this),
                 new DeadState());
+        }
+
+        private HitPoint RandomHitPoint(int randomValue)
+        {
+            foreach (HitPoint hitPoint in _hitPoints)
+            {
+                if (randomValue < hitPoint.Value) return hitPoint;
+                randomValue -= hitPoint.Value;
+            }
+            Debug.LogError("Random hit point exception");
+            return new HitPoint();
+        }
+
+        public async Task<HitPoint> GetTargetAsync()
+        {
+            int randomInt = Random.Range(0, 100);
+            return await Task.Run(() => RandomHitPoint(randomInt));
         }
 
         public void SetPositions(Path path)
@@ -90,17 +123,17 @@ namespace SWAT
             _hudHolder.transform.LookAt(_camera.transform);
         }
 
+        public void UnityEvent_FirePoseReached()
+        {
+            CurrentWeapon.SetFireState(true);
+        }
+
         public void OnSpawn()
         {
             _enemyHud.OnSpawn();
         }
 
         public void OnDespawn() { }
-
-        public void UnityEvent_FirePoseReached()
-        {
-            CurrentWeapon.SetFireState(true);
-        }
 
 #region States
         protected class FiringState : IState
@@ -143,7 +176,7 @@ namespace SWAT
             {
                 if (_enemy._animator != null)
                     _enemy._animator.SetTrigger(_runTrigger);
-                
+
                 _enemy.CurrentWeapon.SetFireState(false);
                 _targetPathPoint = _enemy._path.GetPoint();
             }
