@@ -35,10 +35,8 @@ namespace SWAT.Events
             {
                 List<Delegate> callbacks = _events[typeof(T)];
                 for (int i = 0; i < callbacks.Count; i++)
-                {
                     if (callbacks[i] is Action<T> callback)
                         callback(args);
-                }
             }
             else
                 Debug.LogError($"Event type of {typeof(T)} not registered");
@@ -60,11 +58,23 @@ namespace SWAT.Events
             Enemies = enemies;
         }
     }
-    
+
+    public class WeaponFireEvent
+    {
+        public BaseCharacter Carrier { get; }
+        public float ClipSizeNormalized { get; }
+
+        public WeaponFireEvent(BaseCharacter carrier, float clipSizeNormalized)
+        {
+            Carrier = carrier;
+            ClipSizeNormalized = clipSizeNormalized;
+        } 
+    }
+
     public class StageEnemiesDeadEvent { }
-    
+
     public class PlayerChangedPositionEvent { }
-    
+
     public class LevelCompletedEvent { }
 
     public class EnemyKilledEvent

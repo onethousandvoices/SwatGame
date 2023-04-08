@@ -72,6 +72,13 @@ namespace SWAT
             StateEngine.SwitchState<IdleState>();
             
             GameEvents.Register<StageEnemiesDeadEvent>(OnStageEnemiesDeath);
+            GameEvents.Register<WeaponFireEvent>(OnWeaponFire);
+        }
+
+        private void OnWeaponFire(WeaponFireEvent @event)
+        {
+            if (@event.Carrier != this) return;
+            _crosshair.SetCrosshairProgression(@event.ClipSizeNormalized);
         }
 
         private void OnStageEnemiesDeath(StageEnemiesDeadEvent obj)
@@ -100,10 +107,7 @@ namespace SWAT
             _rotationConstraint.constraintActive = true;
         }
 
-        protected override void Dead()
-        {
-            GameEvents.Call(new PlayerKilledEvent(this));
-        }
+        protected override void Dead(Vector3 position) => GameEvents.Call(new PlayerKilledEvent(this));
 
 #region States
         private class RunState : IState
@@ -266,7 +270,7 @@ namespace SWAT
 
                 _reloadingTimeNormalized += Time.deltaTime;
 
-                _player._crosshair.SetProgression(_reloadingTimeNormalized / _player.CurrentWeapon.ReloadTime);
+                _player._crosshair.SetReloadProgression(_reloadingTimeNormalized / _player.CurrentWeapon.ReloadTime);
 
                 if (_currentReloadingTime <= 0)
                     _player.StateEngine.SwitchState<IdleState>();

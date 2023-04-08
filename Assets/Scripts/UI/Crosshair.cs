@@ -11,6 +11,7 @@ namespace SWAT
         [SerializeField, Range(1f, 30f)] private float _speed;
         [SerializeField] private RectTransform _barHolder;
         [SerializeField] private Image _barFiller;
+        [SerializeField] private Image _crosshairFiller;
         [SerializeField] private Image _crosshairImage;
 
         private GameObject _currentImage;
@@ -87,21 +88,30 @@ namespace SWAT
             _currentImage = _barHolder.gameObject;
             _barHolder.gameObject.SetActive(true);
             _crosshairImage.gameObject.SetActive(false);
+            _crosshairFiller.gameObject.SetActive(false);
             SetWidthAndHeight(false);
         }
 
-        public void SetProgression(float progress)
+        public void SetReloadProgression(float progress)
         {
             _barFiller.fillAmount = progress;
+        }
+
+        public void SetCrosshairProgression(float progress)
+        {
+            _crosshairFiller.fillAmount = progress;
         }
 
         public void DisableBar()
         {
             _crosshairImage.transform.position = _barHolder.transform.position;
+            _crosshairFiller.transform.position = _barHolder.transform.position;
 
             _currentImage = _crosshairImage.gameObject;
             _barHolder.gameObject.SetActive(false);
             _crosshairImage.gameObject.SetActive(true);
+            _crosshairFiller.gameObject.SetActive(true);
+            _crosshairFiller.fillAmount = 1f;
             SetWidthAndHeight(true);
         }
 

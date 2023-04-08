@@ -1,6 +1,7 @@
 ﻿using Controllers;
 using NaughtyAttributes;
 using NTC.Global.Cache;
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
@@ -38,12 +39,14 @@ namespace SWAT
             _fadeRoutine = StartCoroutine(Fade(1f));
         }
 
-        private void Hide()
+        public void Hide(Action callback = null)
         {
+            gameObject.SetActive(true);
+
             if (_fadeRoutine != null)
                 StopCoroutine(_fadeRoutine);
 
-            _fadeRoutine = StartCoroutine(Fade(0f));
+            _fadeRoutine = StartCoroutine(Fade(0f, callback));
         }
 
         public void DamageArmour(float value)
@@ -61,7 +64,8 @@ namespace SWAT
 
             if (_armourFill.fillAmount == 0)
             {
-                _armourHolder.SetActive(false);
+                if (!_playerIsCarrier)
+                    _armourHolder.SetActive(false);
                 _hpHolder.SetActive(true);
             }
 
@@ -76,7 +80,8 @@ namespace SWAT
             if (_hpHolder.activeSelf == false)
             {
                 _hpHolder.SetActive(true);
-                _armourHolder.SetActive(false);
+                if (!_playerIsCarrier)
+                    _armourHolder.SetActive(false);
             }
 
             _hpFill.fillAmount -= value;
@@ -92,22 +97,24 @@ namespace SWAT
 
         protected override void Run()
         {
-            if (_fadeRoutine != null || _playerIsCarrier) return;
+            if (_fadeRoutine != null || _playerIsCarrier)
+                return;
 
             _currentTimerValue -= Time.deltaTime;
 
-            if (_currentTimerValue > 0) return;
+            if (_currentTimerValue > 0)
+                return;
 
             Hide();
         }
 
-        private IEnumerator Fade(float to)
+        private IEnumerator Fade(float to, Action callback = null)
         {
             float t = 0f;
             Color start = _allImages[0].color;
             Color target = start;
             target.a = to;
-            
+
             if (_playerIsCarrier)
             {
                 SetTargetColor();
@@ -123,8 +130,9 @@ namespace SWAT
                     t += Time.deltaTime * _speed;
                 }
             }
-            
+
             SetTargetColor();
+            callback?.Invoke();
 
             void SetTargetColor()
             {

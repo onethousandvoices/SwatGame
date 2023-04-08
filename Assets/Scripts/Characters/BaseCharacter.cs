@@ -40,7 +40,7 @@ namespace SWAT
             StateEngine.CurrentState?.Run();
         }
 
-        public void DoDamage(int damage)
+        public void DoDamage(int damage, Vector3 position)
         {
             if (IsVulnerable == false) return;
             
@@ -69,7 +69,7 @@ namespace SWAT
 
             if (CurrentHealth <= 0)
             {
-                Dead();
+                Dead(position);
             }
         }
 
@@ -87,6 +87,6 @@ namespace SWAT
 
         protected void SetHud(Hud hud) => _hud = hud;
 
-        protected abstract void Dead();
+        protected abstract void Dead(Vector3 position);
     }
 }

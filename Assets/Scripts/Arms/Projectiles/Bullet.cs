@@ -15,7 +15,7 @@ namespace SWAT.Weapons
             if (other.TryGetComponent(out HitBox hitBox))
             {
                 if (hitBox.Character.Type != Carrier)
-                    hitBox.DoDamage(Damage);
+                    hitBox.DoDamage(Damage, transform.position);
             }
             NightPool.Despawn(this);
         }

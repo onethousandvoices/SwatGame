@@ -27,5 +27,11 @@ namespace SWAT.Behaviour
             
             // Debug.LogError($"Current state is {CurrentState}");
         }
+
+        public void Stop()
+        {
+            CurrentState?.Exit();
+            CurrentState = null;
+        }
     }
 }

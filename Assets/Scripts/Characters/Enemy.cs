@@ -2,12 +2,15 @@
 using Controllers;
 using NaughtyAttributes;
 using NTC.Global.Pool;
+using SWAT.Behaviour;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.LevelScripts.Navigation;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Animations;
 using IState = SWAT.Behaviour.IState;
 
 namespace SWAT
@@ -17,8 +20,13 @@ namespace SWAT
         [SerializeField] private Hud _enemyHud;
         [SerializeField] private EnemyHudHolder _hudHolder;
         [SerializeField] private HitPointsValues _hitPointsValues;
+        [SerializeField] private RotationConstraint _rotationConstraint;
+        [HorizontalLine(color: EColor.Red)]
+        [SerializeField] private HitBox[] _hitBoxes;
+        [SerializeField] private Rigidbody[] _ragdollRbs;
+        [SerializeField] private Collider[] _ragdollColliders;
 
-        private Rigidbody _rb;
+        private Rigidbody _mainRb;
         private Animator _animator;
         private Player _player;
         private Camera _camera;
@@ -27,12 +35,11 @@ namespace SWAT
 
         private bool _isFirePos;
 
-
         private static readonly int _fireTrigger = Animator.StringToHash("Fire");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
-        
+
         public override CharacterType Type => CharacterType.Enemy;
-        
+
         protected override int BaseMaxArmour => ChildMaxArmour;
         protected override int BaseMaxHealth => ChildMaxHealth;
 
@@ -67,9 +74,11 @@ namespace SWAT
                 HitPoint point = new HitPoint(_player.HitPointsHolder.HitPoints[i], _hitPointsValues.Values[i]);
                 _hitPoints.Add(point);
             }
-            
-            _rb = Get<Rigidbody>();
+
+            _mainRb = Get<Rigidbody>();
             _animator = Get<Animator>();
+
+            SetRagdollState(true);
 
             CurrentWeapon.Configure(
                 ProjectileDamage,
@@ -80,15 +89,15 @@ namespace SWAT
 
             StateEngine.AddState(
                 new FiringState(this),
-                new RunState(this),
-                new DeadState());
+                new RunState(this));
         }
 
         private HitPoint RandomHitPoint(int randomValue)
         {
             foreach (HitPoint hitPoint in _hitPoints)
             {
-                if (randomValue < hitPoint.Value) return hitPoint;
+                if (randomValue < hitPoint.Value)
+                    return hitPoint;
                 randomValue -= hitPoint.Value;
             }
             Debug.LogError("Random hit point exception");
@@ -101,39 +110,84 @@ namespace SWAT
             return await Task.Run(() => RandomHitPoint(randomInt));
         }
 
+        [Button("Find Ragdoll Rbs")]
+        private void FindRbs()
+        {
+            _ragdollRbs = GetComponentsInChildren<Rigidbody>();
+            _ragdollRbs = _ragdollRbs.Where(x => x != Get<Rigidbody>()).ToArray();
+        }
+
+        [Button("Find Ragdoll Colliders")]
+        private void FindRagdollColliders()
+        {
+            _ragdollColliders = GetComponentsInChildren<Collider>();
+
+            List<Collider> ragdollColliders = new List<Collider>(_ragdollColliders);
+            List<Collider> collidersToRemove = new List<Collider>();
+
+            foreach (Collider col in _ragdollColliders)
+                if (col.gameObject.TryGetComponent(out HitBox box))
+                    collidersToRemove.Add(col);
+
+            foreach (Collider col in collidersToRemove)
+                ragdollColliders.Remove(col);
+
+            _ragdollColliders = ragdollColliders.ToArray();
+        }
+
+        [Button("Find HitBoxes")]
+        private void FindHitBoxes() => _hitBoxes = GetComponentsInChildren<HitBox>();
+
+        private void SetRagdollState(bool state)
+        {
+            foreach (Rigidbody rb in _ragdollRbs)
+                rb.isKinematic = state;
+            foreach (Collider col in _ragdollColliders)
+                col.isTrigger = state;
+            foreach (HitBox box in _hitBoxes)
+                box.Collider.isTrigger = !state;
+        }
+
         public void SetPositions(Path path)
         {
             _path = path;
             SetFirstState();
         }
 
-        protected virtual void SetFirstState()
-        {
-            StateEngine.SwitchState<RunState>();
-        }
+        protected virtual void SetFirstState() => StateEngine.SwitchState<RunState>();
 
-        protected override void Dead()
+        protected override void Dead(Vector3 position)
         {
+            StateEngine.Stop();
+            _enemyHud.Hide(() => _hudHolder.gameObject.SetActive(false));
+            SpawnDespawnActions(false);
+            foreach (Rigidbody rb in _ragdollRbs)
+                rb.AddExplosionForce(3333f, position, 3f);
             GameEvents.Call(new EnemyKilledEvent(this));
-            NightPool.Despawn(this);
+            NightPool.Despawn(this, 3f);
         }
-
-        protected override void LateRun()
-        {
-            _hudHolder.transform.LookAt(_camera.transform);
-        }
-
-        public void UnityEvent_FirePoseReached()
-        {
-            CurrentWeapon.SetFireState(true);
-        }
-
+        
         public void OnSpawn()
         {
             _enemyHud.OnSpawn();
+            SpawnDespawnActions(true);
+        }
+
+        private void SpawnDespawnActions(bool state)
+        {
+            SetRagdollState(state);
+            CurrentWeapon.gameObject.SetActive(state);
+            if (_rotationConstraint != null)
+                _rotationConstraint.constraintActive = state;
+            if (_animator != null)
+                _animator.enabled = state;
         }
 
         public void OnDespawn() { }
+
+        protected override void LateRun() => _hudHolder.transform.LookAt(_camera.transform);
+
+        public void UnityEvent_FirePoseReached() => CurrentWeapon.SetFireState(true);
 
 #region States
         protected class FiringState : IState
@@ -158,7 +212,8 @@ namespace SWAT
                 _enemy.CurrentWeapon.Fire();
                 _currentFiringTime -= Time.deltaTime;
 
-                if (_currentFiringTime > 0) return;
+                if (_currentFiringTime > 0)
+                    return;
 
                 _enemy.StateEngine.SwitchState<RunState>();
             }
@@ -202,21 +257,13 @@ namespace SWAT
 
                 //todo constrain velocty
 
-                _enemy._rb.AddForce(_enemy.transform.forward * (_enemy.Speed * 100 * Time.deltaTime), ForceMode.Force);
+                _enemy._mainRb.AddForce(_enemy.transform.forward * (_enemy.Speed * 100 * Time.deltaTime), ForceMode.Force);
 
-                if ((_targetPathPoint.transform.position - enemyPos).sqrMagnitude > 2f) return;
+                if ((_targetPathPoint.transform.position - enemyPos).sqrMagnitude > 2f)
+                    return;
 
                 UpdatePathIndex();
             }
-
-            public void Exit() { }
-        }
-
-        private class DeadState : IState
-        {
-            public void Enter() { }
-
-            public void Run() { }
 
             public void Exit() { }
         }

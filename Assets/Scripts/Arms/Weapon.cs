@@ -2,6 +2,7 @@
 using NTC.Global.Cache;
 using NTC.Global.Pool;
 using SWAT.Behaviour;
+using SWAT.Events;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -88,6 +89,8 @@ namespace SWAT.Weapons
             Projectile projectile = NightPool.Spawn(_projectile, _firePoint.position, transform.rotation);
             projectile.Configure(_projectileDamage, _carrier.Type);
 
+            GameEvents.Call(new WeaponFireEvent(_carrier, _currentClipSize / _clipSize));
+            
             if (_currentClipSize <= 0)
                 ClipIsEmpty = true;
         }
