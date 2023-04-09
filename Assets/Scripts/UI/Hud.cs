@@ -41,8 +41,6 @@ namespace SWAT
 
         public void Hide(Action callback = null)
         {
-            gameObject.SetActive(true);
-
             if (_fadeRoutine != null)
                 StopCoroutine(_fadeRoutine);
 
@@ -185,6 +183,7 @@ namespace SWAT
             gameObject.SetActive(false);
             _hpFill.fillAmount = 1;
             _armourFill.fillAmount = 1;
+            _fadeRoutine = null;
         }
     }
 }

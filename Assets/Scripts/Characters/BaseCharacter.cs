@@ -87,6 +87,6 @@ namespace SWAT
 
         protected void SetHud(Hud hud) => _hud = hud;
 
-        protected abstract void Dead(Vector3 position);
+        protected abstract void Dead(Vector3 hitPosition);
     }
 }

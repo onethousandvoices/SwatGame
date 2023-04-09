@@ -45,7 +45,7 @@ namespace SWAT.Weapons
             _clipSize = clipSize;
             _reloadTime = reloadTime;
             _totalAmmo = totalAmmo;
-            
+
             _carrier.TryGetComponent(out Player player);
 
             if (player != null)
@@ -60,16 +60,18 @@ namespace SWAT.Weapons
             }
 
             _currentClipSize = _clipSize;
-            
+
             ResetFiringRate();
         }
 
         public async void Fire()
         {
-            if (FireState == false) return;
+            if (FireState == false)
+                return;
             _currentFiringRate -= Time.deltaTime;
 
-            if (_currentFiringRate >= 0) return;
+            if (_currentFiringRate >= 0)
+                return;
             _currentFiringRate = 60f / _firingRate;
 
             if (_carrier is Enemy)
@@ -84,13 +86,16 @@ namespace SWAT.Weapons
 
         private void FireInner()
         {
+            if (!gameObject.activeSelf)
+                return;
+
             _currentClipSize--;
 
             Projectile projectile = NightPool.Spawn(_projectile, _firePoint.position, transform.rotation);
             projectile.Configure(_projectileDamage, _carrier.Type);
 
             GameEvents.Call(new WeaponFireEvent(_carrier, _currentClipSize / _clipSize));
-            
+
             if (_currentClipSize <= 0)
                 ClipIsEmpty = true;
         }
@@ -111,8 +116,16 @@ namespace SWAT.Weapons
             {
                 if (_carrier is Player)
                     _currentAimingPoint = _target.GetTarget();
-                else
+                else if (_carrier is Enemy enemy)
+                {
                     transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
+                    
+                    if (_currentAimingPoint != Vector3.zero && enemy.LaserBeam != null)
+                    {
+                        enemy.LaserBeam.SetPosition(1, _firePoint.position);
+                        enemy.LaserBeam.SetPosition(0, _currentAimingPoint);
+                    }
+                }
 
                 Vector3 direction = _currentAimingPoint - transform.position + _posOffset;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
