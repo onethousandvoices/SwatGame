@@ -2381,7 +2381,7 @@ Transform:
   m_GameObject: {fileID: 4956057212172290758}
   m_LocalRotation: {x: -0, y: 0.20791158, z: -0, w: 0.9781477}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3691955781152882914}
@@ -3103,11 +3103,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sumTarget: 100
   _sum: 100
-  _hitPoint1Value: 96
-  _hitPoint2Value: 1
-  _hitPoint3Value: 1
-  _hitPoint4Value: 1
-  _hitPoint5Value: 1
+  _hitPoint1Value: 40
+  _hitPoint2Value: 20
+  _hitPoint3Value: 20
+  _hitPoint4Value: 10
+  _hitPoint5Value: 10
 --- !u!1 &5827122210867310541
 GameObject:
   m_ObjectHideFlags: 0

@@ -107,7 +107,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4580156667909606585}
   m_LocalRotation: {x: -0.09175901, y: -0.70187956, z: 0.09329188, w: 0.70017284}
-  m_LocalPosition: {x: -0.24999872, y: 0.48938313, z: -0.13052854}
+  m_LocalPosition: {x: -0.249, y: -0.163, z: 0.045}
   m_LocalScale: {x: 0.9999999, y: 1.0000002, z: 0.9999999}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -138,7 +138,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4580156667922714770}
   m_LocalRotation: {x: -0.09175901, y: -0.70187956, z: 0.09329188, w: 0.70017284}
-  m_LocalPosition: {x: 0.49999744, y: 0.4912319, z: -0.12894648}
+  m_LocalPosition: {x: 2.617, y: 0.295, z: -0.07}
   m_LocalScale: {x: 0.9999999, y: 1.0000002, z: 0.9999999}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -262,6 +262,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Character>k__BackingField: {fileID: 4580156669734313475}
+  <Collider>k__BackingField: {fileID: 4580156667957370992}
 --- !u!1 &4580156667973889456
 GameObject:
   m_ObjectHideFlags: 0
@@ -742,7 +743,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4580156668868140310}
   m_LocalRotation: {x: -0.09175901, y: -0.70187956, z: 0.09329188, w: 0.70017284}
-  m_LocalPosition: {x: -0.49999744, y: 0.48876688, z: -0.13105589}
+  m_LocalPosition: {x: -1.197, y: 0.255, z: -0.07}
   m_LocalScale: {x: 0.9999999, y: 1.0000002, z: 0.9999999}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1078,7 +1079,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4580156669098118745}
   m_LocalRotation: {x: -0.09175901, y: -0.70187956, z: 0.09329188, w: 0.70017284}
-  m_LocalPosition: {x: -0, y: 0.49, z: -0.13}
+  m_LocalPosition: {x: 0, y: -0.49, z: 0.13}
   m_LocalScale: {x: 0.9999999, y: 1.0000002, z: 0.9999999}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1109,7 +1110,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4580156669129096601}
   m_LocalRotation: {x: -0.09175901, y: -0.70187956, z: 0.09329188, w: 0.70017284}
-  m_LocalPosition: {x: 0.24999872, y: 0.49061564, z: -0.12947384}
+  m_LocalPosition: {x: 0.249, y: 1.04, z: -0.277}
   m_LocalScale: {x: 0.9999999, y: 1.0000002, z: 0.9999999}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1293,6 +1294,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <Character>k__BackingField: {fileID: 4580156669734313475}
+  <Collider>k__BackingField: {fileID: 4580156669365301217}
 --- !u!1 &4580156669446169597
 GameObject:
   m_ObjectHideFlags: 0

@@ -2101,10 +2101,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _sumTarget: 100
   _sum: 100
-  _hitPoint1Value: 20
-  _hitPoint2Value: 20
-  _hitPoint3Value: 20
-  _hitPoint4Value: 20
+  _hitPoint1Value: 15
+  _hitPoint2Value: 15
+  _hitPoint3Value: 25
+  _hitPoint4Value: 25
   _hitPoint5Value: 20
 --- !u!1 &7160034944403616433
 GameObject:
