@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
@@ -14,9 +15,17 @@ namespace SWAT.Utility
         {
             List<Dictionary<string, object>> list = new List<Dictionary<string, object>>();
             TextAsset data = Resources.Load(file) as TextAsset;
- 
+            
             string[] lines = Regex.Split(data.text, LINE_SPLIT_RE);
- 
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                string line = lines[i];
+                string[] arr = line.Split(',');
+                arr = arr.SkipLast(1).ToArray();
+                lines[i] = string.Join(',', arr);
+            }
+
             if (lines.Length <= 1) return list;
  
             string[] header = Regex.Split(lines[0], SPLIT_RE);
