@@ -107,7 +107,7 @@ namespace SWAT
             _rotationConstraint.constraintActive = true;
         }
 
-        protected override void Dead(Vector3 position) => GameEvents.Call(new PlayerKilledEvent(this));
+        protected override void Dead(Vector3 hitPosition) => GameEvents.Call(new PlayerKilledEvent(this));
 
 #region States
         private class RunState : IState

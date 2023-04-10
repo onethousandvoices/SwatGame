@@ -11,7 +11,8 @@ namespace SWAT
     public class HitPointsHolder : MonoCache
     {
         [field: SerializeField] public List<Transform> HitPoints { get; private set; }
-        
+
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             if (HitPoints == null || HitPoints.Count < 1) return;
@@ -43,5 +44,6 @@ namespace SWAT
                 });
             }
         }
+#endif
     }
 }

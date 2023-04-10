@@ -3,7 +3,6 @@ using SWAT;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.Utility;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -21,7 +20,6 @@ namespace Controllers
         private readonly Dictionary<string, int> _enemySniperCfg = new Dictionary<string, int>();
         private readonly Dictionary<string, int> _enemySniperRifleCfg = new Dictionary<string, int>();
 #endregion
-
         protected override void OnEnabled()
         {
             Application.targetFrameRate = 60;

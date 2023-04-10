@@ -6,6 +6,7 @@ using SWAT.Behaviour;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.LevelScripts.Navigation;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,6 +22,7 @@ namespace SWAT
         [SerializeField] private EnemyHudHolder _hudHolder;
         [SerializeField] private HitPointsValues _hitPointsValues;
         [SerializeField] private RotationConstraint _rotationConstraint;
+        [field: SerializeField] public LineRenderer LaserBeam { get; private set; }
         [HorizontalLine(color: EColor.Red)]
         [SerializeField] private HitBox[] _hitBoxes;
         [SerializeField] private Rigidbody[] _ragdollRbs;
@@ -156,26 +158,59 @@ namespace SWAT
 
         protected virtual void SetFirstState() => StateEngine.SwitchState<RunState>();
 
-        protected override void Dead(Vector3 position)
+        protected override void Dead(Vector3 hitPosition)
         {
             StateEngine.Stop();
-            _enemyHud.Hide(() => _hudHolder.gameObject.SetActive(false));
+            _hudHolder.gameObject.SetActive(false);
             SpawnDespawnActions(false);
-            foreach (Rigidbody rb in _ragdollRbs)
-                rb.AddExplosionForce(3333f, position, 3f);
+
+            Collider[] colliders = new Collider[5];
+
+            Physics.OverlapSphereNonAlloc(hitPosition, 3f, colliders);
+            
+            foreach (Collider col in colliders)
+            {
+                if (col != null && col.attachedRigidbody != null)
+                    col.attachedRigidbody.AddExplosionForce(2888f, hitPosition, 3f);
+            }
+            
             GameEvents.Call(new EnemyKilledEvent(this));
-            NightPool.Despawn(this, 3f);
+            StartCoroutine(DeathRoutine());
         }
-        
+
+        private IEnumerator DeathRoutine()
+        {
+            yield return new WaitForSeconds(3f);
+
+            foreach (Rigidbody rb in _ragdollRbs)
+                rb.isKinematic = true;
+            foreach (Collider ragdollCollider in _ragdollColliders)
+                ragdollCollider.isTrigger = true;
+
+            yield return new WaitForSeconds(7f);
+
+            float t = 0f;
+            while (t < 1f)
+            {
+                transform.position = Vector3.Lerp(transform.position, transform.position - new Vector3(0f, 5f, 0f), t);
+                yield return null;
+                t += Time.deltaTime;
+            }
+
+            NightPool.Despawn(this);
+        }
+
         public void OnSpawn()
         {
             _enemyHud.OnSpawn();
+            _hudHolder.gameObject.SetActive(true);
             SpawnDespawnActions(true);
         }
 
         private void SpawnDespawnActions(bool state)
         {
             SetRagdollState(state);
+            _mainRb.isKinematic = !state;
             CurrentWeapon.gameObject.SetActive(state);
             if (_rotationConstraint != null)
                 _rotationConstraint.constraintActive = state;
