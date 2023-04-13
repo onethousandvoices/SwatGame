@@ -494,7 +494,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4900336189642384110}
   m_LocalRotation: {x: -0.07780694, y: -0.66975766, z: 0.07067562, w: -0.73510253}
-  m_LocalPosition: {x: -69.200005, y: 4.56, z: 0.00000094532965}
+  m_LocalPosition: {x: -69.630005, y: 4.56, z: 0.00000094532965}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -575,8 +575,8 @@ MonoBehaviour:
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
     m_InvertInput: 0
-    m_MinValue: -20
-    m_MaxValue: 20
+    m_MinValue: -25
+    m_MaxValue: 25
     m_Wrap: 0
     m_Recentering:
       m_enabled: 0
@@ -669,7 +669,12 @@ MonoBehaviour:
   m_AnimatedTarget: {fileID: 0}
   m_LayerIndex: 0
   m_ShowDebugText: 0
-  m_ChildCameras: []
+  m_ChildCameras:
+  - {fileID: 4900336189642384109}
+  - {fileID: 4900336189908895208}
+  - {fileID: 4900336189426325543}
+  - {fileID: 1810783998732808804}
+  - {fileID: 6339189489832355728}
   m_Instructions:
   - m_FullHash: 1363859911
     m_VirtualCamera: {fileID: 4900336189642384109}
@@ -701,17 +706,7 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 4
   m_CustomBlends: {fileID: 0}
-  m_ParentHash:
-  - m_Hash: -729815479
-    m_ParentHash: 756556552
-  - m_Hash: 1363859911
-    m_ParentHash: 756556552
-  - m_Hash: 1468540187
-    m_ParentHash: 756556552
-  - m_Hash: -559417516
-    m_ParentHash: 756556552
-  - m_Hash: -827840423
-    m_ParentHash: 756556552
+  m_ParentHash: []
 --- !u!1 &4900336189762340352
 GameObject:
   m_ObjectHideFlags: 0

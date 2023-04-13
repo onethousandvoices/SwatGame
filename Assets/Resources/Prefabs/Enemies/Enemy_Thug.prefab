@@ -1346,7 +1346,7 @@ Transform:
   m_GameObject: {fileID: 7160034943701442193}
   m_LocalRotation: {x: -0.7071068, y: 0, z: -0, w: 0.7071067}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.7, y: 0.7, z: 0.7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7160034944135970956}
@@ -2007,6 +2007,7 @@ MonoBehaviour:
   _hudHolder: {fileID: 7160034944534739248}
   _hitPointsValues: {fileID: 7160034944249544365}
   _rotationConstraint: {fileID: 0}
+  <LaserBeam>k__BackingField: {fileID: 0}
   _hitBoxes:
   - {fileID: 7160034943674639155}
   _ragdollRbs:
@@ -2643,7 +2644,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20f63ff4368e4bf1a6f96ae09035e7fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _projectile: {fileID: 1375463690335951632, guid: bf8cc944f4983114180879b977a55490, type: 3}
+  _projectile: {fileID: 1375463690335951632, guid: 54fab015731c23e4aa541518dbbf9bf2, type: 3}
   _firePoint: {fileID: 7160034945095976622}
   _maxFireRange: 100
   _rightHand: {fileID: 7160034943615642884}
