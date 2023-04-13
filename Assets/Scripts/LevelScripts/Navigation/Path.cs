@@ -2,6 +2,7 @@
 using NTC.Global.Cache;
 using System;
 using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace SWAT.LevelScripts.Navigation
@@ -96,12 +97,14 @@ namespace SWAT.LevelScripts.Navigation
                 UnsetRecursive();
             }
 
-            Color cyan = Color.cyan;
-            cyan.a = 0.5f;
-
+            Color current = Color.white;
+            current.a = 0.5f;
+            
+            current = Selection.activeGameObject == gameObject ? Color.magenta : Color.cyan;
+            
             if (Start != null)
             {
-                Gizmos.color = cyan;
+                Gizmos.color = current;
                 Gizmos.DrawSphere(Start.transform.position, 0.5f);
             }
 
@@ -109,17 +112,18 @@ namespace SWAT.LevelScripts.Navigation
             {
                 PathPoint point = _pathPoints[i];
                 if (point == null) continue;
-                if (point.name == "Start")
+                switch (point.name)
                 {
-                    point.transform.SetSiblingIndex(0);
-                }
-                else if (point.name == "End")
-                {
-                    point.transform.SetSiblingIndex(transform.childCount);
+                    case "Start":
+                        point.transform.SetSiblingIndex(0);
+                        break;
+                    case "End":
+                        point.transform.SetSiblingIndex(transform.childCount);
+                        break;
                 }
 
                 point.Draw();
-                Gizmos.color = cyan;
+                Gizmos.color = current;
                 Gizmos.DrawLine(_pathPoints[i - 1].transform.position, point.transform.position);
             }
         }

@@ -12,7 +12,7 @@ namespace SWAT
     public class Player : BaseCharacter
     {
         [SerializeField] private Path _path;
-        
+
         [Config(Extras.Player, "A1")] private int _maxHealth;
         [Config(Extras.Player, "A2")] private int _maxArmour;
         [Config(Extras.Player, "A3")] private int _speed;
@@ -36,29 +36,29 @@ namespace SWAT
         private Crosshair _crosshair;
 
         public override CharacterType Type => CharacterType.Player;
-        
+
         protected override int BaseMaxArmour => _maxArmour;
         protected override int BaseMaxHealth => _maxHealth;
-        
+
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            
+
             SetHud(_playerHud);
             _playerHud.PlayerCarry();
-            
+
             CurrentHealth = _maxHealth;
             CurrentArmour = _maxArmour;
 
             _rb = Get<Rigidbody>();
-            
+
             CurrentWeapon.Configure(
                 _projectileDamage,
                 _firingRate,
                 _clipSize,
                 _reloadTime,
                 _totalAmmo);
-            
+
             _crosshair = ObjectHolder.GetObject<Crosshair>();
 
             StateEngine.AddState(
@@ -70,14 +70,15 @@ namespace SWAT
                 new RunState(this));
 
             StateEngine.SwitchState<IdleState>();
-            
+
             GameEvents.Register<StageEnemiesDeadEvent>(OnStageEnemiesDeath);
             GameEvents.Register<WeaponFireEvent>(OnWeaponFire);
         }
 
         private void OnWeaponFire(WeaponFireEvent @event)
         {
-            if (@event.Carrier != this) return;
+            if (@event.Carrier != this)
+                return;
             _crosshair.SetCrosshairProgression(@event.ClipSizeNormalized);
         }
 
@@ -85,7 +86,7 @@ namespace SWAT
         {
             StateEngine.SwitchState<RunState>();
         }
-        
+
         private void GetUp()
         {
             _animator.SetBool(_isSit, false);
@@ -101,7 +102,8 @@ namespace SWAT
 
         public void UnityEvent_FirePoseAnimationEnd()
         {
-            if (CurrentWeapon.FireState || StateEngine.CurrentState.GetType() == typeof(IdleState)) return;
+            if (CurrentWeapon.FireState || StateEngine.CurrentState.GetType() == typeof(IdleState))
+                return;
 
             CurrentWeapon.SetFireState(true);
             _rotationConstraint.constraintActive = true;
@@ -144,12 +146,13 @@ namespace SWAT
                 direction.y = 0;
                 Quaternion rotation = Quaternion.LookRotation(direction);
                 _player.transform.rotation = Quaternion.Slerp(_player.transform.rotation, rotation, Time.deltaTime * 20f);
-                
+
                 //todo constrain velocty
 
                 _player._rb.AddForce(_player.transform.forward * (_player._speed * 100 * Time.deltaTime), ForceMode.Force);
-                
-                if ((_targetPathPoint.transform.position - playerPos).sqrMagnitude > 2f) return;
+
+                if ((_targetPathPoint.transform.position - playerPos).sqrMagnitude > 2f)
+                    return;
 
                 UpdatePathIndex();
             }
@@ -161,7 +164,7 @@ namespace SWAT
                 GameEvents.Call(new PlayerChangedPositionEvent());
             }
         }
-        
+
         private class FiringState : IState
         {
             private readonly Player _player;
@@ -214,7 +217,8 @@ namespace SWAT
             {
                 _player._rotationConstraint.weight -= Time.deltaTime * 2f;
 
-                if (_player._rotationConstraint.weight > 0.3f) return;
+                if (_player._rotationConstraint.weight > 0.3f)
+                    return;
 
                 _player.StateEngine.SwitchState<ReloadingState>();
             }
@@ -240,7 +244,8 @@ namespace SWAT
             {
                 _player._rotationConstraint.weight -= Time.deltaTime * 2f;
 
-                if (_player._rotationConstraint.weight > 0.3f) return;
+                if (_player._rotationConstraint.weight > 0.3f)
+                    return;
 
                 _player.StateEngine.SwitchState<IdleState>();
             }
