@@ -1,4 +1,5 @@
-﻿using NTC.Global.Cache;
+﻿using NaughtyAttributes;
+using NTC.Global.Cache;
 using SWAT;
 using SWAT.Events;
 using SWAT.LevelScripts;
@@ -12,6 +13,7 @@ namespace Controllers
 {
     public class GameController : MonoCache
     {
+        [SerializeField, HideInInspector] private bool _isDebug;
 #region CfgDictionaries
         private readonly Dictionary<string, int> _playerCfg = new Dictionary<string, int>();
         private readonly Dictionary<string, int> _playerWeaponCfg = new Dictionary<string, int>();
@@ -30,7 +32,7 @@ namespace Controllers
         private IEnumerator Start() //todo kostbl
         {
             yield return new WaitForSeconds(1f);
-            ObjectHolder.AddObject(new LevelController(FindObjectOfType<Level>()));
+            ObjectHolder.AddObject(new LevelController(FindObjectOfType<Level>(), _isDebug));
         }
 
         protected override void OnDisabled()
@@ -153,6 +155,18 @@ namespace Controllers
                         break;
                 }
             }
+        }
+        
+        [Button("Set Debug")]
+        private void SetDebug()
+        {
+            _isDebug = true;
+        }
+        
+        [Button("Unset Debug")]
+        private void UnsetDebug()
+        {
+            _isDebug = false;
         }
     }
 }

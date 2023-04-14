@@ -73,7 +73,7 @@ namespace SWAT
             _stateIdle = new IdleState(this);
             _stateRun = new PlayerRunState(this, _stateIdle);
 
-            StateEngine.SwitchState(_stateRun);
+            StateEngine.SwitchState(_stateIdle);
 
             GameEvents.Register<StageEnemiesDeadEvent>(OnStageEnemiesDeath);
             GameEvents.Register<WeaponFireEvent>(OnWeaponFire);

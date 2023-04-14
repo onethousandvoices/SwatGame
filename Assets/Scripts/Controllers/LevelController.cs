@@ -3,7 +3,7 @@ using SWAT;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using System.Collections.Generic;
-using System.Linq;
+using UnityEditor;
 using UnityEngine;
 
 namespace Controllers
@@ -12,12 +12,13 @@ namespace Controllers
     {
         private List<Enemy> _enemiesToKill;
         private readonly Level _level;
-
         private int _index;
-        
-        public LevelController(Level level)
+        private bool _isDebug;
+
+        public LevelController(Level level, bool isDebug)
         {
             _level = level;
+            _isDebug = isDebug;
             Init();
         }
 
@@ -45,7 +46,7 @@ namespace Controllers
             
             foreach (EnemyPath path in _level.Stages[_index].Enemies)
             {
-                break;
+                if (_isDebug) break;
                 Enemy enemy = NightPool.Spawn(path.Enemy, path.Path.Start.transform.position + new Vector3(0f, 0.4f, 0f));
                 enemy.SetPositions(path.Path);
                 
