@@ -1,10 +1,9 @@
 ﻿using Controllers;
+using NaughtyAttributes;
 using SWAT.Behaviour;
 using SWAT.Events;
-using SWAT.LevelScripts;
 using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -27,8 +26,6 @@ namespace SWAT
         [SerializeField] private Hud _playerHud;
         [SerializeField] private RotationConstraint _rotationConstraint;
         [field: SerializeField] public HitPointsHolder HitPointsHolder { get; private set; }
-
-        private static Player _instance;
         
         private static readonly int _isSit = Animator.StringToHash("IsSit");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
@@ -50,8 +47,6 @@ namespace SWAT
         protected override void OnEnabled()
         {
             base.OnEnabled();
-
-            _instance = this;
             
             SetHud(_playerHud);
             _playerHud.PlayerCarry();
@@ -121,16 +116,12 @@ namespace SWAT
 
         protected override void Dead(Vector3 hitPosition) => GameEvents.Call(new PlayerKilledEvent(this));
 
-#if UNITY_EDITOR
-        [MenuItem("DEBUG/Player run")]
-        private static void SetStateRun()
+        [Button("Run")]
+        private void SetStateRun()
         {
-            _instance.StateEngine.SwitchState(_instance._stateRun);
+            StateEngine.SwitchState(_stateRun);
         }
-
-        protected override void OnDisabled() => _instance = null;
-#endif
-
+        
 #region States
         private class PlayerRunState : RunState
         {
