@@ -2003,6 +2003,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentWeapon: {fileID: 7160034945095976617}
+  Animator: {fileID: 7160034944249544366}
   _enemyHud: {fileID: 7160034944849058642}
   _hudHolder: {fileID: 7160034944534739248}
   _hitPointsValues: {fileID: 7160034944249544365}

@@ -45,6 +45,7 @@ namespace Controllers
             
             foreach (EnemyPath path in _level.Stages[_index].Enemies)
             {
+                break;
                 Enemy enemy = NightPool.Spawn(path.Enemy, path.Path.Start.transform.position + new Vector3(0f, 0.4f, 0f));
                 enemy.SetPositions(path.Path);
                 

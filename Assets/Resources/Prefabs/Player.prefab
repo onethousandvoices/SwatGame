@@ -764,7 +764,7 @@ GameObject:
   - component: {fileID: 4580156669734313475}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -836,9 +836,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentWeapon: {fileID: 4580156667997503804}
+  Animator: {fileID: 4580156669734313477}
   _path: {fileID: 0}
   _playerHud: {fileID: 0}
-  _animator: {fileID: 4580156669734313477}
   _rotationConstraint: {fileID: 4580156669365301216}
   <HitPointsHolder>k__BackingField: {fileID: 4580156667957370991}
 --- !u!1 &4580156668937849320

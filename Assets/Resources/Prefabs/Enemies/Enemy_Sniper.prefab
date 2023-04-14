@@ -3050,6 +3050,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   CurrentWeapon: {fileID: 6036384131414340356}
+  Animator: {fileID: 7274944416448686916}
   _enemyHud: {fileID: 4119684125721891961}
   _hudHolder: {fileID: 6807317942702918382}
   _hitPointsValues: {fileID: 8953042684378485434}

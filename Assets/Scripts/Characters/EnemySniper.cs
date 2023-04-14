@@ -25,9 +25,9 @@ namespace SWAT
         protected override int ClipSize => _clipSize;
         protected override int ReloadTime => _reloadTime;
         protected override int TotalAmmo => _totalAmmo;
-        protected override int Speed => _speed;
+        protected override int EnemySpeed => _speed;
         protected override int FiringTime => _firingTime;
 
-        protected override void SetFirstState() => StateEngine.SwitchState<FiringState>();
+        protected override void SetFirstState() => StateEngine.SwitchState(StateFiring);
     }
 }
