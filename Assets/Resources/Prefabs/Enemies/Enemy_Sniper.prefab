@@ -304,7 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20f63ff4368e4bf1a6f96ae09035e7fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _projectile: {fileID: 1375463690335951632, guid: bf8cc944f4983114180879b977a55490, type: 3}
+  _projectile: {fileID: 1375463690335951632, guid: 54fab015731c23e4aa541518dbbf9bf2, type: 3}
   _firePoint: {fileID: 4078209875795650908}
   _maxFireRange: 130
   _rightHand: {fileID: 7791590778510043522}
@@ -3055,6 +3055,7 @@ MonoBehaviour:
   _hudHolder: {fileID: 6807317942702918382}
   _hitPointsValues: {fileID: 8953042684378485434}
   _rotationConstraint: {fileID: 8589306532349600911}
+  <LaserBeam>k__BackingField: {fileID: 5564879269259792010}
   _hitBoxes:
   - {fileID: 7703520469054083307}
   _ragdollRbs:
@@ -3081,7 +3082,6 @@ MonoBehaviour:
   - {fileID: 4439678427524810412}
   - {fileID: 4439678426137348521}
   - {fileID: 4439678427360228897}
-  <LaserBeam>k__BackingField: {fileID: 5564879269259792010}
   _maxHealth: 100
   _maxArmour: 200
   _speed: 0
