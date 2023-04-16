@@ -1,13 +1,9 @@
 ﻿using Arms;
 using Controllers;
-using NaughtyAttributes;
 using NTC.Global.Pool;
 using SWAT.Behaviour;
-using SWAT.Events;
 using SWAT.LevelScripts.Navigation;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
@@ -17,15 +13,9 @@ namespace SWAT
 {
     public abstract class Enemy : BaseCharacter, IPoolItem
     {
-        [SerializeField] private Hud _enemyHud;
-        [SerializeField] private EnemyHudHolder _hudHolder;
         [SerializeField] private HitPointsValues _hitPointsValues;
         [SerializeField] private RotationConstraint _rotationConstraint;
         [field: SerializeField] public LineRenderer LaserBeam { get; private set; }
-        [HorizontalLine(color: EColor.Red)]
-        [SerializeField] private HitBox[] _hitBoxes;
-        [SerializeField] private Rigidbody[] _ragdollRbs;
-        [SerializeField] private Collider[] _ragdollColliders;
 
         private Player _player;
         private Camera _camera;
@@ -50,18 +40,13 @@ namespace SWAT
         protected abstract int TotalAmmo { get; }
         protected abstract int EnemySpeed { get; }
         protected abstract int FiringTime { get; }
-
-        protected IState StateFiring;
-        private IState _stateRun;
         
         protected override void OnEnabled()
         {
             base.OnEnabled();
 
             IsVulnerable = true;
-
-            SetHud(_enemyHud);
-
+            
             CurrentHealth = ChildMaxHealth;
             CurrentArmour = ChildMaxArmour;
             Speed = EnemySpeed;
@@ -77,8 +62,6 @@ namespace SWAT
                 _hitPoints.Add(point);
             }
             
-            SetRagdollState(true);
-
             CurrentWeapon.Configure(
                 ProjectileDamage,
                 FiringRate,
@@ -86,8 +69,9 @@ namespace SWAT
                 ReloadTime,
                 TotalAmmo);
 
-            StateFiring = new FiringState(this);
-            _stateRun = new EnemyRunState(this, StateFiring);
+            StateEngine.AddState(
+                new EnemyFiringState(this),
+                new EnemyRunState(this));
         }
 
         private HitPoint RandomHitPoint(int randomValue)
@@ -108,125 +92,51 @@ namespace SWAT
             return await Task.Run(() => RandomHitPoint(randomInt));
         }
 
-        [Button("Find Ragdoll Rbs")]
-        private void FindRbs()
-        {
-            _ragdollRbs = GetComponentsInChildren<Rigidbody>();
-            _ragdollRbs = _ragdollRbs.Where(x => x != Get<Rigidbody>()).ToArray();
-        }
-
-        [Button("Find Ragdoll Colliders")]
-        private void FindRagdollColliders()
-        {
-            _ragdollColliders = GetComponentsInChildren<Collider>();
-
-            List<Collider> ragdollColliders = new List<Collider>(_ragdollColliders);
-            List<Collider> collidersToRemove = new List<Collider>();
-
-            foreach (Collider col in _ragdollColliders)
-                if (col.gameObject.TryGetComponent(out HitBox box))
-                    collidersToRemove.Add(col);
-
-            foreach (Collider col in collidersToRemove)
-                ragdollColliders.Remove(col);
-
-            _ragdollColliders = ragdollColliders.ToArray();
-        }
-
-        [Button("Find HitBoxes")]
-        private void FindHitBoxes() => _hitBoxes = GetComponentsInChildren<HitBox>();
-
-        private void SetRagdollState(bool state)
-        {
-            foreach (Rigidbody rb in _ragdollRbs)
-                rb.isKinematic = state;
-            foreach (Collider col in _ragdollColliders)
-                col.isTrigger = state;
-            foreach (HitBox box in _hitBoxes)
-                box.Collider.isTrigger = !state;
-        }
-
         public void SetPositions(Path path)
         {
             Path = path;
             SetFirstState();
         }
 
-        protected virtual void SetFirstState() => StateEngine.SwitchState(_stateRun);
+        protected virtual void SetFirstState() => StateEngine.SwitchState<EnemyRunState>();
 
         protected override void Dead(Vector3 hitPosition)
         {
-            StateEngine.Stop();
-            _hudHolder.gameObject.SetActive(false);
             SpawnDespawnActions(false);
-
-            Collider[] colliders = new Collider[5];
-
-            Physics.OverlapSphereNonAlloc(hitPosition, 3f, colliders);
-            
-            foreach (Collider col in colliders)
-            {
-                if (col != null && col.attachedRigidbody != null)
-                    col.attachedRigidbody.AddExplosionForce(2888f, hitPosition, 3f);
-            }
-            
-            GameEvents.Call(new EnemyKilledEvent(this));
-            StartCoroutine(DeathRoutine());
-        }
-
-        private IEnumerator DeathRoutine()
-        {
-            yield return new WaitForSeconds(3f);
-
-            foreach (Rigidbody rb in _ragdollRbs)
-                rb.isKinematic = true;
-            foreach (Collider ragdollCollider in _ragdollColliders)
-                ragdollCollider.isTrigger = true;
-
-            yield return new WaitForSeconds(7f);
-
-            float t = 0f;
-            while (t < 1f)
-            {
-                transform.position = Vector3.Lerp(transform.position, transform.position - new Vector3(0f, 5f, 0f), t);
-                yield return null;
-                t += Time.deltaTime;
-            }
-
-            NightPool.Despawn(this);
+            base.Dead(hitPosition);
         }
 
         public void OnSpawn()
         {
-            _enemyHud.OnSpawn();
-            _hudHolder.gameObject.SetActive(true);
+            Hud.OnSpawn();
             SpawnDespawnActions(true);
+            SetPhysicsState(true);
         }
 
         private void SpawnDespawnActions(bool state)
         {
-            SetRagdollState(state);
-            Rb.isKinematic = !state;
+            Hud.transform.parent.gameObject.SetActive(state);
             CurrentWeapon.gameObject.SetActive(state);
+
+            if (LaserBeam != null)
+                LaserBeam.enabled = state;
             if (_rotationConstraint != null)
                 _rotationConstraint.constraintActive = state;
-            if (Animator != null)
-                Animator.enabled = state;
         }
 
         public void OnDespawn() { }
 
-        protected override void LateRun() => _hudHolder.transform.LookAt(_camera.transform);
+        protected override void LateRun() => Hud.transform.parent.transform.LookAt(_camera.transform);
 
         public void UnityEvent_FirePoseReached() => CurrentWeapon.SetFireState(true);
-
+        
 #region States
-        private class FiringState : IState
+        protected class EnemyFiringState : IState
         {
             private readonly Enemy _enemy;
             private float _currentFiringTime;
 
-            public FiringState(Enemy enemy) => _enemy = enemy;
+            public EnemyFiringState(Enemy enemy) => _enemy = enemy;
 
             public void Enter()
             {
@@ -246,7 +156,7 @@ namespace SWAT
                 if (_currentFiringTime > 0)
                     return;
 
-                _enemy.StateEngine.SwitchState(_enemy._stateRun);
+                _enemy.StateEngine.SwitchState<EnemyRunState>();
             }
 
             public void Exit() { }
@@ -255,9 +165,7 @@ namespace SWAT
         private class EnemyRunState : RunState
         {
             private readonly Enemy _enemy;
-
-            public EnemyRunState(IRunStateReady character, IState switchOnPathUpdate) : 
-                base(character, switchOnPathUpdate) => _enemy = (Enemy)character;
+            public EnemyRunState(IRunStateReady character) : base(character) => _enemy = (Enemy)character;
 
             public override void Enter()
             {
@@ -267,17 +175,15 @@ namespace SWAT
 
                 _enemy.CurrentWeapon.SetFireState(false);
             }
+            
+            protected override bool OnPathPointStop()
+            {
+                _enemy.StateEngine.SwitchState<EnemyFiringState>();
+                return true;
+            }
 
             public override void Exit() { }
         }
 #endregion
-
-        [Button("Update Parameters")]
-        public void UpdateConfigValues()
-        {
-            GameController controller = FindObjectOfType<GameController>();
-            controller.ConfigObject(this);
-            Debug.LogError($"{name} parameters updated!");
-        }
     }
 }

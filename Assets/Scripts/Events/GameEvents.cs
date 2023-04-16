@@ -42,59 +42,48 @@ namespace SWAT.Events
                 Debug.LogError($"Event type of {typeof(T)} not registered");
         }
 
-        public static void UnregisterAll()
-        {
-            _events.Clear();
-        }
+        public static void UnregisterAll() => _events.Clear();
     }
 
 #region Events
-    public class EnemiesSpawnedEvent
-    {
-        public Enemy[] Enemies { get; }
+    public class Event_CivilianDead { }
 
-        public EnemiesSpawnedEvent(Enemy[] enemies)
-        {
-            Enemies = enemies;
-        }
+    public class Event_CharactersSpawned
+    {
+        public BaseCharacter[] Characters { get; }
+        public Event_CharactersSpawned(BaseCharacter[] characters) => Characters = characters;
     }
 
-    public class WeaponFireEvent
+    public class Event_WeaponFire
     {
         public BaseCharacter Carrier { get; }
         public float ClipSizeNormalized { get; }
 
-        public WeaponFireEvent(BaseCharacter carrier, float clipSizeNormalized)
+        public Event_WeaponFire(BaseCharacter carrier, float clipSizeNormalized)
         {
             Carrier = carrier;
             ClipSizeNormalized = clipSizeNormalized;
-        } 
-    }
-
-    public class StageEnemiesDeadEvent { }
-
-    public class PlayerChangedPositionEvent { }
-
-    public class LevelCompletedEvent { }
-
-    public class EnemyKilledEvent
-    {
-        public Enemy Enemy { get; }
-
-        public EnemyKilledEvent(Enemy enemy)
-        {
-            Enemy = enemy;
         }
     }
 
-    public class PlayerKilledEvent
+    public class Event_StageEnemiesDead { }
+
+    public class Event_PlayerChangedPosition { }
+
+    public class Event_PlayerRunStarted { }
+
+    public class Event_LevelCompleted { }
+
+    public class Event_CharacterKilled
+    {
+        public BaseCharacter Character { get; }
+        public Event_CharacterKilled(BaseCharacter character) => Character = character;
+    }
+
+    public class Event_PlayerKilled
     {
         public Player Player { get; }
-
-        public PlayerKilledEvent(Player player)
-        {
-            Player = player;
-        }
+        public Event_PlayerKilled(Player player) => Player = player;
     }
 #endregion
 }

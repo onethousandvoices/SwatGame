@@ -15,7 +15,7 @@ namespace SWAT.Utility
 
         private static string _filePath => Application.dataPath + "/Resources/BasicEntityCfg.csv";
 #if UNITY_EDITOR
-        [MenuItem("Tools/DownloadGDP")]
+        [MenuItem("Tools/DownloadGDP and parse")]
         private static async void DownloadGdp()
         {
             Object cfg = Resources.Load(_fileName);

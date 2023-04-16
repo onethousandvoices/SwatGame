@@ -28,6 +28,6 @@ namespace SWAT
         protected override int EnemySpeed => _speed;
         protected override int FiringTime => _firingTime;
 
-        protected override void SetFirstState() => StateEngine.SwitchState(StateFiring);
+        protected override void SetFirstState() => StateEngine.SwitchState<EnemyFiringState>();
     }
 }

@@ -323,6 +323,8 @@ MonoBehaviour:
   _barFiller: {fileID: 1144543712844479001}
   _crosshairFiller: {fileID: 7239991227208581989}
   _crosshairImage: {fileID: 1144543711410985401}
+  _imageWidth: 0.055
+  _imageHeight: 0.0315
 --- !u!1 &3217412336994121569
 GameObject:
   m_ObjectHideFlags: 0

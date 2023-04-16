@@ -5,15 +5,15 @@ using UnityEngine;
 namespace SWAT.LevelScripts
 {
     [Serializable]
-    public struct EnemyPath
+    public struct CharacterPathPair
     {
-        [field: SerializeField] public Enemy Enemy { get; private set; }
+        [field: SerializeField] public BaseCharacter Character { get; private set; }
         [field: SerializeField] public Path Path { get; private set; }
     }
 
     [Serializable]
     public class Stage
     {
-        [field: SerializeField] public EnemyPath[] Enemies { get; private set; }
+        [field: SerializeField] public CharacterPathPair[] CharacterPathPairs { get; private set; }
     }
 }

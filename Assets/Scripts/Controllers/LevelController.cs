@@ -3,77 +3,99 @@ using SWAT;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEngine;
 
 namespace Controllers
 {
-    public class LevelController
+    public interface IGetStageCount
     {
+        public int Count { get; }
+    }
+
+    public class LevelController : IGetStageCount
+    {
+        private List<BaseCharacter> _stageCharacters;
         private List<Enemy> _enemiesToKill;
+        private Transform _charactersHolder;
         private readonly Level _level;
         private int _index;
-        private bool _isDebug;
+        private readonly bool _isDebug;
 
-        public LevelController(Level level, bool isDebug)
+        public int Count => _level.Stages.Count;
+
+        public LevelController(Level level, Transform charactersHolder, bool isDebug)
         {
             _level = level;
+            _charactersHolder = charactersHolder;
             _isDebug = isDebug;
-            Init();
         }
 
-        private void Init()
+        public void Init()
         {
             _index = 0;
 
             SpawnStageEnemies();
-            
-            GameEvents.Register<EnemyKilledEvent>(OnEnemyKilled);
-            GameEvents.Register<PlayerKilledEvent>(OnPlayerKilled);
-            GameEvents.Register<PlayerChangedPositionEvent>(OnPlayerMoved);
+
+            GameEvents.Register<Event_CharacterKilled>(OnEnemyKilled);
+            GameEvents.Register<Event_PlayerKilled>(OnPlayerKilled);
+            GameEvents.Register<Event_PlayerChangedPosition>(OnPlayerMoved);
         }
 
         private void SpawnStageEnemies()
         {
+            _stageCharacters ??= new List<BaseCharacter>();
             _enemiesToKill ??= new List<Enemy>();
+            _stageCharacters.Clear();
             _enemiesToKill.Clear();
 
             if (_index >= _level.Stages.Count)
             {
-                GameEvents.Call(new LevelCompletedEvent());
+                GameEvents.Call(new Event_LevelCompleted());
                 return;
             }
-            
-            foreach (EnemyPath path in _level.Stages[_index].Enemies)
+
+            foreach (CharacterPathPair path in _level.Stages[_index].CharacterPathPairs)
             {
-                if (_isDebug) break;
-                Enemy enemy = NightPool.Spawn(path.Enemy, path.Path.Start.transform.position + new Vector3(0f, 0.4f, 0f));
-                enemy.SetPositions(path.Path);
-                
-                _enemiesToKill.Add(enemy);
+                if (_isDebug)
+                    break;
+                BaseCharacter character = NightPool.Spawn(path.Character, path.Path.Start.transform.position + new Vector3(0f, 0.4f, 0f));
+                character.transform.parent = _charactersHolder;
+
+                if (character is Enemy enemy)
+                {
+                    enemy.SetPositions(path.Path);
+                    _enemiesToKill.Add(enemy);
+                }
+
+                _stageCharacters.Add(character);
             }
-            
-            GameEvents.Call(new EnemiesSpawnedEvent(_enemiesToKill.ToArray()));
+
+            GameEvents.Call(new Event_CharactersSpawned(_stageCharacters.ToArray()));
         }
 
-        private void OnPlayerMoved(PlayerChangedPositionEvent obj)
+        private void OnPlayerMoved(Event_PlayerChangedPosition obj)
         {
             _index++;
             SpawnStageEnemies();
         }
 
-        private void OnPlayerKilled(PlayerKilledEvent obj)
+        private void OnPlayerKilled(Event_PlayerKilled obj)
         {
             Debug.LogError("player is dead...");
         }
 
-        private void OnEnemyKilled(EnemyKilledEvent killedEvent)
+        private void OnEnemyKilled(Event_CharacterKilled killed)
         {
-            if (_enemiesToKill.Contains(killedEvent.Enemy) == false) return;
-            _enemiesToKill.Remove(killedEvent.Enemy);
+            if (killed.Character is not Enemy enemy)
+                return;
+            if (!_enemiesToKill.Contains(enemy))
+                return;
             
-            if (_enemiesToKill.Count > 0) return;
-            GameEvents.Call(new StageEnemiesDeadEvent());
+            _enemiesToKill.Remove(enemy);
+
+            if (_enemiesToKill.Count > 0)
+                return;
+            GameEvents.Call(new Event_StageEnemiesDead());
         }
     }
 }
