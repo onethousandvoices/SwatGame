@@ -46,6 +46,8 @@ namespace SWAT.Events
     }
 
 #region Events
+    public class Event_BossOnSecondaryWeaponShot { }
+    
     public class Event_CivilianDead { }
 
     public class Event_CharactersSpawned

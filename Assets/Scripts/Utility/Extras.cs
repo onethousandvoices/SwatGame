@@ -12,6 +12,8 @@ namespace SWAT.Utility
         public const string EnemySniper = "enemy.sniper";
         public const string EnemyWeapon_SniperRifle = "enemy.sniperrifle";
         public const string PeaceMan = "Peaceman";
+        public const string Boss = "Boss";
+        public const string Boss_Weapons = "Boss.weapons";
         
         public static string BreakCamelCase(string str)
         {

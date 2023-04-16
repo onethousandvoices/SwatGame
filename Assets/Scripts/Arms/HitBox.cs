@@ -1,7 +1,7 @@
 ﻿using NTC.Global.Cache;
 using UnityEngine;
 
-namespace SWAT.Behaviour
+namespace SWAT
 {
     public class HitBox : MonoCache
     {
