@@ -11,10 +11,8 @@ namespace SWAT
 {
     public class Player : BaseCharacter
     {
-        [SerializeField] private Path _path;
-
-        [Config(Extras.Player, "A1")] private int _maxHealth;
-        [Config(Extras.Player, "A2")] private int _maxArmour;
+        [field: Config(Extras.Player, "A2")] protected override int BaseMaxArmour { get; }
+        [field: Config(Extras.Player, "A1")] protected override int BaseMaxHealth { get; }
         [Config(Extras.Player, "A3")] private int _speed;
 
         [Config(Extras.PlayerWeapon, "A1")] private int _projectileDamage;
@@ -23,38 +21,26 @@ namespace SWAT
         [Config(Extras.PlayerWeapon, "A4")] private int _reloadTime;
         [Config(Extras.PlayerWeapon, "A5")] private int _totalAmmo;
 
-        [SerializeField] private Hud _playerHud;
         [SerializeField] private RotationConstraint _rotationConstraint;
         [field: SerializeField] public HitPointsHolder HitPointsHolder { get; private set; }
-        
+
         private static readonly int _isSit = Animator.StringToHash("IsSit");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
         private static readonly int _firingTrigger = Animator.StringToHash("Firing");
 
         private Crosshair _crosshair;
-        private IState _stateFiring;
-        private IState _statePreIdle;
-        private IState _statePreReloading;
-        private IState _stateReloading;
-        private IState _stateIdle;
-        private IState _stateRun;
 
         public override CharacterType Type => CharacterType.Player;
-
-        protected override int BaseMaxArmour => _maxArmour;
-        protected override int BaseMaxHealth => _maxHealth;
 
         protected override void OnEnabled()
         {
             base.OnEnabled();
             
-            SetHud(_playerHud);
-            _playerHud.PlayerCarry();
+            Hud.PlayerCarry();
 
-            CurrentHealth = _maxHealth;
-            CurrentArmour = _maxArmour;
+            CurrentHealth = BaseMaxHealth;
+            CurrentArmour = BaseMaxArmour;
 
-            Path = _path;
             Speed = _speed;
 
             CurrentWeapon.Configure(
@@ -66,29 +52,30 @@ namespace SWAT
 
             _crosshair = ObjectHolder.GetObject<Crosshair>();
 
-            _stateFiring = new FiringState(this);
-            _statePreIdle = new PreIdleState(this);
-            _statePreReloading = new PreReloadingState(this);
-            _stateReloading = new ReloadingState(this);
-            _stateIdle = new IdleState(this);
-            _stateRun = new PlayerRunState(this, _stateIdle);
+            StateEngine.AddState(
+                new PlayerFiringState(this),
+                new PreIdleState(this),
+                new PreReloadingState(this),
+                new ReloadingState(this),
+                new IdleState(this),
+                new PlayerRunState(this));
 
-            StateEngine.SwitchState(_stateIdle);
+            StateEngine.SwitchState<IdleState>();
 
-            GameEvents.Register<StageEnemiesDeadEvent>(OnStageEnemiesDeath);
-            GameEvents.Register<WeaponFireEvent>(OnWeaponFire);
+            GameEvents.Register<Event_StageEnemiesDead>(OnStageEnemiesDeath);
+            GameEvents.Register<Event_WeaponFire>(OnWeaponFire);
         }
 
-        private void OnWeaponFire(WeaponFireEvent @event)
+        private void OnWeaponFire(Event_WeaponFire @event)
         {
             if (@event.Carrier != this)
                 return;
             _crosshair.SetCrosshairProgression(@event.ClipSizeNormalized);
         }
 
-        private void OnStageEnemiesDeath(StageEnemiesDeadEvent obj)
+        private void OnStageEnemiesDeath(Event_StageEnemiesDead obj)
         {
-            StateEngine.SwitchState(_stateRun);
+            StateEngine.SwitchState<PlayerRunState>();
         }
 
         private void GetUp()
@@ -114,21 +101,20 @@ namespace SWAT
             _rotationConstraint.constraintActive = true;
         }
 
-        protected override void Dead(Vector3 hitPosition) => GameEvents.Call(new PlayerKilledEvent(this));
+        protected override void Dead(Vector3 hitPosition) => GameEvents.Call(new Event_PlayerKilled(this));
 
         [Button("Run")]
         private void SetStateRun()
         {
-            StateEngine.SwitchState(_stateRun);
+            StateEngine.SwitchState<PlayerRunState>();
         }
-        
+
 #region States
         private class PlayerRunState : RunState
         {
             private readonly Player _player;
 
-            public PlayerRunState(IRunStateReady character, IState switchOnPathUpdate) :
-                base(character, switchOnPathUpdate) => _player = (Player)character;
+            public PlayerRunState(IRunStateReady character) : base(character) => _player = (Player)character;
 
             public override void Enter()
             {
@@ -136,25 +122,33 @@ namespace SWAT
                 _player.GetUp();
                 _player.Animator.SetTrigger(_runTrigger);
                 _player.CurrentWeapon.SetFireState(false);
-                TargetPathPoint = _player._path.GetPoint();
+                TargetPathPoint = _player.Path.GetPoint();
                 _player._rotationConstraint.weight = 0f;
                 _player._rotationConstraint.constraintActive = false;
                 _player.CurrentWeapon.RiseUp();
+
+                GameEvents.Call(new Event_PlayerRunStarted());
+            }
+
+            protected override bool OnPathPointStop()
+            {
+                _player.StateEngine.SwitchState<IdleState>();
+                return true;
             }
 
             public override void Exit()
             {
                 _player.transform.rotation = TargetPathPoint.transform.rotation;
                 _player.CurrentWeapon.Lower();
-                GameEvents.Call(new PlayerChangedPositionEvent());
+                GameEvents.Call(new Event_PlayerChangedPosition());
             }
         }
 
-        private class FiringState : IState
+        private class PlayerFiringState : IState
         {
             private readonly Player _player;
 
-            public FiringState(Player player) => _player = player;
+            public PlayerFiringState(Player player) => _player = player;
 
             public void Enter()
             {
@@ -167,24 +161,19 @@ namespace SWAT
             public void Run()
             {
                 if (Input.GetMouseButton(0))
-                {
                     _player.CurrentWeapon.Fire();
-                }
 
                 if (Input.GetMouseButtonUp(0))
                 {
                     _player.CurrentWeapon.ResetFiringRate();
-                    _player.StateEngine.SwitchState(_player._statePreIdle);
+                    _player.StateEngine.SwitchState<PreIdleState>();
                 }
 
                 if (_player.CurrentWeapon.ClipIsEmpty)
-                    _player.StateEngine.SwitchState(_player._statePreReloading);
+                    _player.StateEngine.SwitchState<PreReloadingState>();
             }
 
-            public void Exit()
-            {
-                _player.IsVulnerable = false;
-            }
+            public void Exit() => _player.IsVulnerable = false;
         }
 
         private class PreReloadingState : IState
@@ -193,10 +182,7 @@ namespace SWAT
 
             public PreReloadingState(Player player) => _player = player;
 
-            public void Enter()
-            {
-                _player.CurrentWeapon.SetFireState(false);
-            }
+            public void Enter() => _player.CurrentWeapon.SetFireState(false);
 
             public void Run()
             {
@@ -205,13 +191,10 @@ namespace SWAT
                 if (_player._rotationConstraint.weight > 0.3f)
                     return;
 
-                _player.StateEngine.SwitchState(_player._stateReloading);
+                _player.StateEngine.SwitchState<ReloadingState>();
             }
 
-            public void Exit()
-            {
-                _player.SitDown();
-            }
+            public void Exit() => _player.SitDown();
         }
 
         private class PreIdleState : IState
@@ -220,10 +203,7 @@ namespace SWAT
 
             public PreIdleState(Player player) => _player = player;
 
-            public void Enter()
-            {
-                _player.CurrentWeapon.SetFireState(false);
-            }
+            public void Enter() => _player.CurrentWeapon.SetFireState(false);
 
             public void Run()
             {
@@ -232,7 +212,7 @@ namespace SWAT
                 if (_player._rotationConstraint.weight > 0.3f)
                     return;
 
-                _player.StateEngine.SwitchState(_player._stateIdle);
+                _player.StateEngine.SwitchState<IdleState>();
             }
 
             public void Exit() { }
@@ -263,12 +243,12 @@ namespace SWAT
                 _player._crosshair.SetReloadProgression(_reloadingTimeNormalized / _player.CurrentWeapon.ReloadTime);
 
                 if (_currentReloadingTime <= 0)
-                    _player.StateEngine.SwitchState(_player._stateIdle);
+                    _player.StateEngine.SwitchState<IdleState>();
             }
 
             public void Exit()
             {
-                _player._crosshair.DisableBar();
+                _player._crosshair.ReloadReady();
                 _player.CurrentWeapon.Reload();
             }
         }
@@ -279,17 +259,12 @@ namespace SWAT
 
             public IdleState(Player player) => _player = player;
 
-            public void Enter()
-            {
-                _player.SitDown();
-            }
+            public void Enter() => _player.SitDown();
 
             public void Run()
             {
                 if (Input.GetMouseButtonDown(0))
-                {
-                    _player.StateEngine.SwitchState(_player._stateFiring);
-                }
+                    _player.StateEngine.SwitchState<PlayerFiringState>();
             }
 
             public void Exit() { }

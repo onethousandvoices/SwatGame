@@ -94,7 +94,7 @@ namespace SWAT.Weapons
             Projectile projectile = NightPool.Spawn(_projectile, _firePoint.position, transform.rotation);
             projectile.Configure(_projectileDamage, _carrier.Type);
 
-            GameEvents.Call(new WeaponFireEvent(_carrier, _currentClipSize / _clipSize));
+            GameEvents.Call(new Event_WeaponFire(_carrier, _currentClipSize / _clipSize));
 
             if (_currentClipSize <= 0)
                 ClipIsEmpty = true;
@@ -119,7 +119,7 @@ namespace SWAT.Weapons
                 else if (_carrier is Enemy enemy)
                 {
                     transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
-                    
+
                     if (_currentAimingPoint != Vector3.zero && enemy.LaserBeam != null)
                     {
                         enemy.LaserBeam.SetPosition(1, _firePoint.position);

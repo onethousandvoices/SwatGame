@@ -6,14 +6,9 @@ namespace SWAT.Behaviour
     public abstract class RunState : IState
     {
         private readonly IRunStateReady _character;
-        private readonly IState SwitchState;
         protected PathPoint TargetPathPoint;
 
-        protected RunState(IRunStateReady character, IState switchOnPathUpdate)
-        {
-            _character = character;
-            SwitchState = switchOnPathUpdate;
-        }
+        protected RunState(IRunStateReady character) => _character = character;
 
         public virtual void Enter()
         {
@@ -24,26 +19,26 @@ namespace SWAT.Behaviour
         {
             if (TargetPathPoint.IsStopPoint)
             {
-                _character.StateEngine.SwitchState(SwitchState);
-                return;
+                if (OnPathPointStop())
+                    return;
             }
-
             TargetPathPoint = _character.Path.GetPoint();
         }
 
+        protected virtual bool OnPathPointStop() => false;
+
         public void Run()
         {
-            Vector3 enemyPos = _character.Transform.position;
-            Vector3 direction = TargetPathPoint.transform.position - enemyPos;
+            Vector3 character = _character.Transform.position;
+            Vector3 direction = TargetPathPoint.transform.position - character;
             direction.y = 0;
             Quaternion rotation = Quaternion.LookRotation(direction);
             _character.Transform.rotation = Quaternion.Slerp(_character.Transform.rotation, rotation, Time.deltaTime * 20f);
 
-            //todo constrain velocty
+            if (_character.Rb.velocity.magnitude < _character.Speed)
+                _character.Rb.AddForce(_character.Transform.forward * (_character.Speed * 100 * Time.deltaTime), ForceMode.Force);
 
-            _character.Rb.AddForce(_character.Transform.forward * (_character.Speed * 100 * Time.deltaTime), ForceMode.Force);
-
-            if ((TargetPathPoint.transform.position - enemyPos).sqrMagnitude > 2f)
+            if ((TargetPathPoint.transform.position - character).sqrMagnitude > 2f)
                 return;
 
             UpdatePathIndex();

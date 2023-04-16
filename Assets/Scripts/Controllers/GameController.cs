@@ -4,6 +4,7 @@ using SWAT;
 using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.Utility;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
@@ -13,26 +14,29 @@ namespace Controllers
 {
     public class GameController : MonoCache
     {
+        [SerializeField] private Transform _charactersHolder;
         [SerializeField, HideInInspector] private bool _isDebug;
 #region CfgDictionaries
-        private readonly Dictionary<string, int> _playerCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _playerWeaponCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemyThugCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemyPistolCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemySniperCfg = new Dictionary<string, int>();
-        private readonly Dictionary<string, int> _enemySniperRifleCfg = new Dictionary<string, int>();
+        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _playerCfg = new SerializableDictionary<string, int>();
+        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _playerWeaponCfg = new SerializableDictionary<string, int>();
+        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemyThugCfg = new SerializableDictionary<string, int>();
+        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemyPistolCfg = new SerializableDictionary<string, int>();
+        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemySniperCfg = new SerializableDictionary<string, int>();
+        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemySniperRifleCfg = new SerializableDictionary<string, int>();
+        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _peaceManCfg = new SerializableDictionary<string, int>();
 #endregion
+        private LevelController _levelController;
+        
         protected override void OnEnabled()
         {
             Application.targetFrameRate = 60;
-            ParseConfig();
             ConfigureObjects();
         }
 
         private IEnumerator Start() //todo kostbl
         {
             yield return new WaitForSeconds(1f);
-            ObjectHolder.AddObject(new LevelController(FindObjectOfType<Level>(), _isDebug));
+            _levelController.Init();
         }
 
         protected override void OnDisabled()
@@ -44,13 +48,14 @@ namespace Controllers
         private void ParseConfig()
         {
             List<Dictionary<string, object>> config = CSVReader.Read("BasicEntityCfg");
-            
+
             _playerCfg.Clear();
             _playerWeaponCfg.Clear();
             _enemyThugCfg.Clear();
             _enemyPistolCfg.Clear();
             _enemySniperCfg.Clear();
             _enemySniperRifleCfg.Clear();
+            _peaceManCfg.Clear();
 
             for (int i = 0; i < config.Count; i++)
             {
@@ -59,8 +64,10 @@ namespace Controllers
 
                 foreach (string key in dict.Keys)
                 {
-                    if (key.Contains("ID")) continue;
-                    if (string.IsNullOrEmpty(dict[key].ToString())) continue;
+                    if (key.Contains("ID"))
+                        continue;
+                    if (string.IsNullOrEmpty(dict[key].ToString()))
+                        continue;
 
                     switch (first)
                     {
@@ -82,6 +89,9 @@ namespace Controllers
                         case Extras.EnemyWeapon_SniperRifle:
                             _enemySniperRifleCfg.Add(key, (int)dict[key]);
                             break;
+                        case Extras.PeaceMan:
+                            _peaceManCfg.Add(key, (int)dict[key]);
+                            break;
                     }
                 }
             }
@@ -89,6 +99,8 @@ namespace Controllers
 
         private void ConfigureObjects()
         {
+            _levelController = new LevelController(FindObjectOfType<Level>(), _charactersHolder, _isDebug);
+            ObjectHolder.AddObject(_levelController, typeof(IGetStageCount));
             ObjectHolder.AddObject(this);
 
             MonoCache[] objects = FindObjectsOfType<MonoCache>();
@@ -99,28 +111,30 @@ namespace Controllers
 
                 ConfigObject(obj);
 
-                if (obj.gameObject.TryGetComponent(out Camera cam)) ObjectHolder.AddObject(cam);
-                if (obj.gameObject.GetComponent<Crosshair>() != null) ObjectHolder.AddObject(obj);
-                if (obj.gameObject.GetComponent<Player>() != null) ObjectHolder.AddObject(obj);
+                if (obj.gameObject.TryGetComponent(out Camera cam))
+                    ObjectHolder.AddObject(cam);
+                if (obj.gameObject.GetComponent<Crosshair>() != null)
+                    ObjectHolder.AddObject(obj);
+                if (obj.gameObject.GetComponent<Player>() != null)
+                    ObjectHolder.AddObject(obj);
             }
         }
 
         public void ConfigPrefabs()
         {
+            ParseConfig();
+
             MonoCache[] prefabs = Resources.LoadAll<MonoCache>($"Prefabs");
+            MonoCache[] sceneObjects = FindObjectsOfType<MonoCache>();
 
             foreach (MonoCache prefab in prefabs)
-            {
                 ConfigObject(prefab);
-            }
+            foreach (MonoCache sceneObject in sceneObjects)
+                ConfigObject(sceneObject);
         }
 
-        public void ConfigObject(MonoCache obj)
+        private void ConfigObject(MonoCache obj)
         {
-#if UNITY_EDITOR
-            ParseConfig();
-#endif
-            
             FieldInfo[] fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
             for (int j = 0; j < fields.Length; j++)
@@ -128,7 +142,8 @@ namespace Controllers
                 FieldInfo fieldInfo = fields[j];
 
                 Config configRequest = fieldInfo.GetCustomAttribute<Config>();
-                if (configRequest == null) continue;
+                if (configRequest == null)
+                    continue;
 
                 string id = configRequest.Id;
                 string param = configRequest.Param;
@@ -153,20 +168,48 @@ namespace Controllers
                     case Extras.EnemyWeapon_SniperRifle:
                         fieldInfo.SetValue(obj, _enemySniperRifleCfg[param]);
                         break;
+                    case Extras.PeaceMan:
+                        fieldInfo.SetValue(obj, _peaceManCfg[param]);
+                        break;
                 }
             }
         }
-        
+
         [Button("Set Debug")]
         private void SetDebug()
         {
             _isDebug = true;
         }
-        
+
         [Button("Unset Debug")]
         private void UnsetDebug()
         {
             _isDebug = false;
+        }
+    }
+
+    [Serializable]
+    public class SerializableDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISerializationCallbackReceiver
+    {
+        [SerializeField] private List<TKey> _keys = new List<TKey>();
+        [SerializeField] private List<TValue> _values = new List<TValue>();
+
+        public void OnBeforeSerialize()
+        {
+            _keys.Clear();
+            _values.Clear();
+            foreach (KeyValuePair<TKey, TValue> pair in this)
+            {
+                _keys.Add(pair.Key);
+                _values.Add(pair.Value);
+            }
+        }
+
+        public void OnAfterDeserialize()
+        {
+            Clear();
+            for (int i = 0; i < _keys.Count; i++)
+                Add(_keys[i], _values[i]);
         }
     }
 }
