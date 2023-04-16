@@ -1,4 +1,5 @@
 ﻿using Controllers;
+using NaughtyAttributes;
 using NTC.Global.Cache;
 using NTC.Global.Pool;
 using SWAT.Behaviour;
@@ -14,6 +15,8 @@ namespace SWAT.Weapons
         public bool FireState { get; private set; }
         public float ReloadTime => _reloadTime;
 
+        [SerializeField] private Weapon _weaponPair;
+        [HorizontalLine(color: EColor.Red)]
         [SerializeField] private Projectile _projectile;
         [SerializeField] private Transform _firePoint;
         [SerializeField, Range(1f, 500f)] private float _maxFireRange;
@@ -45,10 +48,8 @@ namespace SWAT.Weapons
             _clipSize = clipSize;
             _reloadTime = reloadTime;
             _totalAmmo = totalAmmo;
-
-            _carrier.TryGetComponent(out Player player);
-
-            if (player != null)
+            
+            if (_carrier is Player)
             {
                 _lookSpeed = 20;
                 _target = ObjectHolder.GetObject<Crosshair>();
@@ -59,9 +60,20 @@ namespace SWAT.Weapons
                 SetAimingPoint();
             }
 
+            if (_carrier is Boss)
+            {
+                GameEvents.Register<Event_BossOnSecondaryWeaponShot>(OnSecondaryWeaponShot);
+            }
+
             _currentClipSize = _clipSize;
 
             ResetFiringRate();
+        }
+
+        private async void OnSecondaryWeaponShot(Event_BossOnSecondaryWeaponShot obj)
+        {
+            await _weaponPair.SetAimingPoint();
+            _weaponPair.FireInner();
         }
 
         public async void Fire()
@@ -114,17 +126,22 @@ namespace SWAT.Weapons
 
             if (FireState)
             {
-                if (_carrier is Player)
-                    _currentAimingPoint = _target.GetTarget();
-                else if (_carrier is Enemy enemy)
+                switch (_carrier)
                 {
-                    transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
+                    case Player:
+                        _currentAimingPoint = _target.GetTarget();
+                        break;
+                    case Boss boss:
+                        break;
+                    case Enemy enemy:
+                        transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
 
-                    if (_currentAimingPoint != Vector3.zero && enemy.LaserBeam != null)
-                    {
-                        enemy.LaserBeam.SetPosition(1, _firePoint.position);
-                        enemy.LaserBeam.SetPosition(0, _currentAimingPoint);
-                    }
+                        if (_currentAimingPoint != Vector3.zero && enemy.LaserBeam != null)
+                        {
+                            enemy.LaserBeam.SetPosition(1, _firePoint.position);
+                            enemy.LaserBeam.SetPosition(0, _currentAimingPoint);
+                        }
+                        break;
                 }
 
                 Vector3 direction = _currentAimingPoint - transform.position + _posOffset;
@@ -143,23 +160,24 @@ namespace SWAT.Weapons
 #endif
         }
 
+        public void SetActive(bool state)
+        {
+            gameObject.SetActive(state);
+            if (_weaponPair != null)
+                _weaponPair.gameObject.SetActive(state);
+        }
+        
         public void RiseUp()
         {
             _isRiseUp = true;
             transform.localEulerAngles = new Vector3(-90f, 0f, 0f);
         }
 
-        public void Lower()
-        {
-            _isRiseUp = false;
-        }
+        public void Lower() => _isRiseUp = false;
 
         public void SetFireState(bool state) => FireState = state;
 
-        public void ResetFiringRate()
-        {
-            _currentFiringRate = 60f / _firingRate;
-        }
+        public void ResetFiringRate() => _currentFiringRate = 60f / _firingRate;
 
         public void Reload()
         {

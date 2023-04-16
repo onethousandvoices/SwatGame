@@ -16,17 +16,29 @@ namespace Controllers
     {
         [SerializeField] private Transform _charactersHolder;
         [SerializeField, HideInInspector] private bool _isDebug;
+        [SerializeField, HideInInspector] private bool _showCfg;
 #region CfgDictionaries
-        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _playerCfg = new SerializableDictionary<string, int>();
-        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _playerWeaponCfg = new SerializableDictionary<string, int>();
-        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemyThugCfg = new SerializableDictionary<string, int>();
-        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemyPistolCfg = new SerializableDictionary<string, int>();
-        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemySniperCfg = new SerializableDictionary<string, int>();
-        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _enemySniperRifleCfg = new SerializableDictionary<string, int>();
-        [SerializeField, HideInInspector] private SerializableDictionary<string, int> _peaceManCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _playerCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _playerWeaponCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _enemyThugCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _enemyPistolCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _enemySniperCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _enemySniperRifleCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _peaceManCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _bossCfg = new SerializableDictionary<string, int>();
+        [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _bossWeaponCfg = new SerializableDictionary<string, int>();
+
+        [ShowNativeProperty] private int _playerCfgCount => _playerCfg.Count;
+        [ShowNativeProperty] private int _playerWeaponCfgCount => _playerWeaponCfg.Count;
+        [ShowNativeProperty] private int _enemyThugCount => _enemyThugCfg.Count;
+        [ShowNativeProperty] private int _enemyPistolCfgCount => _enemyPistolCfg.Count;
+        [ShowNativeProperty] private int _enemySniperRifleCfgCount => _enemySniperCfg.Count;
+        [ShowNativeProperty] private int _peaceManCfgCount => _peaceManCfg.Count;
+        [ShowNativeProperty] private int _bossCfgCount => _bossCfg.Count;
+        [ShowNativeProperty] private int _bossWeaponCfgCount => _bossWeaponCfg.Count;
 #endregion
         private LevelController _levelController;
-        
+
         protected override void OnEnabled()
         {
             Application.targetFrameRate = 60;
@@ -91,6 +103,12 @@ namespace Controllers
                             break;
                         case Extras.PeaceMan:
                             _peaceManCfg.Add(key, (int)dict[key]);
+                            break;
+                        case Extras.Boss:
+                            _bossCfg.Add(key, (int)dict[key]);
+                            break;
+                        case Extras.Boss_Weapons:
+                            _bossWeaponCfg.Add(key, (int)dict[key]);
                             break;
                     }
                 }
@@ -171,6 +189,12 @@ namespace Controllers
                     case Extras.PeaceMan:
                         fieldInfo.SetValue(obj, _peaceManCfg[param]);
                         break;
+                    case Extras.Boss:
+                        fieldInfo.SetValue(obj, _bossCfg[param]);
+                        break;
+                    case Extras.Boss_Weapons:
+                        fieldInfo.SetValue(obj, _bossWeaponCfg[param]);
+                        break;
                 }
             }
         }
@@ -185,6 +209,18 @@ namespace Controllers
         private void UnsetDebug()
         {
             _isDebug = false;
+        }
+
+        [Button("Show cfg")]
+        private void ShowParsedCfg()
+        {
+            _showCfg = true;
+        }
+
+        [Button("Hide cfg")]
+        private void HideParsedCfg()
+        {
+            _showCfg = false;
         }
     }
 

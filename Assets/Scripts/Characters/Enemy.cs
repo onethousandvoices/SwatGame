@@ -68,7 +68,12 @@ namespace SWAT
                 ClipSize,
                 ReloadTime,
                 TotalAmmo);
+            
+            ConfigureStates();
+        }
 
+        protected virtual void ConfigureStates()
+        {
             StateEngine.AddState(
                 new EnemyFiringState(this),
                 new EnemyRunState(this));
@@ -116,7 +121,7 @@ namespace SWAT
         private void SpawnDespawnActions(bool state)
         {
             Hud.transform.parent.gameObject.SetActive(state);
-            CurrentWeapon.gameObject.SetActive(state);
+            CurrentWeapon.SetActive(state);
 
             if (LaserBeam != null)
                 LaserBeam.enabled = state;
@@ -162,7 +167,7 @@ namespace SWAT
             public void Exit() { }
         }
 
-        private class EnemyRunState : RunState
+        protected class EnemyRunState : RunState
         {
             private readonly Enemy _enemy;
             public EnemyRunState(IRunStateReady character) : base(character) => _enemy = (Enemy)character;

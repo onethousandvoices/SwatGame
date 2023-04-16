@@ -91,14 +91,14 @@ namespace Controllers
 
                 switch (spawnedCharacter)
                 {
+                    case Boss:
+                        progressBarCharacter.SetType(ProgressCharacterType.Boss);
+                        break;
                     case Enemy:
                         progressBarCharacter.SetType(ProgressCharacterType.Enemy);
                         break;
                     case Civilian:
                         progressBarCharacter.SetType(ProgressCharacterType.Civilian);
-                        break;
-                    case Boss:
-                        progressBarCharacter.SetType(ProgressCharacterType.Boss);
                         break;
                 }
 
@@ -108,10 +108,13 @@ namespace Controllers
                 currentPercent += step;
             }
 
-            Image first = _progressBarCharacters[0].Image;
-            float panelLeftSide = first.rectTransform.anchoredPosition.x - first.rectTransform.rect.width;
-            _lowerPanel.sizeDelta = new Vector2(Mathf.Abs(panelLeftSide) * 2f, _lowerPanel.sizeDelta.y);
-
+            if (_progressBarCharacters.Length > 0)
+            {
+                Image first = _progressBarCharacters[0].Image;
+                float panelLeftSide = first.rectTransform.anchoredPosition.x - first.rectTransform.rect.width;
+                _lowerPanel.sizeDelta = new Vector2(Mathf.Abs(panelLeftSide) * 2f, _lowerPanel.sizeDelta.y);
+            }
+            
             _animator.SetTrigger(ShowLower);
         }
 
