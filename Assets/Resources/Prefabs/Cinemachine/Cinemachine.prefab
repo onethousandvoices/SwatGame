@@ -1250,7 +1250,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6137204961597896044}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -31.42, y: 0, z: 0}
+  m_LocalPosition: {x: -29.21, y: 4.78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1269,16 +1269,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2d37e5385efd7064cb1d54c94960acae, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_Resolution: 21
+  m_Resolution: 100
   m_Appearance:
     pathColor: {r: 0, g: 1, b: 0, a: 1}
     inactivePathColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
     width: 0.2
   m_Looped: 0
   m_Waypoints:
-  - position: {x: -2.7455883, y: 5.7689633, z: 11.585214}
-    tangent: {x: -4.289871, y: 1.6720939, z: 4.9873304}
+  - position: {x: -36.591995, y: -2.2249746, z: 0.24544221}
+    tangent: {x: 3.1802578, y: 1.6720943, z: 4.3486605}
     roll: 0
-  - position: {x: -31.177862, y: 8.178623, z: 13.03061}
-    tangent: {x: -3.5162315, y: 2.445166, z: 4.3564587}
+  - position: {x: -17.32962, y: 1.030251, z: 10.366935}
+    tangent: {x: 2.3209038, y: -0.49721766, z: -5.9878826}
+    roll: 0
+  - position: {x: -16.87815, y: 1.8627925, z: -1.8558143}
+    tangent: {x: 2.7469025, y: -1.0240426, z: -3.3241248}
     roll: 0
