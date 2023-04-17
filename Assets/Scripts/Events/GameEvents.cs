@@ -44,7 +44,7 @@ namespace SWAT.Events
     }
 
 #region Events
-    public class Event_CivilianLook { }
+    public class Event_CivilianLookEnded { }
     
     public class Event_CrosshairMoved { }
 

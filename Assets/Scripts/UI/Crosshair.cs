@@ -39,7 +39,7 @@ namespace SWAT
             
             GameEvents.Register<Event_PlayerChangedPosition>(_ => Enable());
             GameEvents.Register<Event_PlayerRunStarted>(_ => Disable());
-            GameEvents.Register<Event_CivilianLook>(_ => Disable());
+            GameEvents.Register<Event_CivilianLookEnded>(_ => Enable());
             
             ReloadReady();
         }
@@ -47,7 +47,15 @@ namespace SWAT
         protected override void Run()
         {
             if (!_tutorialController.IsInputAllowed) return;
-            
+
+            if (_tutorialController.IsCivilianStage)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+            if (!gameObject.activeSelf)
+                gameObject.SetActive(true);
+
             if (Input.GetMouseButtonDown(0))
             {
                 _startDragMouse = Input.mousePosition;

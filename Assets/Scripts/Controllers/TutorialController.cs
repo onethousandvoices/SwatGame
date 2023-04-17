@@ -21,7 +21,7 @@ namespace Controllers
         public bool IsTutorialDriven { get; private set; }
         public bool IsInputAllowed { get; private set; }
         public bool IsTutorialDone { get; private set;}
-        private bool _isCivilianStage;
+        public bool IsCivilianStage { get; private set; }
 
         protected override void OnEnabled()
         {
@@ -32,7 +32,7 @@ namespace Controllers
             IsTutorialDriven = true;
             IsInputAllowed = false;
             IsTutorialDone = false;
-            _isCivilianStage = false;
+            IsCivilianStage = false;
             _animator.SetTrigger(MeetFiring);
         }
 
@@ -43,12 +43,11 @@ namespace Controllers
                 return;
 
             Time.timeScale = 0f;
-            _isCivilianStage = true;
+            IsCivilianStage = true;
             IsInputAllowed = false;
             _animator.SetTrigger(MeetCivilian);
             _camera.LiveChild.LookAt = civilian.transform;
             GameEvents.Unregister<Event_CharactersSpawned>(OnCharacterSpawned);
-            GameEvents.Call(new Event_CivilianLook());
         }
 
         private void OnCrosshairMoved(Event_CrosshairMoved obj)
@@ -63,7 +62,7 @@ namespace Controllers
 
         public void InputAfterCivilianMet()
         {
-            if (!_isCivilianStage) return;
+            if (!IsCivilianStage) return;
             
             Time.timeScale = 1f;
             
@@ -74,6 +73,8 @@ namespace Controllers
             }
 
             IsTutorialDone = true;
+            IsCivilianStage = false;
+            GameEvents.Call(new Event_CivilianLookEnded());
         }
     }
 }
