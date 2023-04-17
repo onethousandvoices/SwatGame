@@ -29,6 +29,7 @@ namespace SWAT
         private static readonly int _firingTrigger = Animator.StringToHash("Firing");
 
         private Crosshair _crosshair;
+        private TutorialController _tutorialController;
 
         public override CharacterType Type => CharacterType.Player;
 
@@ -51,6 +52,7 @@ namespace SWAT
                 _totalAmmo);
 
             _crosshair = ObjectHolder.GetObject<Crosshair>();
+            _tutorialController = ObjectHolder.GetObject<TutorialController>();
 
             StateEngine.AddState(
                 new PlayerFiringState(this),
@@ -263,8 +265,12 @@ namespace SWAT
 
             public void Run()
             {
-                if (Input.GetMouseButtonDown(0))
+                if (Input.GetMouseButtonDown(0) && _player._tutorialController.IsInputAllowed)
+                {
                     _player.StateEngine.SwitchState<PlayerFiringState>();
+                    if (!_player._tutorialController.IsTutorialDone)
+                        _player._tutorialController.InputAfterCivilianMet();
+                }
             }
 
             public void Exit() { }

@@ -31,23 +31,25 @@ namespace SWAT.Events
 
         public static void Call<T>(T args)
         {
-            if (_events.ContainsKey(typeof(T)))
-            {
-                List<Delegate> callbacks = _events[typeof(T)];
-                for (int i = 0; i < callbacks.Count; i++)
-                    if (callbacks[i] is Action<T> callback)
-                        callback(args);
-            }
-            else
-                Debug.LogError($"Event type of {typeof(T)} not registered");
+            if (!_events.ContainsKey(typeof(T)))
+                return;
+            
+            List<Delegate> callbacks = _events[typeof(T)];
+            for (int i = 0; i < callbacks.Count; i++)
+                if (callbacks[i] is Action<T> callback)
+                    callback(args);
         }
 
         public static void UnregisterAll() => _events.Clear();
     }
 
 #region Events
-    public class Event_BossOnSecondaryWeaponShot { }
+    public class Event_CivilianLook { }
     
+    public class Event_CrosshairMoved { }
+
+    public class Event_BossOnSecondaryWeaponShot { }
+
     public class Event_CivilianDead { }
 
     public class Event_CharactersSpawned

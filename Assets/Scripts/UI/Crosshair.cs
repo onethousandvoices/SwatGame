@@ -18,6 +18,7 @@ namespace SWAT
         [SerializeField] private float _imageHeight;
 
         private Camera _camera;
+        private TutorialController _tutorialController;
         private RectTransform _rect;
         
         private Vector3 _startDragMouse;
@@ -31,18 +32,22 @@ namespace SWAT
         protected override void OnEnabled()
         {
             _camera = ObjectHolder.GetObject<Camera>();
+            _tutorialController = ObjectHolder.GetObject<TutorialController>();
             _obstacleLayer = LayerMask.GetMask("Obstacle");
 
             _rect = Get<RectTransform>();
             
             GameEvents.Register<Event_PlayerChangedPosition>(_ => Enable());
             GameEvents.Register<Event_PlayerRunStarted>(_ => Disable());
+            GameEvents.Register<Event_CivilianLook>(_ => Disable());
             
             ReloadReady();
         }
 
         protected override void Run()
         {
+            if (!_tutorialController.IsInputAllowed) return;
+            
             if (Input.GetMouseButtonDown(0))
             {
                 _startDragMouse = Input.mousePosition;
@@ -51,12 +56,16 @@ namespace SWAT
 
             if (Input.GetMouseButton(0))
             {
+                if (_startDragPos == Vector3.zero) return;
+                
                 _endDragMouse = Input.mousePosition;
                 _delta = _endDragMouse - _startDragMouse;
 
                 if (_delta.sqrMagnitude < 5)
                     return;
 
+                GameEvents.Call(new Event_CrosshairMoved());
+                
                 _endDragPos = new Vector3(
                     _startDragPos.x + _delta.x,
                     _startDragPos.y + _delta.y);

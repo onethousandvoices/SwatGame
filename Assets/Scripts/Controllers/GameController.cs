@@ -38,6 +38,7 @@ namespace Controllers
         [ShowNativeProperty] private int _bossWeaponCfgCount => _bossWeaponCfg.Count;
 #endregion
         private LevelController _levelController;
+        private TutorialController _tutorialController;
 
         protected override void OnEnabled()
         {
@@ -45,9 +46,10 @@ namespace Controllers
             ConfigureObjects();
         }
 
-        private IEnumerator Start() //todo kostbl
+        private IEnumerator Start()
         {
-            yield return new WaitForSeconds(1f);
+            while (_tutorialController.IsTutorialDriven)
+                yield return null;
             _levelController.Init();
         }
 
@@ -135,6 +137,9 @@ namespace Controllers
                     ObjectHolder.AddObject(obj);
                 if (obj.gameObject.GetComponent<Player>() != null)
                     ObjectHolder.AddObject(obj);
+                if (obj.gameObject.GetComponent<TutorialController>() == null) continue;
+                ObjectHolder.AddObject(obj);
+                _tutorialController = (TutorialController)obj;
             }
         }
 
