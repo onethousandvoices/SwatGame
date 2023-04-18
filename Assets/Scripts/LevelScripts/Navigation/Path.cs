@@ -75,7 +75,7 @@ namespace SWAT.LevelScripts.Navigation
 
             _pathPoints.Last().transform.position = _pathPoints.First().transform.position + new Vector3(0f, 0f, 2f);
         }
-
+#if UNITY_EDITOR
         private void OnDrawGizmos()
         {
             _pathPoints = GetComponentsInChildren<PathPoint>();
@@ -127,5 +127,6 @@ namespace SWAT.LevelScripts.Navigation
                 Gizmos.DrawLine(_pathPoints[i - 1].transform.position, point.transform.position);
             }
         }
+#endif
     }
 }
