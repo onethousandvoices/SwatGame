@@ -15,7 +15,7 @@ namespace Controllers
     public class GameController : MonoCache
     {
         [SerializeField] private Transform _charactersHolder;
-        [SerializeField, HideInInspector] private bool _isDebug;
+        [field: SerializeField, HideInInspector] public bool IsDebug { get; private set; }
         [SerializeField, HideInInspector] private bool _showCfg;
 #region CfgDictionaries
         [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _playerCfg = new SerializableDictionary<string, int>();
@@ -119,7 +119,7 @@ namespace Controllers
 
         private void ConfigureObjects()
         {
-            _levelController = new LevelController(FindObjectOfType<Level>(), _charactersHolder, _isDebug);
+            _levelController = new LevelController(FindObjectOfType<Level>(), _charactersHolder, IsDebug);
             ObjectHolder.AddObject(_levelController, typeof(IGetStageCount));
             ObjectHolder.AddObject(this);
 
@@ -207,13 +207,13 @@ namespace Controllers
         [Button("Set Debug")]
         private void SetDebug()
         {
-            _isDebug = true;
+            IsDebug = true;
         }
 
         [Button("Unset Debug")]
         private void UnsetDebug()
         {
-            _isDebug = false;
+            IsDebug = false;
         }
 
         [Button("Show cfg")]

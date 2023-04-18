@@ -11,17 +11,17 @@ namespace SWAT
     public class Boss : Enemy, IPoolItem
     {
         [SerializeField] private Weapon _weapon;
-        [HorizontalLine(color: EColor.Red)]
-        [SerializeField, Config(Extras.Boss, "A1")] private int _maxHealth;
-        [SerializeField, Config(Extras.Boss, "A2")] private int _maxArmour;
-        [SerializeField, Config(Extras.Boss, "A3")] private int _speed;
-        [SerializeField, Config(Extras.Boss, "A4")] private int _firingTime;
-        [HorizontalLine(color: EColor.Red)]
-        [SerializeField, Config(Extras.Boss_Weapons, "A1")] private int _projectileDamage;
-        [SerializeField, Config(Extras.Boss_Weapons, "A2")] private int _firingRate;
-        [SerializeField, Config(Extras.Boss_Weapons, "A3")] private int _clipSize;
-        [SerializeField, Config(Extras.Boss_Weapons, "A4")] private int _reloadTime;
-        [SerializeField, Config(Extras.Boss_Weapons, "A5")] private int _totalAmmo;
+        // [HorizontalLine(color: EColor.Red)]
+        // [SerializeField, Config(Extras.Boss, "A1")] private int _maxHealth;
+        // [SerializeField, Config(Extras.Boss, "A2")] private int _maxArmour;
+        // [SerializeField, Config(Extras.Boss, "A3")] private int _speed;
+        // [SerializeField, Config(Extras.Boss, "A4")] private int _firingTime;
+        // [HorizontalLine(color: EColor.Red)]
+        // [SerializeField, Config(Extras.Boss_Weapons, "A1")] private int _projectileDamage;
+        // [SerializeField, Config(Extras.Boss_Weapons, "A2")] private int _firingRate;
+        // [SerializeField, Config(Extras.Boss_Weapons, "A3")] private int _clipSize;
+        // [SerializeField, Config(Extras.Boss_Weapons, "A4")] private int _reloadTime;
+        // [SerializeField, Config(Extras.Boss_Weapons, "A5")] private int _totalAmmo;
         
         public override CharacterType Type { get; }
         protected override int ChildMaxArmour { get; }

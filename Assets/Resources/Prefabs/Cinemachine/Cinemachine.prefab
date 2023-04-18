@@ -151,8 +151,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4900336189426325537}
-  m_LocalRotation: {x: -0.022329608, y: 0.9619651, z: -0.25935534, w: -0.08282189}
-  m_LocalPosition: {x: -59.236282, y: 7.218678, z: 11.723135}
+  m_LocalRotation: {x: 0.1875718, y: 0.75958955, z: -0.2497418, w: 0.5704995}
+  m_LocalPosition: {x: -66.18961, y: 3.7767117, z: 1.4276314}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -396,7 +396,10 @@ MonoBehaviour:
   m_AnimatedTarget: {fileID: 0}
   m_LayerIndex: 0
   m_ShowDebugText: 0
-  m_ChildCameras: []
+  m_ChildCameras:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
   m_Instructions:
   - m_FullHash: 1363859911
     m_VirtualCamera: {fileID: 4900336189642384109}
@@ -427,7 +430,7 @@ MonoBehaviour:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-  m_CustomBlends: {fileID: 0}
+  m_CustomBlends: {fileID: 11400000, guid: f30720408657507429cb97d6ae474c98, type: 2}
   m_ParentHash:
   - m_Hash: -729815479
     m_ParentHash: 756556552
@@ -589,8 +592,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4900336189908895210}
-  m_LocalRotation: {x: 0.120137885, y: 0.70113057, z: -0.121683404, w: 0.6922254}
-  m_LocalPosition: {x: -70.07444, y: 7.2895713, z: 0.050343566}
+  m_LocalRotation: {x: 0.086938776, y: 0.7054093, z: -0.087869346, w: 0.69793874}
+  m_LocalPosition: {x: -72.39388, y: 5.823239, z: 0.033212278}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1279,9 +1282,18 @@ MonoBehaviour:
   - position: {x: -36.591995, y: -2.2249746, z: 0.24544221}
     tangent: {x: 3.1802578, y: 1.6720943, z: 4.3486605}
     roll: 0
-  - position: {x: -17.32962, y: 1.030251, z: 10.366935}
-    tangent: {x: 2.3209038, y: -0.49721766, z: -5.9878826}
+  - position: {x: -17.32962, y: 3.1859932, z: 10.366935}
+    tangent: {x: 0.72024536, y: 1.5040345, z: -5.359003}
     roll: 0
   - position: {x: -16.87815, y: 1.8627925, z: -1.8558143}
-    tangent: {x: 2.7469025, y: -1.0240426, z: -3.3241248}
+    tangent: {x: 0.6416092, y: 0.15514183, z: -3.3241248}
+    roll: 0
+  - position: {x: -25.225662, y: 5.704622, z: -20.743355}
+    tangent: {x: -18.857262, y: 0.12092781, z: 1.4435692}
+    roll: 0
+  - position: {x: -26.115467, y: 7.360337, z: -28.185535}
+    tangent: {x: 2.7298431, y: 2.0040164, z: 0.8037014}
+    roll: 0
+  - position: {x: -9.5602455, y: 3.426519, z: -28.53694}
+    tangent: {x: 5.4136105, y: 0.0045604706, z: -3.707243}
     roll: 0

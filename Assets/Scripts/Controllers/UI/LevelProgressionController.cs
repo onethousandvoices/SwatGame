@@ -60,7 +60,7 @@ namespace Controllers
 
             GameEvents.Register<Event_CharactersSpawned>(ConfigureLowerBar);
             GameEvents.Register<Event_CharacterKilled>(OnCharacterKilled);
-            GameEvents.Register<Event_StageEnemiesDead>(OnStageEnemiesDeath);
+            GameEvents.Register<Event_PlayerRunStarted>(OnStageEnemiesDeath);
 
             _animator.SetTrigger(Show);
         }
@@ -125,7 +125,7 @@ namespace Controllers
             _characterPairs[obj.Character].CrossOut();
         }
 
-        private void OnStageEnemiesDeath(Event_StageEnemiesDead obj)
+        private void OnStageEnemiesDeath(Event_PlayerRunStarted obj)
         {
             NextCheckpoint();
             _animator.SetTrigger(HideLower);

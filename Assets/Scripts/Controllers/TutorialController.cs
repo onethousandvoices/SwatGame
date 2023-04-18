@@ -3,6 +3,7 @@ using NTC.Global.Cache;
 using SWAT;
 using SWAT.Events;
 using System.Linq;
+using System.Threading.Tasks;
 using UnityEngine;
 
 namespace Controllers
@@ -18,36 +19,43 @@ namespace Controllers
         private static readonly int StopMeetCivilian = Animator.StringToHash("StopMeetCivilian");
 
         private Player _player;
+        private Crosshair _crosshair;
         public bool IsTutorialDriven { get; private set; }
         public bool IsInputAllowed { get; private set; }
-        public bool IsTutorialDone { get; private set;}
-        public bool IsCivilianStage { get; private set; }
+        public bool IsTutorialDone { get; private set; }
+        private bool _isCivilianStage;
 
         protected override void OnEnabled()
         {
             _player = ObjectHolder.GetObject<Player>();
+            _crosshair = ObjectHolder.GetObject<Crosshair>();
+            if (ObjectHolder.GetObject<GameController>().IsDebug)
+                return;
+
             GameEvents.Register<Event_CrosshairMoved>(OnCrosshairMoved);
             GameEvents.Register<Event_CharactersSpawned>(OnCharacterSpawned);
 
             IsTutorialDriven = true;
             IsInputAllowed = false;
             IsTutorialDone = false;
-            IsCivilianStage = false;
+            _isCivilianStage = false;
             _animator.SetTrigger(MeetFiring);
         }
 
-        private void OnCharacterSpawned(Event_CharactersSpawned obj)
+        private async void OnCharacterSpawned(Event_CharactersSpawned obj)
         {
             Civilian civilian = (Civilian)obj.Characters.FirstOrDefault(c => c is Civilian);
             if (civilian == null)
                 return;
 
             Time.timeScale = 0f;
-            IsCivilianStage = true;
+            _isCivilianStage = true;
             IsInputAllowed = false;
             _animator.SetTrigger(MeetCivilian);
             _camera.LiveChild.LookAt = civilian.transform;
             GameEvents.Unregister<Event_CharactersSpawned>(OnCharacterSpawned);
+            await Task.Yield();
+            _crosshair.gameObject.SetActive(false);
         }
 
         private void OnCrosshairMoved(Event_CrosshairMoved obj)
@@ -62,10 +70,11 @@ namespace Controllers
 
         public void InputAfterCivilianMet()
         {
-            if (!IsCivilianStage) return;
-            
+            if (!_isCivilianStage)
+                return;
+
             Time.timeScale = 1f;
-            
+
             if (_camera.LiveChild.LookAt != _player.transform)
             {
                 _camera.LiveChild.LookAt = _player.transform;
@@ -73,7 +82,7 @@ namespace Controllers
             }
 
             IsTutorialDone = true;
-            IsCivilianStage = false;
+            _isCivilianStage = false;
             GameEvents.Call(new Event_CivilianLookEnded());
         }
     }

@@ -304,6 +304,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20f63ff4368e4bf1a6f96ae09035e7fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponPair: {fileID: 0}
   _projectile: {fileID: 1375463690335951632, guid: 54fab015731c23e4aa541518dbbf9bf2, type: 3}
   _firePoint: {fileID: 4078209875795650908}
   _maxFireRange: 130
@@ -2106,7 +2107,7 @@ MonoBehaviour:
   <Path>k__BackingField: {fileID: 0}
   CurrentWeapon: {fileID: 6036384131414340356}
   Animator: {fileID: 7274944416448686916}
-  Hud: {fileID: 0}
+  Hud: {fileID: 4119684125721891961}
   HitBoxes:
   - {fileID: 7703520469054083307}
   RagdollRbs:
@@ -3622,3 +3623,14 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 644003602944458945, guid: 802ec2953b092814dbe8380227248496, type: 3}
   m_PrefabInstance: {fileID: 4582479533354053453}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &4119684125721891961 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 483066284396313396, guid: 802ec2953b092814dbe8380227248496, type: 3}
+  m_PrefabInstance: {fileID: 4582479533354053453}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b941e1ddbb7448ec9e32cf5c361b05a8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

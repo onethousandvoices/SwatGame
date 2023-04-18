@@ -133,7 +133,7 @@ namespace SWAT
             foreach (Collider col in RagdollColliders)
                 col.isTrigger = state;
             foreach (HitBox box in HitBoxes)
-                box.Collider.isTrigger = !state;
+                box.Collider.enabled = state;
         }
         
         protected virtual void Dead(Vector3 hitPosition)

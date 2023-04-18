@@ -20,13 +20,13 @@ namespace SWAT
         private Camera _camera;
         private TutorialController _tutorialController;
         private RectTransform _rect;
-        
+
         private Vector3 _startDragMouse;
         private Vector3 _endDragMouse;
         private Vector3 _startDragPos;
         private Vector3 _endDragPos;
         private Vector3 _delta;
-        
+
         private int _obstacleLayer;
 
         protected override void OnEnabled()
@@ -36,25 +36,18 @@ namespace SWAT
             _obstacleLayer = LayerMask.GetMask("Obstacle");
 
             _rect = Get<RectTransform>();
-            
+
             GameEvents.Register<Event_PlayerChangedPosition>(_ => Enable());
             GameEvents.Register<Event_PlayerRunStarted>(_ => Disable());
             GameEvents.Register<Event_CivilianLookEnded>(_ => Enable());
-            
+
             ReloadReady();
         }
 
         protected override void Run()
         {
-            if (!_tutorialController.IsInputAllowed) return;
-
-            if (_tutorialController.IsCivilianStage)
-            {
-                gameObject.SetActive(false);
+            if (!_tutorialController.IsInputAllowed)
                 return;
-            }
-            if (!gameObject.activeSelf)
-                gameObject.SetActive(true);
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -64,8 +57,9 @@ namespace SWAT
 
             if (Input.GetMouseButton(0))
             {
-                if (_startDragPos == Vector3.zero) return;
-                
+                if (_startDragPos == Vector3.zero)
+                    return;
+
                 _endDragMouse = Input.mousePosition;
                 _delta = _endDragMouse - _startDragMouse;
 
@@ -73,7 +67,7 @@ namespace SWAT
                     return;
 
                 GameEvents.Call(new Event_CrosshairMoved());
-                
+
                 _endDragPos = new Vector3(
                     _startDragPos.x + _delta.x,
                     _startDragPos.y + _delta.y);
@@ -81,7 +75,7 @@ namespace SWAT
                 transform.position = Vector3.Lerp(transform.position, _endDragPos, Time.deltaTime * _speed);
 
                 Vector3 clampPoint = _camera.ScreenToViewportPoint(transform.position);
-                
+
                 clampPoint.x = Mathf.Clamp(clampPoint.x, _imageWidth, 1 - _imageWidth);
                 clampPoint.y = Mathf.Clamp(clampPoint.y, _imageHeight, 1 - _imageHeight);
 
@@ -106,7 +100,7 @@ namespace SWAT
         {
             if (!gameObject.activeSelf)
                 gameObject.SetActive(true);
-            
+
             _barHolder.transform.position = _crosshairImage.transform.position;
 
             _barHolder.gameObject.SetActive(true);

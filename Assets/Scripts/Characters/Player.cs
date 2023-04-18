@@ -4,6 +4,7 @@ using SWAT.Behaviour;
 using SWAT.Events;
 using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Animations;
 
@@ -75,8 +76,9 @@ namespace SWAT
             _crosshair.SetCrosshairProgression(@event.ClipSizeNormalized);
         }
 
-        private void OnStageEnemiesDeath(Event_StageEnemiesDead obj)
+        private async void OnStageEnemiesDeath(Event_StageEnemiesDead obj)
         {
+            await Task.Delay(1000);
             StateEngine.SwitchState<PlayerRunState>();
         }
 

@@ -2,6 +2,7 @@
 using NTC.Global.Pool;
 using SWAT.Behaviour;
 using SWAT.Events;
+using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
 using UnityEngine;
 
@@ -11,7 +12,7 @@ namespace SWAT
     {
         [SerializeField, Config(Extras.PeaceMan, "A1")] private int _maxHealth;
         [SerializeField, Config(Extras.PeaceMan, "A2")] private int _maxArmour;
-        [Config(Extras.PeaceMan, "A3")] private int _speed;
+        [SerializeField, Config(Extras.PeaceMan, "A3")] private int _speed;
 
         private Camera _camera;
         
@@ -49,6 +50,11 @@ namespace SWAT
             StateEngine.SwitchState<PeaceManRunState>();
         }
 
+        public void SetPositions(Path path)
+        {
+            Path = path;
+        }
+
         protected override void Dead(Vector3 hitPosition)
         {
             base.Dead(hitPosition);
@@ -63,10 +69,7 @@ namespace SWAT
             Hud.OnSpawn();
         }
 
-        public void OnDespawn()
-        {
-            Hud.transform.parent.gameObject.SetActive(false);
-        }
+        public void OnDespawn() => Hud.transform.parent.gameObject.SetActive(false);
 
 #region States
         private class PeaceManRunState : RunState

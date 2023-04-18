@@ -16,7 +16,7 @@ namespace Controllers
     {
         private List<BaseCharacter> _stageCharacters;
         private List<Enemy> _enemiesToKill;
-        private Transform _charactersHolder;
+        private readonly Transform _charactersHolder;
         private readonly Level _level;
         private int _index;
         private readonly bool _isDebug;
@@ -61,10 +61,15 @@ namespace Controllers
                 BaseCharacter character = NightPool.Spawn(path.Character, path.Path.Start.transform.position + new Vector3(0f, 0.4f, 0f));
                 character.transform.parent = _charactersHolder;
 
-                if (character is Enemy enemy)
+                switch (character)
                 {
-                    enemy.SetPositions(path.Path);
-                    _enemiesToKill.Add(enemy);
+                    case Enemy enemy:
+                        enemy.SetPositions(path.Path);
+                        _enemiesToKill.Add(enemy);
+                        break;
+                    case Civilian civ:
+                        civ.SetPositions(path.Path);
+                        break;
                 }
 
                 _stageCharacters.Add(character);
