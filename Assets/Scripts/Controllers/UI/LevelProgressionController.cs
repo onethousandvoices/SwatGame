@@ -28,6 +28,7 @@ namespace Controllers
         private static readonly int Show = Animator.StringToHash("Show");
         private static readonly int ShowLower = Animator.StringToHash("ShowLower");
         private static readonly int HideLower = Animator.StringToHash("HideLower");
+        private static readonly int Hide = Animator.StringToHash("Hide");
 
         protected override void OnEnabled()
         {
@@ -58,12 +59,19 @@ namespace Controllers
 
             _checkpoints[0].SetState(CheckpointState.Current);
 
+            GameEvents.Register<Event_GameStart>(OnGameStart);
+            GameEvents.Register<Event_GameOver>(OnGameOver);
+            
             GameEvents.Register<Event_CharactersSpawned>(ConfigureLowerBar);
             GameEvents.Register<Event_CharacterKilled>(OnCharacterKilled);
             GameEvents.Register<Event_PlayerRunStarted>(OnStageEnemiesDeath);
-
-            _animator.SetTrigger(Show);
         }
+
+        private void OnGameOver(Event_GameOver obj) 
+            => _animator.SetTrigger(Hide);
+
+        private void OnGameStart(Event_GameStart obj) 
+            => _animator.SetTrigger(Show);
 
         private void ConfigureLowerBar(Event_CharactersSpawned obj)
         {

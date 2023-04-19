@@ -7,7 +7,9 @@
 using System.Collections.Generic;
 using NTC.Global.Cache.Interfaces;
 using NTC.Global.System;
+using SWAT.Events;
 using UnityEngine;
+using NotImplementedException = System.NotImplementedException;
 
 namespace NTC.Global.Cache
 {
@@ -27,10 +29,19 @@ namespace NTC.Global.Cache
 
         private readonly MonoCacheExceptionsChecker _monoCacheExceptionsChecker = 
             new MonoCacheExceptionsChecker();
+
+        private bool _isGameStart;
         
         private void Awake()
         {
             _monoCacheExceptionsChecker.CheckForExceptions();
+            _isGameStart = false;
+            GameEvents.Register<Event_GameStart>(OnGameStart);
+        }
+
+        private void OnGameStart(Event_GameStart obj)
+        {
+            _isGameStart = true;
         }
 
         public void AddRunSystem(IRunSystem runSystem)
@@ -65,6 +76,8 @@ namespace NTC.Global.Cache
 
         private void Update()
         {
+            if (!_isGameStart) return;
+            
             for (int i = 0; i < _runSystems.Count; i++)
             {
                 _runSystems[i].OnRun();
@@ -73,6 +86,8 @@ namespace NTC.Global.Cache
 
         private void FixedUpdate()
         {
+            if (!_isGameStart) return;
+            
             for (int i = 0; i < _fixedRunSystems.Count; i++)
             {
                 _fixedRunSystems[i].OnFixedRun();
@@ -81,6 +96,8 @@ namespace NTC.Global.Cache
 
         private void LateUpdate()
         {
+            if (!_isGameStart) return;
+
             for (int i = 0; i < _lateRunSystems.Count; i++)
             {
                 _lateRunSystems[i].OnLateRun();

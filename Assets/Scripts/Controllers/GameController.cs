@@ -5,9 +5,9 @@ using SWAT.Events;
 using SWAT.LevelScripts;
 using SWAT.Utility;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEditor;
 using UnityEngine;
 
 namespace Controllers
@@ -35,14 +35,11 @@ namespace Controllers
         {
             Application.targetFrameRate = 60;
             ConfigureObjects();
+            GameEvents.Register<Event_GameStart>(OnGameStart);
         }
 
-        private IEnumerator Start()
-        {
-            while (_tutorialController.IsTutorialDriven)
-                yield return null;
-            _levelController.Init();
-        }
+        private static void OnGameStart(Event_GameStart obj) 
+            => Time.timeScale = 1f;
 
         protected override void OnDisabled()
         {
@@ -61,6 +58,8 @@ namespace Controllers
             _enemySniperCfg.Clear();
             _enemySniperRifleCfg.Clear();
             _peaceManCfg.Clear();
+            _bossCfg.Clear();
+            _bossWeaponCfg.Clear();
 
             for (int i = 0; i < config.Count; i++)
             {
@@ -128,7 +127,8 @@ namespace Controllers
                     ObjectHolder.AddObject(obj);
                 if (obj.gameObject.GetComponent<Player>() != null)
                     ObjectHolder.AddObject(obj);
-                if (obj.gameObject.GetComponent<TutorialController>() == null) continue;
+                if (obj.gameObject.GetComponent<TutorialController>() == null)
+                    continue;
                 ObjectHolder.AddObject(obj);
                 _tutorialController = (TutorialController)obj;
             }
@@ -138,16 +138,13 @@ namespace Controllers
         {
             ParseConfig();
 
-            MonoCache[] prefabs = Resources.LoadAll<MonoCache>($"Prefabs");
             MonoCache[] sceneObjects = FindObjectsOfType<MonoCache>();
-
-            foreach (MonoCache prefab in prefabs)
-                ConfigObject(prefab);
+            
             foreach (MonoCache sceneObject in sceneObjects)
                 ConfigObject(sceneObject);
         }
 
-        private void ConfigObject(MonoCache obj)
+        public void ConfigObject(MonoCache obj)
         {
             FieldInfo[] fields = obj.GetType().GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 
@@ -203,7 +200,7 @@ namespace Controllers
 
         [Button("Enable Tutorial")]
         private void EnableTutorial() => IsTutorial = true;
-        
+
         [Button("Disable Tutorial")]
         private void DisableTutorial() => IsTutorial = false;
 

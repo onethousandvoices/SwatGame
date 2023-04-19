@@ -1,4 +1,5 @@
-﻿using Controllers;
+﻿using Cinemachine;
+using Controllers;
 using NaughtyAttributes;
 using SWAT.Behaviour;
 using SWAT.Events;
@@ -28,9 +29,12 @@ namespace SWAT
         private static readonly int _isSit = Animator.StringToHash("IsSit");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
         private static readonly int _firingTrigger = Animator.StringToHash("Firing");
+        private static readonly int _gameOver = Animator.StringToHash("GameOver");
 
         private Crosshair _crosshair;
         private TutorialController _tutorialController;
+        private static readonly int GameStart = Animator.StringToHash("GameStart");
+        private bool _isGameOver;
 
         public override CharacterType Type => CharacterType.Player;
 
@@ -62,11 +66,11 @@ namespace SWAT
                 new ReloadingState(this),
                 new IdleState(this),
                 new PlayerRunState(this));
-
-            StateEngine.SwitchState<IdleState>();
-
+            
             GameEvents.Register<Event_StageEnemiesDead>(OnStageEnemiesDeath);
             GameEvents.Register<Event_WeaponFire>(OnWeaponFire);
+            GameEvents.Register<Event_GameOver>(OnGameOver);
+            GameEvents.Register<Event_GameStart>(OnGameStart);
         }
 
         private void OnWeaponFire(Event_WeaponFire @event)
@@ -104,15 +108,28 @@ namespace SWAT
             CurrentWeapon.SetFireState(true);
             _rotationConstraint.constraintActive = true;
         }
-
+        
         protected override void Dead(Vector3 hitPosition) 
             => GameEvents.Call(new Event_GameOver("Player is dead", false));
+        
+        private void OnGameOver(Event_GameOver obj)
+        {
+            _isGameOver = true;
+            Animator.SetTrigger(_gameOver);
+            Hud.gameObject.SetActive(false);
+        }
+        
+        private void OnGameStart(Event_GameStart obj)
+        {
+            _isGameOver = false;
+            StateEngine.SwitchState<IdleState>();
+            Animator.SetTrigger(GameStart);
+            CurrentWeapon.Reload();
+        }
 
         [Button("Run")]
-        private void SetStateRun()
-        {
-            StateEngine.SwitchState<PlayerRunState>();
-        }
+        private void SetStateRun() 
+            => StateEngine.SwitchState<PlayerRunState>();
 
 #region States
         private class PlayerRunState : RunState
@@ -268,12 +285,11 @@ namespace SWAT
 
             public void Run()
             {
-                if (Input.GetMouseButtonDown(0) && _player._tutorialController.IsInputAllowed)
-                {
-                    _player.StateEngine.SwitchState<PlayerFiringState>();
-                    if (!_player._tutorialController.IsTutorialDone)
-                        _player._tutorialController.InputAfterCivilianMet();
-                }
+                if (!Input.GetMouseButtonDown(0) || !_player._tutorialController.IsInputAllowed || _player._isGameOver)
+                    return;
+                _player.StateEngine.SwitchState<PlayerFiringState>();
+                if (!_player._tutorialController.IsTutorialDone)
+                    _player._tutorialController.InputAfterCivilianMet();
             }
 
             public void Exit() { }

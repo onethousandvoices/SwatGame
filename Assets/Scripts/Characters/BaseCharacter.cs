@@ -1,4 +1,5 @@
-﻿using NaughtyAttributes;
+﻿using Controllers;
+using NaughtyAttributes;
 using NTC.Global.Cache;
 using NTC.Global.Pool;
 using SWAT.Behaviour;
@@ -47,8 +48,7 @@ namespace SWAT
         protected bool IsVulnerable;
         protected int CurrentHealth;
         protected int CurrentArmour;
-
-
+        
         public Transform Transform { get; private set; }
         public Rigidbody Rb { get; private set; }
         
@@ -155,11 +155,13 @@ namespace SWAT
         }
 
         [Button("Kill")]
-        private void Kill()
-        {
-            Dead(transform.position);
-        }
-        
+        private void Kill() 
+            => Dead(transform.position);
+
+        [Button("Update Params")]
+        private void UpdateStats() 
+            => FindObjectOfType<GameController>().ConfigObject(this);
+
         private IEnumerator DeathRoutine()
         {
             yield return new WaitForSeconds(3f);

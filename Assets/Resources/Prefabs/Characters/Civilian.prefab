@@ -95,6 +95,7 @@ MonoBehaviour:
   - {fileID: 8317572963909970336}
   _maxHealth: 100
   _maxArmour: 0
+  _speed: 8
 --- !u!1001 &6596257807893233714
 PrefabInstance:
   m_ObjectHideFlags: 0

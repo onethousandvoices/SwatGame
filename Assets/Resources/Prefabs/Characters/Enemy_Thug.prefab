@@ -377,6 +377,7 @@ GameObject:
   - component: {fileID: 7160034945081212638}
   - component: {fileID: 7160034945081212639}
   - component: {fileID: 7160034945081212636}
+  - component: {fileID: 2093958544229632497}
   m_Layer: 6
   m_Name: right.arm3
   m_TagString: Untagged
@@ -476,6 +477,20 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &2093958544229632497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7160034943674639147}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6d3bc80ab4d4cb9800c402e1a800bdd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  <Character>k__BackingField: {fileID: 7160034944249544364}
+  <Collider>k__BackingField: {fileID: 7160034945081212639}
 --- !u!1 &7160034943674639150
 GameObject:
   m_ObjectHideFlags: 0
@@ -2027,6 +2042,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 20f63ff4368e4bf1a6f96ae09035e7fa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _weaponPair: {fileID: 0}
   _projectile: {fileID: 1375463690335951632, guid: 54fab015731c23e4aa541518dbbf9bf2, type: 3}
   _firePoint: {fileID: 7160034945095976622}
   _maxFireRange: 100

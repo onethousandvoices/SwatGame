@@ -20,7 +20,6 @@ namespace Controllers
 
         private Player _player;
         private Crosshair _crosshair;
-        public bool IsTutorialDriven { get; private set; }
         public bool IsInputAllowed { get; private set; }
         public bool IsTutorialDone { get; private set; }
         private bool _isCivilianStage;
@@ -29,16 +28,26 @@ namespace Controllers
         {
             _player = ObjectHolder.GetObject<Player>();
             _crosshair = ObjectHolder.GetObject<Crosshair>();
+            
+            //debug
             if (!ObjectHolder.GetObject<GameController>().IsTutorial)
+            {
+                IsInputAllowed = true;
                 return;
+            }
 
+            GameEvents.Register<Event_GameStart>(OnGameStart);
             GameEvents.Register<Event_CrosshairMoved>(OnCrosshairMoved);
             GameEvents.Register<Event_CharactersSpawned>(OnCharacterSpawned);
 
-            IsTutorialDriven = true;
             IsInputAllowed = false;
             IsTutorialDone = false;
             _isCivilianStage = false;
+        }
+
+        private void OnGameStart(Event_GameStart obj)
+        {
+            if (IsTutorialDone) return;
             _animator.SetTrigger(MeetFiring);
         }
 
@@ -60,9 +69,7 @@ namespace Controllers
 
         private void OnCrosshairMoved(Event_CrosshairMoved obj)
         {
-            IsTutorialDriven = false;
             _animator.SetTrigger(StopMeetFiring);
-
             GameEvents.Unregister<Event_CrosshairMoved>(OnCrosshairMoved);
         }
 

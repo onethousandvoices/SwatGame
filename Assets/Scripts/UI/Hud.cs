@@ -176,7 +176,11 @@ namespace SWAT
                 image.color = target;
         }
 
-        public void PlayerCarry() => _playerIsCarrier = true;
+        public void PlayerCarry()
+        {
+            gameObject.SetActive(true);
+            _playerIsCarrier = true;
+        }
 
         public void OnSpawn()
         {

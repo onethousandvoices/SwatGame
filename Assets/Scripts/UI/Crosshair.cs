@@ -39,6 +39,8 @@ namespace SWAT
 
             GameEvents.Register<Event_PlayerChangedPosition>(_ => Enable());
             GameEvents.Register<Event_PlayerRunStarted>(_ => Disable());
+            GameEvents.Register<Event_GameStart>(_ => Enable());
+            GameEvents.Register<Event_GameOver>(_ => Disable());
             GameEvents.Register<Event_CivilianLookEnded>(_ => Enable());
 
             ReloadReady();

@@ -33,7 +33,7 @@ namespace SWAT.Events
         {
             if (!_events.ContainsKey(typeof(T)))
                 return;
-            
+
             List<Delegate> callbacks = _events[typeof(T)];
             for (int i = 0; i < callbacks.Count; i++)
                 if (callbacks[i] is Action<T> callback)
@@ -45,11 +45,11 @@ namespace SWAT.Events
 
 #region Events
     public class Event_CivilianLookEnded { }
-    
+
     public class Event_CrosshairMoved { }
 
     public class Event_BossOnSecondaryWeaponShot { }
-    
+
     public class Event_CharactersSpawned
     {
         public BaseCharacter[] Characters { get; }
@@ -73,13 +73,15 @@ namespace SWAT.Events
     public class Event_PlayerChangedPosition { }
 
     public class Event_PlayerRunStarted { }
-    
+
     public class Event_CharacterKilled
     {
         public BaseCharacter Character { get; }
         public Event_CharacterKilled(BaseCharacter character) => Character = character;
     }
-    
+
+    public class Event_GameStart { }
+
     public class Event_GameOver
     {
         public string Reason { get; }

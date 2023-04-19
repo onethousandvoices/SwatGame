@@ -18,6 +18,7 @@ namespace Controllers
         private List<Enemy> _enemiesToKill;
         private readonly Transform _charactersHolder;
         private readonly Level _level;
+        private Player _player;
         private int _index;
         private readonly bool _isDebug;
 
@@ -28,23 +29,43 @@ namespace Controllers
             _level = level;
             _charactersHolder = charactersHolder;
             _isDebug = isDebug;
-        }
 
-        public void Init()
-        {
-            _index = 0;
-
-            SpawnStageEnemies();
-
+            GameEvents.Register<Event_GameStart>(OnGameStart);
+            GameEvents.Register<Event_GameOver>(OnGameOver);
             GameEvents.Register<Event_CharacterKilled>(OnEnemyKilled);
             GameEvents.Register<Event_PlayerChangedPosition>(OnPlayerMoved);
         }
 
+        private void OnGameOver(Event_GameOver obj) { }
+
+        private void OnGameStart(Event_GameStart obj)
+        {
+            _player ??= ObjectHolder.GetObject<Player>();
+            _index = 0;
+            SpawnStageEnemies();
+            SpawnPlayer();
+        }
+
+        private void SpawnPlayer()
+        {
+            _player.transform.position = _player.Path.Start.transform.position + new Vector3(0f, 0.5f, 0f);
+            _player.transform.rotation = _player.Path.Start.transform.rotation;
+        }
+
         private void SpawnStageEnemies()
         {
-            _stageCharacters ??= new List<BaseCharacter>();
+            if (_stageCharacters != null)
+            {
+                foreach (BaseCharacter character in _stageCharacters)
+                    NightPool.Despawn(character);
+                _stageCharacters.Clear();
+            }
+            else
+            {
+                _stageCharacters = new List<BaseCharacter>();
+            }
+
             _enemiesToKill ??= new List<Enemy>();
-            _stageCharacters.Clear();
             _enemiesToKill.Clear();
 
             if (_index >= _level.Stages.Count)
@@ -89,7 +110,7 @@ namespace Controllers
                 return;
             if (!_enemiesToKill.Contains(enemy))
                 return;
-            
+
             _enemiesToKill.Remove(enemy);
 
             if (_enemiesToKill.Count > 0)
