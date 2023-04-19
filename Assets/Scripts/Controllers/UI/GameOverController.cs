@@ -48,7 +48,7 @@ namespace Controllers
                 yield return null;
             }
             
-            _gameOverText.text = obj.Reason + "...";
+            _gameOverText.text = obj.Reason.ToUpper();
             switch (obj.IsGoodEnd)
             {
                 case true:

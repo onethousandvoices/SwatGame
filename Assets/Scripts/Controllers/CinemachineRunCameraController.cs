@@ -31,7 +31,14 @@ namespace Controllers
 
             _dolly = _camera.GetCinemachineComponent<CinemachineTrackedDolly>();
             _dolly.m_PathPosition = 0f;
+            
+            GameEvents.Register<Event_GameStart>(OnStart);
             GameEvents.Register<Event_PlayerRunStarted>(OnPlayerRun);
+        }
+
+        private void OnStart(Event_GameStart obj)
+        {
+            _dolly.m_PathPosition = 0f;
         }
 
         private void OnPlayerRun(Event_PlayerRunStarted obj)

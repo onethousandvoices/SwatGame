@@ -69,8 +69,6 @@ namespace SWAT
             
             GameEvents.Register<Event_StageEnemiesDead>(OnStageEnemiesDeath);
             GameEvents.Register<Event_WeaponFire>(OnWeaponFire);
-            GameEvents.Register<Event_GameOver>(OnGameOver);
-            GameEvents.Register<Event_GameStart>(OnGameStart);
         }
 
         private void OnWeaponFire(Event_WeaponFire @event)
@@ -110,18 +108,19 @@ namespace SWAT
         }
         
         protected override void Dead(Vector3 hitPosition) 
-            => GameEvents.Call(new Event_GameOver("Player is dead", false));
+            => GameEvents.Call(new Event_GameOver("Dead", false));
         
-        private void OnGameOver(Event_GameOver obj)
+        protected override void OnGameOver(Event_GameOver obj)
         {
             _isGameOver = true;
-            Animator.SetTrigger(_gameOver);
             Hud.gameObject.SetActive(false);
+            Animator.SetTrigger(_gameOver);
         }
         
-        private void OnGameStart(Event_GameStart obj)
+        protected override void OnGameStart(Event_GameStart obj)
         {
             _isGameOver = false;
+            Hud.gameObject.SetActive(true);
             StateEngine.SwitchState<IdleState>();
             Animator.SetTrigger(GameStart);
             CurrentWeapon.Reload();

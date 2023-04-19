@@ -42,33 +42,41 @@ namespace SWAT
         [SerializeField] protected HitBox[] HitBoxes;
         [SerializeField] protected Rigidbody[] RagdollRbs;
         [SerializeField] protected Collider[] RagdollColliders;
-        
+
         protected StateEngine StateEngine;
-        
+
         protected bool IsVulnerable;
         protected int CurrentHealth;
         protected int CurrentArmour;
-        
+
         public Transform Transform { get; private set; }
         public Rigidbody Rb { get; private set; }
-        
+
         public abstract CharacterType Type { get; }
-        
+
         public int Speed { get; protected set; }
-        
+
         protected abstract int BaseMaxArmour { get; }
         protected abstract int BaseMaxHealth { get; }
 
         protected Action OnDamageTaken;
 
         private bool IsPeaceMan => Type == CharacterType.PeaceMan;
-        
+
         protected override void OnEnabled()
         {
             Rb = Get<Rigidbody>();
             StateEngine = new StateEngine();
             Transform = transform;
+
+            GameEvents.Register<Event_GameOver>(OnGameOver);
+            GameEvents.Register<Event_GameStart>(OnGameStart);
         }
+
+        protected virtual void OnGameOver(Event_GameOver obj) { }
+
+        protected virtual void OnGameStart(Event_GameStart obj) 
+            => CurrentWeapon.Reload();
 
         protected override void Run() => StateEngine.CurrentState?.Run();
 
@@ -78,7 +86,7 @@ namespace SWAT
                 return;
 
             OnDamageTaken?.Invoke();
-            
+
             if (CurrentArmour > 0)
             {
                 float armourBeforeHit = (float)CurrentArmour / BaseMaxArmour;
@@ -120,14 +128,14 @@ namespace SWAT
                 return;
             Hud.DamageHealth(damage);
         }
-        
+
         protected void SetPhysicsState(bool state)
         {
             Rb.isKinematic = !state;
-            
+
             if (Animator != null)
                 Animator.enabled = state;
-            
+
             foreach (Rigidbody rb in RagdollRbs)
                 rb.isKinematic = state;
             foreach (Collider col in RagdollColliders)
@@ -135,7 +143,7 @@ namespace SWAT
             foreach (HitBox box in HitBoxes)
                 box.Collider.enabled = state;
         }
-        
+
         protected virtual void Dead(Vector3 hitPosition)
         {
             GameEvents.Call(new Event_CharacterKilled(this));
@@ -146,20 +154,20 @@ namespace SWAT
 
             Collider[] colliders = new Collider[5];
             Physics.OverlapSphereNonAlloc(hitPosition, 3f, colliders);
-            
+
             foreach (Collider col in colliders)
                 if (col != null && col.attachedRigidbody != null)
                     col.attachedRigidbody.AddExplosionForce(2888f, hitPosition, 3f);
-            
+
             StartCoroutine(DeathRoutine());
         }
 
         [Button("Kill")]
-        private void Kill() 
+        private void Kill()
             => Dead(transform.position);
 
         [Button("Update Params")]
-        private void UpdateStats() 
+        private void UpdateStats()
             => FindObjectOfType<GameController>().ConfigObject(this);
 
         private IEnumerator DeathRoutine()

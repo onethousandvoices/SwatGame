@@ -19,7 +19,7 @@ namespace SWAT.LevelScripts.Navigation
         }
 
         [SerializeField, HideInInspector] private PathPoint[] _pathPoints;
-        
+
         private int _index;
         private int _mod = 1;
         private bool _isRecursive;
@@ -52,10 +52,11 @@ namespace SWAT.LevelScripts.Navigation
             return _pathPoints[_index];
         }
 
+        public void ResetPath()
+            => _index = 0;
+
         private void OnValidate()
-        {
-            _pathPoints = GetComponentsInChildren<PathPoint>();
-        }
+            => _pathPoints = GetComponentsInChildren<PathPoint>();
 
         [ShowIf("_isRecursiveAble"), Button("Set Path Recursive")]
         private void SetRecursive()
@@ -70,7 +71,8 @@ namespace SWAT.LevelScripts.Navigation
         {
             _isRecursive = false;
 
-            if (_wasRecursive == false) return;
+            if (_wasRecursive == false)
+                return;
             _wasRecursive = false;
 
             _pathPoints.Last().transform.position = _pathPoints.First().transform.position + new Vector3(0f, 0f, 2f);
@@ -99,9 +101,9 @@ namespace SWAT.LevelScripts.Navigation
 
             Color current = Color.white;
             current.a = 0.5f;
-            
+
             current = Selection.activeGameObject == gameObject ? Color.magenta : Color.cyan;
-            
+
             if (Start != null)
             {
                 Gizmos.color = current;
@@ -111,7 +113,8 @@ namespace SWAT.LevelScripts.Navigation
             for (int i = 1; i < _pathPoints.Length; i++)
             {
                 PathPoint point = _pathPoints[i];
-                if (point == null) continue;
+                if (point == null)
+                    continue;
                 switch (point.name)
                 {
                     case "Start":
