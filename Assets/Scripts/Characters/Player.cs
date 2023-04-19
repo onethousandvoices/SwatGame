@@ -105,7 +105,8 @@ namespace SWAT
             _rotationConstraint.constraintActive = true;
         }
 
-        protected override void Dead(Vector3 hitPosition) => GameEvents.Call(new Event_PlayerKilled(this));
+        protected override void Dead(Vector3 hitPosition) 
+            => GameEvents.Call(new Event_GameOver("Player is dead", false));
 
         [Button("Run")]
         private void SetStateRun()

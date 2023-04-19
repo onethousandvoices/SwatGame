@@ -137,6 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4900336189426325536}
   - component: {fileID: 4900336189426325543}
+  - component: {fileID: 3160578394570276909}
   m_Layer: 0
   m_Name: RunCamera
   m_TagString: Untagged
@@ -151,8 +152,8 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4900336189426325537}
-  m_LocalRotation: {x: 0.1875718, y: 0.75958955, z: -0.2497418, w: 0.5704995}
-  m_LocalPosition: {x: -66.18961, y: 3.7767117, z: 1.4276314}
+  m_LocalRotation: {x: 0.0761854, y: 0.7981838, z: -0.10331672, w: 0.5885781}
+  m_LocalPosition: {x: -65.88214, y: 3.8870344, z: 1.7702168}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -181,7 +182,7 @@ MonoBehaviour:
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:
-    FieldOfView: 60
+    FieldOfView: 40
     OrthographicSize: 10
     NearClipPlane: 0.1
     FarClipPlane: 5000
@@ -198,6 +199,24 @@ MonoBehaviour:
         m_Calls: []
   m_LegacyBlendHint: 0
   m_ComponentOwner: {fileID: 4900336190764649047}
+--- !u!114 &3160578394570276909
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4900336189426325537}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6a9b92b27cd1478b847b71cac85993c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _camera: {fileID: 4900336189426325543}
+  _speed0to1: 0.69
+  _speed1to2: 1.69
+  _speed2to3: 1.71
+  _speed3to4: 1.57
+  _speed4to5: 2.28
 --- !u!1 &4900336189642384110
 GameObject:
   m_ObjectHideFlags: 0
@@ -517,7 +536,7 @@ MonoBehaviour:
   m_XDamping: 1
   m_YDamping: 1
   m_ZDamping: 1
-  m_TargetMovementOnly: 1
+  m_TargetMovementOnly: 0
   m_ScreenX: 0.5
   m_ScreenY: 0.5
   m_CameraDistance: 10
@@ -567,7 +586,7 @@ MonoBehaviour:
   m_SoftZoneHeight: 0.8
   m_BiasX: 0
   m_BiasY: 0
-  m_CenterOnActivate: 1
+  m_CenterOnActivate: 0
 --- !u!1 &4900336189908895210
 GameObject:
   m_ObjectHideFlags: 0
@@ -981,19 +1000,19 @@ MonoBehaviour:
   m_Path: {fileID: 8967717445616932023}
   m_PathPosition: 0
   m_PositionUnits: 0
-  m_PathOffset: {x: 0, y: 0, z: 0}
-  m_XDamping: 0
-  m_YDamping: 0
-  m_ZDamping: 1
+  m_PathOffset: {x: -0.99, y: 1, z: -1.2}
+  m_XDamping: 3.9
+  m_YDamping: 3.8
+  m_ZDamping: 3.4
   m_CameraUp: 0
   m_PitchDamping: 0
   m_YawDamping: 0
   m_RollDamping: 0
   m_AutoDolly:
-    m_Enabled: 1
+    m_Enabled: 0
     m_PositionOffset: 0
-    m_SearchRadius: 2
-    m_SearchResolution: 5
+    m_SearchRadius: 12
+    m_SearchResolution: 26
 --- !u!1 &4900336190793108353
 GameObject:
   m_ObjectHideFlags: 3

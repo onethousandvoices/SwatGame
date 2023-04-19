@@ -49,9 +49,7 @@ namespace SWAT.Events
     public class Event_CrosshairMoved { }
 
     public class Event_BossOnSecondaryWeaponShot { }
-
-    public class Event_CivilianDead { }
-
+    
     public class Event_CharactersSpawned
     {
         public BaseCharacter[] Characters { get; }
@@ -75,19 +73,23 @@ namespace SWAT.Events
     public class Event_PlayerChangedPosition { }
 
     public class Event_PlayerRunStarted { }
-
-    public class Event_LevelCompleted { }
-
+    
     public class Event_CharacterKilled
     {
         public BaseCharacter Character { get; }
         public Event_CharacterKilled(BaseCharacter character) => Character = character;
     }
-
-    public class Event_PlayerKilled
+    
+    public class Event_GameOver
     {
-        public Player Player { get; }
-        public Event_PlayerKilled(Player player) => Player = player;
+        public string Reason { get; }
+        public bool IsGoodEnd { get; }
+
+        public Event_GameOver(string reason, bool isGoodEnd)
+        {
+            Reason = reason;
+            IsGoodEnd = isGoodEnd;
+        }
     }
 #endregion
 }

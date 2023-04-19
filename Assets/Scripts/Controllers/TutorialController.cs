@@ -29,7 +29,7 @@ namespace Controllers
         {
             _player = ObjectHolder.GetObject<Player>();
             _crosshair = ObjectHolder.GetObject<Crosshair>();
-            if (ObjectHolder.GetObject<GameController>().IsDebug)
+            if (!ObjectHolder.GetObject<GameController>().IsTutorial)
                 return;
 
             GameEvents.Register<Event_CrosshairMoved>(OnCrosshairMoved);

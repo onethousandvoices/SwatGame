@@ -37,7 +37,6 @@ namespace Controllers
             SpawnStageEnemies();
 
             GameEvents.Register<Event_CharacterKilled>(OnEnemyKilled);
-            GameEvents.Register<Event_PlayerKilled>(OnPlayerKilled);
             GameEvents.Register<Event_PlayerChangedPosition>(OnPlayerMoved);
         }
 
@@ -50,7 +49,7 @@ namespace Controllers
 
             if (_index >= _level.Stages.Count)
             {
-                GameEvents.Call(new Event_LevelCompleted());
+                GameEvents.Call(new Event_GameOver("Level completed", true));
                 return;
             }
 
@@ -82,11 +81,6 @@ namespace Controllers
         {
             _index++;
             SpawnStageEnemies();
-        }
-
-        private void OnPlayerKilled(Event_PlayerKilled obj)
-        {
-            Debug.LogError("player is dead...");
         }
 
         private void OnEnemyKilled(Event_CharacterKilled killed)

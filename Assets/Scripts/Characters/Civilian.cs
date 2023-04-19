@@ -58,7 +58,7 @@ namespace SWAT
         protected override void Dead(Vector3 hitPosition)
         {
             base.Dead(hitPosition);
-            GameEvents.Call(new Event_CivilianDead());
+            GameEvents.Call(new Event_GameOver("Civilian is dead", false));
         }
         
         protected override void LateRun() => Hud.transform.parent.transform.LookAt(_camera.transform);
