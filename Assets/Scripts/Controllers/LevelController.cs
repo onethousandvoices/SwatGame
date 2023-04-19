@@ -48,7 +48,7 @@ namespace Controllers
 
         private void SpawnPlayer()
         {
-            _player.transform.position = _player.Path.Start.transform.position + new Vector3(0f, 0.5f, 0f);
+            _player.transform.position = _player.Path.Start.transform.position + new Vector3(0f, 0.6f, 0f);
             _player.transform.rotation = _player.Path.Start.transform.rotation;
         }
 
