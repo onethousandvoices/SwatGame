@@ -11,7 +11,7 @@ namespace Controllers
     public class TutorialController : MonoCache
     {
         [SerializeField] private Animator _animator;
-        [SerializeField] private CinemachineStateDrivenCamera _camera;
+        [SerializeField] private CinemachineVirtualCamera _runCamera;
 
         private static readonly int MeetFiring = Animator.StringToHash("MeetFiring");
         private static readonly int StopMeetFiring = Animator.StringToHash("StopMeetFiring");
@@ -20,15 +20,17 @@ namespace Controllers
 
         private Player _player;
         private Crosshair _crosshair;
+        private CinemachineComposer _composer;
+        private Vector3 _baseOffset;
+        public bool IsCivilianStage { get; private set; }
         public bool IsInputAllowed { get; private set; }
         public bool IsTutorialDone { get; private set; }
-        private bool _isCivilianStage;
 
         protected override void OnEnabled()
         {
             _player = ObjectHolder.GetObject<Player>();
             _crosshair = ObjectHolder.GetObject<Crosshair>();
-            
+
             //debug
             if (!ObjectHolder.GetObject<GameController>().IsTutorial)
             {
@@ -40,14 +42,17 @@ namespace Controllers
             GameEvents.Register<Event_CrosshairMoved>(OnCrosshairMoved);
             GameEvents.Register<Event_CharactersSpawned>(OnCharacterSpawned);
 
+            _composer = _runCamera.GetCinemachineComponent<CinemachineComposer>();
+            _baseOffset = _composer.m_TrackedObjectOffset;
+            IsCivilianStage = false;
             IsInputAllowed = false;
             IsTutorialDone = false;
-            _isCivilianStage = false;
         }
 
         private void OnGameStart(Event_GameStart obj)
         {
-            if (IsTutorialDone) return;
+            if (IsTutorialDone)
+                return;
             _animator.SetTrigger(MeetFiring);
         }
 
@@ -58,10 +63,17 @@ namespace Controllers
                 return;
 
             Time.timeScale = 0f;
-            _isCivilianStage = true;
+            IsCivilianStage = true;
             IsInputAllowed = false;
             _animator.SetTrigger(MeetCivilian);
-            _camera.LiveChild.LookAt = civilian.transform;
+
+            _runCamera.LookAt = civilian.transform;
+            _runCamera.Follow = civilian.transform;
+            
+            _composer.m_TrackedObjectOffset = new Vector3(_baseOffset.x, _baseOffset.y, 0);
+
+            _runCamera.m_Lens.FieldOfView = 20;
+
             GameEvents.Unregister<Event_CharactersSpawned>(OnCharacterSpawned);
             await Task.Yield();
             _crosshair.gameObject.SetActive(false);
@@ -73,23 +85,24 @@ namespace Controllers
             GameEvents.Unregister<Event_CrosshairMoved>(OnCrosshairMoved);
         }
 
-        public void UnityEvent_AllowInput() => IsInputAllowed = true;
+        public void UnityEvent_AllowInput()
+            => IsInputAllowed = true;
 
         public void InputAfterCivilianMet()
         {
-            if (!_isCivilianStage)
-                return;
-
             Time.timeScale = 1f;
+            _runCamera.m_Lens.FieldOfView = 40;
+            _composer.m_TrackedObjectOffset = _baseOffset;
 
-            if (_camera.LiveChild.LookAt != _player.transform)
+            if (_runCamera.LookAt != _player.transform)
             {
-                _camera.LiveChild.LookAt = _player.transform;
+                _runCamera.LookAt = _player.transform;
+                _runCamera.Follow = _player.transform;
                 _animator.SetTrigger(StopMeetCivilian);
             }
 
             IsTutorialDone = true;
-            _isCivilianStage = false;
+            IsCivilianStage = false;
             GameEvents.Call(new Event_CivilianLookEnded());
         }
     }

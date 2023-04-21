@@ -34,6 +34,14 @@ namespace Controllers
             GameEvents.Register<Event_GameOver>(OnGameOver);
             GameEvents.Register<Event_CharacterKilled>(OnEnemyKilled);
             GameEvents.Register<Event_PlayerChangedPosition>(OnPlayerMoved);
+            
+            GameEvents.Register<Event_TEST_BossSpawn>(OnBossSpawn);
+        }
+
+        private void OnBossSpawn(Event_TEST_BossSpawn obj)
+        {
+            Boss boss = NightPool.Spawn(obj.Boss, obj.BossPath.Start.transform.position + new Vector3(0f, 0.4f, 0f));
+            boss.SetPositions(obj.BossPath);
         }
 
         private void OnGameOver(Event_GameOver obj) { }
@@ -61,9 +69,7 @@ namespace Controllers
                 _stageCharacters.Clear();
             }
             else
-            {
                 _stageCharacters = new List<BaseCharacter>();
-            }
 
             _enemiesToKill ??= new List<Enemy>();
             _enemiesToKill.Clear();

@@ -37,9 +37,7 @@ namespace Controllers
         }
 
         private void OnStart(Event_GameStart obj)
-        {
-            _dolly.m_PathPosition = 0f;
-        }
+            => _dolly.m_PathPosition = 0f;
 
         private void OnPlayerRun(Event_PlayerRunStarted obj)
             => StartCoroutine(LerpToNextPoint());

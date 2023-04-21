@@ -17,9 +17,7 @@ namespace Controllers
         }
 
         private void OnGameOver(Event_GameOver obj)
-        {
-            _deathCamera.Priority = 666;
-        }
+            => _deathCamera.Priority = 666;
 
         private void OnGameStart(Event_GameStart obj)
         {

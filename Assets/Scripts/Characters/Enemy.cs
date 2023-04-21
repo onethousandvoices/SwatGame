@@ -17,14 +17,14 @@ namespace SWAT
         [SerializeField] private RotationConstraint _rotationConstraint;
         [field: SerializeField] public LineRenderer LaserBeam { get; private set; }
 
-        private Player _player;
+        protected Player Player;
         private Camera _camera;
         private List<HitPoint> _hitPoints;
 
         private bool _isFirePos;
 
-        private static readonly int _fireTrigger = Animator.StringToHash("Fire");
-        private static readonly int _runTrigger = Animator.StringToHash("Run");
+        protected static readonly int FireTrigger = Animator.StringToHash("Fire");
+        protected static readonly int RunTrigger = Animator.StringToHash("Run");
 
         public override CharacterType Type => CharacterType.Enemy;
 
@@ -51,14 +51,14 @@ namespace SWAT
             CurrentArmour = ChildMaxArmour;
             Speed = EnemySpeed;
 
-            _player = ObjectHolder.GetObject<Player>();
+            Player = ObjectHolder.GetObject<Player>();
             _camera = ObjectHolder.GetObject<Camera>();
 
             _hitPoints = new List<HitPoint>();
 
             for (int i = 0; i < 5; i++)
             {
-                HitPoint point = new HitPoint(_player.HitPointsHolder.HitPoints[i], _hitPointsValues.Values[i]);
+                HitPoint point = new HitPoint(Player.HitPointsHolder.HitPoints[i], _hitPointsValues.Values[i]);
                 _hitPoints.Add(point);
             }
             
@@ -146,10 +146,10 @@ namespace SWAT
             public void Enter()
             {
                 if (_enemy.Animator != null)
-                    _enemy.Animator.SetTrigger(_fireTrigger);
+                    _enemy.Animator.SetTrigger(FireTrigger);
 
                 _currentFiringTime = _enemy.FiringTime;
-                _enemy.transform.LookAt(_enemy._player.transform.position);
+                _enemy.transform.LookAt(_enemy.Player.transform.position);
                 _enemy.CurrentWeapon.SetFireState(true);
             }
 
@@ -176,7 +176,7 @@ namespace SWAT
             {
                 base.Enter();
                 if (_enemy.Animator != null)
-                    _enemy.Animator.SetTrigger(_runTrigger);
+                    _enemy.Animator.SetTrigger(RunTrigger);
 
                 _enemy.CurrentWeapon.SetFireState(false);
             }

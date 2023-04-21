@@ -75,10 +75,17 @@ namespace SWAT
 
         protected virtual void OnGameOver(Event_GameOver obj) { }
 
-        protected virtual void OnGameStart(Event_GameStart obj) 
-            => CurrentWeapon.Reload();
+        protected virtual void OnGameStart(Event_GameStart obj)
+        {
+            if (CurrentWeapon != null)
+                CurrentWeapon.Reload();
 
-        protected override void Run() => StateEngine.CurrentState?.Run();
+            if (Path != null)
+                Path.ResetPath();
+        }
+
+        protected override void Run()
+            => StateEngine.CurrentState?.Run();
 
         public void DoDamage(int damage, Vector3 position)
         {
@@ -223,6 +230,7 @@ namespace SWAT
             RagdollColliders = ragdollColliders.ToArray();
         }
 
-        private void FindHitBoxes() => HitBoxes = GetComponentsInChildren<HitBox>();
+        private void FindHitBoxes()
+            => HitBoxes = GetComponentsInChildren<HitBox>();
     }
 }

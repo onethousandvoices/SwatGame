@@ -944,7 +944,7 @@ MonoBehaviour:
   m_Follow: {fileID: 0}
   m_AnimatedTarget: {fileID: 0}
   m_LayerIndex: 0
-  m_ShowDebugText: 0
+  m_ShowDebugText: 1
   m_ChildCameras:
   - {fileID: 8479913319638056850}
   - {fileID: 8479913319367694487}
@@ -1296,7 +1296,7 @@ MonoBehaviour:
   m_LockStageInInspector: 
   m_StreamingVersion: 20170927
   m_Priority: 3
-  m_StandbyUpdate: 2
+  m_StandbyUpdate: 1
   m_LookAt: {fileID: 0}
   m_Follow: {fileID: 0}
   m_Lens:

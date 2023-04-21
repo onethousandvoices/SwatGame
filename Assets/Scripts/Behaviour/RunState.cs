@@ -8,12 +8,11 @@ namespace SWAT.Behaviour
         private readonly IRunStateReady _character;
         protected PathPoint TargetPathPoint;
 
-        protected RunState(IRunStateReady character) => _character = character;
+        protected RunState(IRunStateReady character)
+            => _character = character;
 
         public virtual void Enter()
-        {
-            TargetPathPoint = _character.Path.GetPoint();
-        }
+            => TargetPathPoint = _character.Path.GetPoint();
 
         private void UpdatePathIndex()
         {
@@ -25,7 +24,8 @@ namespace SWAT.Behaviour
             TargetPathPoint = _character.Path.GetPoint();
         }
 
-        protected virtual bool OnPathPointStop() => false;
+        protected virtual bool OnPathPointStop()
+            => false;
 
         public void Run()
         {

@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5c001bdfe425cd440bcfb062747cb0ce, type: 3}
+  m_Name: SniperPool
+  m_EditorClassIdentifier: 
+  poolName: Snipers
+  poolItems:
+  - prefab: {fileID: 5625921451753454683, guid: 2d4c4e7d47ffad848a230f1048c2d83e, type: 3}
+    size: 20

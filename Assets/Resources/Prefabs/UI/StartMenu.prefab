@@ -523,6 +523,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7197663353623166829}
+  - component: {fileID: 812049684576130145}
   - component: {fileID: 7197663353623166826}
   m_Layer: 5
   m_Name: StartMenu
@@ -552,6 +553,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!95 &812049684576130145
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7197663353623166828}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: cb4228502a805f044bc29be1a04dd933, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
 --- !u!114 &7197663353623166826
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,6 +585,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a86268f7d15440a9988b8d5555329217, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _animator: {fileID: 812049684576130145}
   _startButton: {fileID: 7197663352142081727}
   _quitButton: {fileID: 7197663352053821769}
 --- !u!1 &7197663353853536546

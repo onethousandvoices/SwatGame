@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SWAT.LevelScripts.Navigation;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -44,6 +45,18 @@ namespace SWAT.Events
     }
 
 #region Events
+    public class Event_TEST_BossSpawn
+    {
+        public Boss Boss { get; }
+        public Path BossPath { get; }
+
+        public Event_TEST_BossSpawn(Boss boss, Path path)
+        {
+            Boss = boss;
+            BossPath = path;
+        }
+    }
+
     public class Event_CivilianLookEnded { }
 
     public class Event_CrosshairMoved { }

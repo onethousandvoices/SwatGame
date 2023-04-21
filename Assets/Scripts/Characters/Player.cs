@@ -1,9 +1,7 @@
-﻿using Cinemachine;
-using Controllers;
+﻿using Controllers;
 using NaughtyAttributes;
 using SWAT.Behaviour;
 using SWAT.Events;
-using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -26,7 +24,9 @@ namespace SWAT
         [SerializeField] private RotationConstraint _rotationConstraint;
         [field: SerializeField] public HitPointsHolder HitPointsHolder { get; private set; }
 
-        private static readonly int _isSit = Animator.StringToHash("IsSit");
+        private static readonly int _sitTrigger = Animator.StringToHash("Sit");
+        private static readonly int _standUpTrigger = Animator.StringToHash("StandUp");
+        private static readonly int _standUpRunTrigger = Animator.StringToHash("StandUpRun");
         private static readonly int _runTrigger = Animator.StringToHash("Run");
         private static readonly int _firingTrigger = Animator.StringToHash("Firing");
         private static readonly int _gameOver = Animator.StringToHash("GameOver");
@@ -41,7 +41,7 @@ namespace SWAT
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            
+
             Hud.PlayerCarry();
 
             CurrentHealth = BaseMaxHealth;
@@ -66,16 +66,16 @@ namespace SWAT
                 new ReloadingState(this),
                 new IdleState(this),
                 new PlayerRunState(this));
-            
+
             GameEvents.Register<Event_StageEnemiesDead>(OnStageEnemiesDeath);
             GameEvents.Register<Event_WeaponFire>(OnWeaponFire);
         }
 
-        private void OnWeaponFire(Event_WeaponFire @event)
+        private void OnWeaponFire(Event_WeaponFire obj)
         {
-            if (@event.Carrier != this)
+            if (obj.Carrier != this)
                 return;
-            _crosshair.SetCrosshairProgression(@event.ClipSizeNormalized);
+            _crosshair.SetCrosshairProgression(obj.ClipSizeNormalized);
         }
 
         private async void OnStageEnemiesDeath(Event_StageEnemiesDead obj)
@@ -84,18 +84,12 @@ namespace SWAT
             StateEngine.SwitchState<PlayerRunState>();
         }
 
-        private void GetUp()
-        {
-            Animator.enabled = true;
-            Animator.SetBool(_isSit, false);
-        }
-
         private void SitDown()
         {
             CurrentWeapon.SetFireState(false);
             _rotationConstraint.constraintActive = false;
             _rotationConstraint.weight = 0f;
-            Animator.SetBool(_isSit, true);
+            Animator.SetTrigger(_sitTrigger);
         }
 
         public void UnityEvent_FirePoseAnimationEnd()
@@ -106,19 +100,20 @@ namespace SWAT
             CurrentWeapon.SetFireState(true);
             _rotationConstraint.constraintActive = true;
         }
-        
-        protected override void Dead(Vector3 hitPosition) 
+
+        protected override void Dead(Vector3 hitPosition)
             => GameEvents.Call(new Event_GameOver("Dead", false));
-        
+
         protected override void OnGameOver(Event_GameOver obj)
         {
             _isGameOver = true;
             Hud.gameObject.SetActive(false);
             Animator.SetTrigger(_gameOver);
         }
-        
+
         protected override void OnGameStart(Event_GameStart obj)
         {
+            base.OnGameStart(obj);
             _isGameOver = false;
             Hud.gameObject.SetActive(true);
             StateEngine.SwitchState<IdleState>();
@@ -127,7 +122,7 @@ namespace SWAT
         }
 
         [Button("Run")]
-        private void SetStateRun() 
+        private void SetStateRun()
             => StateEngine.SwitchState<PlayerRunState>();
 
 #region States
@@ -135,14 +130,14 @@ namespace SWAT
         {
             private readonly Player _player;
 
-            public PlayerRunState(IRunStateReady character) : base(character) => _player = (Player)character;
+            public PlayerRunState(IRunStateReady character) : base(character)
+                => _player = (Player)character;
 
             public override void Enter()
             {
                 base.Enter();
-                _player.GetUp();
+                _player.Animator.SetTrigger(_standUpRunTrigger);
                 _player.Animator.SetTrigger(_runTrigger);
-                _player.CurrentWeapon.SetFireState(false);
                 TargetPathPoint = _player.Path.GetPoint();
                 _player._rotationConstraint.weight = 0f;
                 _player._rotationConstraint.constraintActive = false;
@@ -169,11 +164,12 @@ namespace SWAT
         {
             private readonly Player _player;
 
-            public PlayerFiringState(Player player) => _player = player;
+            public PlayerFiringState(Player player)
+                => _player = player;
 
             public void Enter()
             {
-                _player.GetUp();
+                _player.Animator.SetTrigger(_standUpTrigger);
                 _player.Animator.SetTrigger(_firingTrigger);
                 _player.IsVulnerable = true;
                 _player._rotationConstraint.weight = 1f;
@@ -194,16 +190,19 @@ namespace SWAT
                     _player.StateEngine.SwitchState<PreReloadingState>();
             }
 
-            public void Exit() => _player.IsVulnerable = false;
+            public void Exit()
+                => _player.IsVulnerable = false;
         }
 
         private class PreReloadingState : IState
         {
             private readonly Player _player;
 
-            public PreReloadingState(Player player) => _player = player;
+            public PreReloadingState(Player player)
+                => _player = player;
 
-            public void Enter() => _player.CurrentWeapon.SetFireState(false);
+            public void Enter()
+                => _player.CurrentWeapon.SetFireState(false);
 
             public void Run()
             {
@@ -215,16 +214,19 @@ namespace SWAT
                 _player.StateEngine.SwitchState<ReloadingState>();
             }
 
-            public void Exit() => _player.SitDown();
+            public void Exit()
+                => _player.SitDown();
         }
 
         private class PreIdleState : IState
         {
             private readonly Player _player;
 
-            public PreIdleState(Player player) => _player = player;
+            public PreIdleState(Player player)
+                => _player = player;
 
-            public void Enter() => _player.CurrentWeapon.SetFireState(false);
+            public void Enter()
+                => _player.CurrentWeapon.SetFireState(false);
 
             public void Run()
             {
@@ -246,7 +248,8 @@ namespace SWAT
             private float _reloadingTimeNormalized;
             private float _currentReloadingTime;
 
-            public ReloadingState(Player player) => _player = player;
+            public ReloadingState(Player player)
+                => _player = player;
 
             public void Enter()
             {
@@ -278,17 +281,23 @@ namespace SWAT
         {
             private readonly Player _player;
 
-            public IdleState(Player player) => _player = player;
+            public IdleState(Player player)
+                => _player = player;
 
-            public void Enter() => _player.SitDown();
+            public void Enter()
+                => _player.SitDown();
 
             public void Run()
             {
                 if (!Input.GetMouseButtonDown(0) || !_player._tutorialController.IsInputAllowed || _player._isGameOver)
                     return;
-                _player.StateEngine.SwitchState<PlayerFiringState>();
-                if (!_player._tutorialController.IsTutorialDone)
+                if (_player._tutorialController.IsCivilianStage)
+                {
                     _player._tutorialController.InputAfterCivilianMet();
+                    return;
+                }
+                
+                _player.StateEngine.SwitchState<PlayerFiringState>();
             }
 
             public void Exit() { }

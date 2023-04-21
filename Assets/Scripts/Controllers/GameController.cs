@@ -3,6 +3,7 @@ using NTC.Global.Cache;
 using SWAT;
 using SWAT.Events;
 using SWAT.LevelScripts;
+using SWAT.LevelScripts.Navigation;
 using SWAT.Utility;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,8 @@ namespace Controllers
         [SerializeField] private Transform _charactersHolder;
         [field: SerializeField, HideInInspector] public bool IsDebug { get; private set; }
         [field: SerializeField, HideInInspector] public bool IsTutorial { get; private set; }
+        [SerializeField, HideInInspector] private bool _tutorialShown;
+        [SerializeField, HideInInspector] private bool _debugMode;
 #region CfgDictionaries
         [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _playerCfg = new SerializableDictionary<string, int>();
         [SerializeField, ShowIf("_showCfg")] private SerializableDictionary<string, int> _playerWeaponCfg = new SerializableDictionary<string, int>();
@@ -31,14 +34,19 @@ namespace Controllers
         private LevelController _levelController;
         private TutorialController _tutorialController;
 
+        [SerializeField] private Boss _boss;
+        [SerializeField] private Path _bossPath;
+
         protected override void OnEnabled()
         {
             Application.targetFrameRate = 60;
             ConfigureObjects();
             GameEvents.Register<Event_GameStart>(OnGameStart);
+
+            // GameEvents.Call(new Event_TEST_BossSpawn(_boss, _bossPath));
         }
 
-        private static void OnGameStart(Event_GameStart obj) 
+        private static void OnGameStart(Event_GameStart obj)
             => Time.timeScale = 1f;
 
         protected override void OnDisabled()
@@ -139,9 +147,12 @@ namespace Controllers
             ParseConfig();
 
             MonoCache[] sceneObjects = FindObjectsOfType<MonoCache>();
-            
+            MonoCache[] prefabs = Resources.LoadAll<MonoCache>($"Prefabs");
+
             foreach (MonoCache sceneObject in sceneObjects)
                 ConfigObject(sceneObject);
+            foreach (MonoCache prefab in prefabs)
+                ConfigObject(prefab);
         }
 
         public void ConfigObject(MonoCache obj)
@@ -192,29 +203,45 @@ namespace Controllers
             }
         }
 
-        [Button("Set Debug")]
-        private void SetDebug() => IsDebug = true;
+        [Button("Set Debug"), HideIf("_debugMode")]
+        private void SetDebug()
+        {
+            IsDebug = true;
+            _debugMode = true;
+        }
 
-        [Button("Unset Debug")]
-        private void UnsetDebug() => IsDebug = false;
+        [Button("Unset Debug"), ShowIf("_debugMode")]
+        private void UnsetDebug()
+        {
+            IsDebug = false;
+            _debugMode = false;
+        }
 
-        [Button("Enable Tutorial")]
-        private void EnableTutorial() => IsTutorial = true;
+        [Button("Enable Tutorial"), HideIf("_tutorialShown")]
+        private void EnableTutorial()
+        {
+            IsTutorial = true;
+            _tutorialShown = true;
+        }
 
-        [Button("Disable Tutorial")]
-        private void DisableTutorial() => IsTutorial = false;
+        [Button("Disable Tutorial"), ShowIf("_tutorialShown")]
+        private void DisableTutorial()
+        {
+            IsTutorial = false;
+            _tutorialShown = false;
+        }
 
-        [Button("gameOverBad")]
+        [Button("Game Over Bad")]
         private void TestBad()
-        {
-            GameEvents.Call(new Event_GameOver("test bad", false));
-        }
+            => GameEvents.Call(new Event_GameOver("test bad", false));
 
-        [Button("gameOverGood")]
+        [Button("Game Over Good")]
         private void TestGood()
-        {
-            GameEvents.Call(new Event_GameOver("test good", true));
-        }
+            => GameEvents.Call(new Event_GameOver("test good", true));
+        
+        [Button("Game Start")]
+        private void StartGame()
+            => GameEvents.Call(new Event_GameStart());
     }
 
     [Serializable]

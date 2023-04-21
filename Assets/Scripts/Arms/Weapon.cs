@@ -48,7 +48,7 @@ namespace SWAT.Weapons
             _clipSize = clipSize;
             _reloadTime = reloadTime;
             _totalAmmo = totalAmmo;
-            
+
             if (_carrier is Player)
             {
                 _lookSpeed = 20;
@@ -124,6 +124,12 @@ namespace SWAT.Weapons
             if (_carrier is Player)
                 transform.position = _rightHand.position;
 
+            if (_isRiseUp)
+            {
+                transform.localEulerAngles = new Vector3(-90f, 0f, 0f);
+                return;
+            }
+
             if (FireState)
             {
                 switch (_carrier)
@@ -166,11 +172,11 @@ namespace SWAT.Weapons
             if (_weaponPair != null)
                 _weaponPair.gameObject.SetActive(state);
         }
-        
+
         public void RiseUp()
         {
             _isRiseUp = true;
-            transform.localEulerAngles = new Vector3(-90f, 0f, 0f);
+            SetFireState(false);
         }
 
         public void Lower() => _isRiseUp = false;

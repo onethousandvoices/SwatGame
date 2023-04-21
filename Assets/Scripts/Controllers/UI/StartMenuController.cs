@@ -8,10 +8,12 @@ namespace Controllers
 {
     public class StartMenuController : MonoCache
     {
+        [SerializeField] private Animator _animator;
         [SerializeField] private Button _startButton;
         [SerializeField] private Button _quitButton;
 
         private TutorialController _tutorial;
+        private static readonly int Hide = Animator.StringToHash("Hide");
 
         protected override void OnEnabled()
         {
@@ -19,8 +21,7 @@ namespace Controllers
 
             _startButton.onClick.AddListener(() =>
             {
-                GameEvents.Call(new Event_GameStart());
-                gameObject.SetActive(false);
+                _animator.SetTrigger(Hide);
             });
             _quitButton.onClick.AddListener(() =>
             {
@@ -30,6 +31,12 @@ namespace Controllers
                 Application.Quit();
 #endif
             });
+        }
+
+        public void UnityEvent_FadeEnd()
+        {
+            GameEvents.Call(new Event_GameStart());
+            gameObject.SetActive(false);
         }
 
         protected override void OnDisabled()

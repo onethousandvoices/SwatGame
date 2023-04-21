@@ -44,7 +44,7 @@ namespace Controllers
             while (t < 1f)
             {
                 Time.timeScale = Mathf.Lerp(start, target, t);
-                t += Time.unscaledDeltaTime / 3f;
+                t += Time.unscaledDeltaTime * 2f;
                 yield return null;
             }
             

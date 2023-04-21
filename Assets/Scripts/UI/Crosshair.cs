@@ -28,6 +28,7 @@ namespace SWAT
         private Vector3 _delta;
 
         private int _obstacleLayer;
+        private bool _shouldDisable;
 
         protected override void OnEnabled()
         {
@@ -39,8 +40,16 @@ namespace SWAT
 
             GameEvents.Register<Event_PlayerChangedPosition>(_ => Enable());
             GameEvents.Register<Event_PlayerRunStarted>(_ => Disable());
-            GameEvents.Register<Event_GameStart>(_ => Enable());
-            GameEvents.Register<Event_GameOver>(_ => Disable());
+            GameEvents.Register<Event_GameStart>(_ =>
+            {
+                _shouldDisable = false;
+                Enable();
+            });
+            GameEvents.Register<Event_GameOver>(_ =>
+            {
+                _shouldDisable = true;
+                Disable();
+            });
             GameEvents.Register<Event_CivilianLookEnded>(_ => Enable());
 
             ReloadReady();
@@ -100,6 +109,8 @@ namespace SWAT
 
         public void EnableBar()
         {
+            if (_shouldDisable)
+                return;
             if (!gameObject.activeSelf)
                 gameObject.SetActive(true);
 
@@ -122,9 +133,7 @@ namespace SWAT
         }
 
         private void Disable()
-        {
-            gameObject.SetActive(false);
-        }
+            => gameObject.SetActive(false);
 
         private void Enable()
         {
@@ -132,8 +141,13 @@ namespace SWAT
             _rect.anchoredPosition = Vector3.zero;
         }
 
-        public Vector3 GetTarget() => RayHit();
-        public void SetReloadProgression(float progress) => _barFiller.fillAmount = progress;
-        public void SetCrosshairProgression(float progress) => _crosshairFiller.fillAmount = progress;
+        public Vector3 GetTarget()
+            => RayHit();
+
+        public void SetReloadProgression(float progress)
+            => _barFiller.fillAmount = progress;
+
+        public void SetCrosshairProgression(float progress)
+            => _crosshairFiller.fillAmount = progress;
     }
 }
