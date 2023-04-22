@@ -1716,7 +1716,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Path>k__BackingField: {fileID: 0}
   CurrentWeapon: {fileID: 7160034945095976617}
-  Animator: {fileID: 7160034944249544366}
+  <Animator>k__BackingField: {fileID: 7160034944249544366}
   Hud: {fileID: 3713054723875509442}
   HitBoxes:
   - {fileID: 7160034943674639155}

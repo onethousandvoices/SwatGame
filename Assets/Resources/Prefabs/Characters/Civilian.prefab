@@ -65,7 +65,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Path>k__BackingField: {fileID: 0}
   CurrentWeapon: {fileID: 0}
-  Animator: {fileID: 8317572962940898933}
+  <Animator>k__BackingField: {fileID: 8317572962940898933}
   Hud: {fileID: 6719000928725728006}
   HitBoxes:
   - {fileID: 8317572963723313038}

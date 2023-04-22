@@ -24,7 +24,7 @@ namespace SWAT
         private bool _isFirePos;
 
         protected static readonly int FireTrigger = Animator.StringToHash("Fire");
-        protected static readonly int RunTrigger = Animator.StringToHash("Run");
+        private static readonly int RunTrigger = Animator.StringToHash("Run");
 
         public override CharacterType Type => CharacterType.Enemy;
 

@@ -61,9 +61,7 @@ namespace SWAT.Weapons
             }
 
             if (_carrier is Boss)
-            {
                 GameEvents.Register<Event_BossOnSecondaryWeaponShot>(OnSecondaryWeaponShot);
-            }
 
             _currentClipSize = _clipSize;
 
@@ -140,7 +138,7 @@ namespace SWAT.Weapons
                     case Boss boss:
                         break;
                     case Enemy enemy:
-                        transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
+                        // transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
 
                         if (_currentAimingPoint != Vector3.zero && enemy.LaserBeam != null)
                         {
@@ -152,6 +150,12 @@ namespace SWAT.Weapons
 
                 Vector3 direction = _currentAimingPoint - transform.position + _posOffset;
                 transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
+
+                if (_weaponPair != null)
+                {
+                    Vector3 directionSecondary = _currentAimingPoint - _weaponPair.transform.position + _posOffset;
+                    _weaponPair.transform.rotation = Quaternion.Lerp(_weaponPair.transform.rotation, Quaternion.LookRotation(directionSecondary), Time.deltaTime * _lookSpeed);
+                }
             }
             else if (_carrier is Player && _isRiseUp == false)
             {
@@ -179,11 +183,14 @@ namespace SWAT.Weapons
             SetFireState(false);
         }
 
-        public void Lower() => _isRiseUp = false;
+        public void Lower()
+            => _isRiseUp = false;
 
-        public void SetFireState(bool state) => FireState = state;
+        public void SetFireState(bool state)
+            => FireState = state;
 
-        public void ResetFiringRate() => _currentFiringRate = 60f / _firingRate;
+        public void ResetFiringRate()
+            => _currentFiringRate = 60f / _firingRate;
 
         public void Reload()
         {

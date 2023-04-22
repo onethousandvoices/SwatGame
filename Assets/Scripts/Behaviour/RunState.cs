@@ -17,10 +17,8 @@ namespace SWAT.Behaviour
         private void UpdatePathIndex()
         {
             if (TargetPathPoint.IsStopPoint)
-            {
                 if (OnPathPointStop())
                     return;
-            }
             TargetPathPoint = _character.Path.GetPoint();
         }
 
@@ -29,6 +27,9 @@ namespace SWAT.Behaviour
 
         public void Run()
         {
+            if (_character.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 || _character.Animator.IsInTransition(0))
+                return;
+            
             Vector3 character = _character.Transform.position;
             Vector3 direction = TargetPathPoint.transform.position - character;
             direction.y = 0;

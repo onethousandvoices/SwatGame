@@ -25,6 +25,7 @@ namespace SWAT
 
     public interface IRunStateReady
     {
+        public Animator Animator { get; }
         public Path Path { get; }
         public Transform Transform { get; }
         public Rigidbody Rb { get; }
@@ -36,7 +37,7 @@ namespace SWAT
         [field: SerializeField] public Path Path { get; protected set; }
         [HideIf("IsPeaceMan")]
         [SerializeField] protected Weapon CurrentWeapon;
-        [SerializeField] protected Animator Animator;
+        [field: SerializeField] public Animator Animator { get; protected set; }
         [SerializeField] protected Hud Hud;
         [HorizontalLine(color: EColor.Red)]
         [SerializeField] protected HitBox[] HitBoxes;

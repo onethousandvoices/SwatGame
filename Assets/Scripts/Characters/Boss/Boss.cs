@@ -19,7 +19,7 @@ namespace SWAT
         [SerializeField, Config(Extras.Boss_Weapons, "A3")] private int _clipSize;
         [SerializeField, Config(Extras.Boss_Weapons, "A4")] private int _reloadTime;
         [SerializeField, Config(Extras.Boss_Weapons, "A5")] private int _totalAmmo;
-        
+
         private static readonly int ShootTrigger = Animator.StringToHash("Shoot");
 
         public override CharacterType Type => CharacterType.Boss;
@@ -36,10 +36,10 @@ namespace SWAT
         protected override void OnEnabled()
         {
             base.OnEnabled();
-            
+
             GameEvents.Register<Event_WeaponFire>(OnWeaponFire);
         }
-        
+
         protected override void ConfigureStates()
         {
             StateEngine.AddState(
@@ -48,9 +48,7 @@ namespace SWAT
         }
 
         protected override void SetFirstState()
-        {
-            StateEngine.SwitchState<BossRunState>();
-        }
+            => StateEngine.SwitchState<BossRunState>();
 
         private void OnWeaponFire(Event_WeaponFire obj)
         {
@@ -58,7 +56,7 @@ namespace SWAT
                 return;
             Animator.SetTrigger(ShootTrigger);
         }
-        
+
         private class BossFireState : IState
         {
             private readonly Boss _boss;
@@ -78,13 +76,17 @@ namespace SWAT
 
             public void Run()
             {
+                if (_boss.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 || _boss.Animator.IsInTransition(0))
+                    return;
+
                 _boss.CurrentWeapon.Fire();
                 _currentFiringTime -= Time.deltaTime;
 
                 if (_currentFiringTime > 0)
                     return;
 
-                _boss.StateEngine.SwitchState<BossRunState>();
+                if (_boss.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime > 1 && !_boss.Animator.IsInTransition(0))
+                    _boss.StateEngine.SwitchState<BossRunState>();
             }
 
             public void Exit() { }
