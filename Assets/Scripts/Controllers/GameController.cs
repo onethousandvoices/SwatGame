@@ -43,7 +43,7 @@ namespace Controllers
             ConfigureObjects();
             GameEvents.Register<Event_GameStart>(OnGameStart);
 
-            // GameEvents.Call(new Event_TEST_BossSpawn(_boss, _bossPath));
+            GameEvents.Call(new Event_TEST_BossSpawn(_boss, _bossPath));
         }
 
         private static void OnGameStart(Event_GameStart obj)
