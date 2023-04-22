@@ -42,12 +42,14 @@ namespace Controllers
             Application.targetFrameRate = 60;
             ConfigureObjects();
             GameEvents.Register<Event_GameStart>(OnGameStart);
-
-            GameEvents.Call(new Event_TEST_BossSpawn(_boss, _bossPath));
         }
 
-        private static void OnGameStart(Event_GameStart obj)
-            => Time.timeScale = 1f;
+        private void OnGameStart(Event_GameStart obj)
+        {
+            Time.timeScale = 1f;
+            if (IsDebug)
+                GameEvents.Call(new Event_TEST_BossSpawn(_boss, _bossPath));
+        }
 
         protected override void OnDisabled()
         {
@@ -238,7 +240,7 @@ namespace Controllers
         [Button("Game Over Good")]
         private void TestGood()
             => GameEvents.Call(new Event_GameOver("test good", true));
-        
+
         [Button("Game Start")]
         private void StartGame()
             => GameEvents.Call(new Event_GameStart());

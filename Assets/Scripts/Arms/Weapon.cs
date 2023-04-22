@@ -29,7 +29,6 @@ namespace SWAT.Weapons
         private int _clipSize;
         private int _reloadTime;
         private int _totalAmmo;
-        private int _lookSpeed;
         private int _projectileDamage;
 
         private Vector3 _currentAimingPoint;
@@ -50,15 +49,9 @@ namespace SWAT.Weapons
             _totalAmmo = totalAmmo;
 
             if (_carrier is Player)
-            {
-                _lookSpeed = 20;
                 _target = ObjectHolder.GetObject<Crosshair>();
-            }
             else
-            {
-                _lookSpeed = 150;
                 SetAimingPoint();
-            }
 
             if (_carrier is Boss)
                 GameEvents.Register<Event_BossOnSecondaryWeaponShot>(OnSecondaryWeaponShot);
@@ -68,9 +61,9 @@ namespace SWAT.Weapons
             ResetFiringRate();
         }
 
-        private async void OnSecondaryWeaponShot(Event_BossOnSecondaryWeaponShot obj)
+        private void OnSecondaryWeaponShot(Event_BossOnSecondaryWeaponShot obj)
         {
-            await _weaponPair.SetAimingPoint();
+            _weaponPair._currentAimingPoint = _currentAimingPoint;
             _weaponPair.FireInner();
         }
 
@@ -135,10 +128,8 @@ namespace SWAT.Weapons
                     case Player:
                         _currentAimingPoint = _target.GetTarget();
                         break;
-                    case Boss boss:
-                        break;
                     case Enemy enemy:
-                        // transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
+                        transform.position = _rightHand.position + new Vector3(0f, 0.2f, 0f) + _posOffset;
 
                         if (_currentAimingPoint != Vector3.zero && enemy.LaserBeam != null)
                         {
@@ -149,12 +140,12 @@ namespace SWAT.Weapons
                 }
 
                 Vector3 direction = _currentAimingPoint - transform.position + _posOffset;
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(direction), Time.deltaTime * _lookSpeed);
+                transform.rotation = Quaternion.LookRotation(direction);
 
                 if (_weaponPair != null)
                 {
                     Vector3 directionSecondary = _currentAimingPoint - _weaponPair.transform.position + _posOffset;
-                    _weaponPair.transform.rotation = Quaternion.Lerp(_weaponPair.transform.rotation, Quaternion.LookRotation(directionSecondary), Time.deltaTime * _lookSpeed);
+                    _weaponPair.transform.rotation = Quaternion.LookRotation(directionSecondary);
                 }
             }
             else if (_carrier is Player && _isRiseUp == false)

@@ -1989,7 +1989,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7160034944981798464}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.1265, z: 0.4882}
+  m_LocalPosition: {x: 0, y: 0.126, z: 0.309}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2044,7 +2044,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponPair: {fileID: 0}
   _projectile: {fileID: 1375463690335951632, guid: 54fab015731c23e4aa541518dbbf9bf2, type: 3}
-  _firePoint: {fileID: 7160034945095976622}
+  _firePoint: {fileID: 7160034944981798467}
   _maxFireRange: 100
   _rightHand: {fileID: 7160034943615642884}
   _leftHand: {fileID: 0}

@@ -102,7 +102,11 @@ namespace SWAT
         }
 
         protected override void Dead(Vector3 hitPosition)
-            => GameEvents.Call(new Event_GameOver("Dead", false));
+        {
+            base.Dead(hitPosition);
+            _rotationConstraint.constraintActive = false;
+            GameEvents.Call(new Event_GameOver("Dead", false));
+        }
 
         protected override void OnGameOver(Event_GameOver obj)
         {

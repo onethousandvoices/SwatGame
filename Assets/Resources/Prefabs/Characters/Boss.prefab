@@ -253,6 +253,10 @@ PrefabInstance:
       value: 12.9915695
       objectReference: {fileID: 0}
     - target: {fileID: -5972225734549337170, guid: c63a2887c2482ba4eb2ac5d416bc2f7f, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.307
+      objectReference: {fileID: 0}
+    - target: {fileID: -5972225734549337170, guid: c63a2887c2482ba4eb2ac5d416bc2f7f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: -89.98021
       objectReference: {fileID: 0}
@@ -1791,6 +1795,10 @@ PrefabInstance:
       propertyPath: _rightHand
       value: 
       objectReference: {fileID: 8400013590270966676}
+    - target: {fileID: 4900238629767995416, guid: 03a3a5705e3cc1f46b76b16be985ac34, type: 3}
+      propertyPath: _projectile
+      value: 
+      objectReference: {fileID: 1375463690335951632, guid: 54fab015731c23e4aa541518dbbf9bf2, type: 3}
     - target: {fileID: 7627478206914379657, guid: 03a3a5705e3cc1f46b76b16be985ac34, type: 3}
       propertyPath: m_RootOrder
       value: 6
@@ -1900,6 +1908,10 @@ PrefabInstance:
       propertyPath: _rightHand
       value: 
       objectReference: {fileID: 7993055921737291737}
+    - target: {fileID: 4900238629767995416, guid: 03a3a5705e3cc1f46b76b16be985ac34, type: 3}
+      propertyPath: _projectile
+      value: 
+      objectReference: {fileID: 1375463690335951632, guid: 54fab015731c23e4aa541518dbbf9bf2, type: 3}
     - target: {fileID: 4900238629767995416, guid: 03a3a5705e3cc1f46b76b16be985ac34, type: 3}
       propertyPath: _weaponPair
       value: 

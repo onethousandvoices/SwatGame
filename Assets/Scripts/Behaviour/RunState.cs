@@ -27,7 +27,7 @@ namespace SWAT.Behaviour
 
         public void Run()
         {
-            if (_character.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 1 || _character.Animator.IsInTransition(0))
+            if (_character.Animator.GetCurrentAnimatorStateInfo(0).normalizedTime < 0.5f || _character.Animator.IsInTransition(0))
                 return;
             
             Vector3 character = _character.Transform.position;

@@ -69,6 +69,8 @@ namespace SWAT
             Rb = Get<Rigidbody>();
             StateEngine = new StateEngine();
             Transform = transform;
+            
+            SetPhysicsState(true);
 
             GameEvents.Register<Event_GameOver>(OnGameOver);
             GameEvents.Register<Event_GameStart>(OnGameStart);

@@ -40,13 +40,13 @@ namespace SWAT
         protected abstract int TotalAmmo { get; }
         protected abstract int EnemySpeed { get; }
         protected abstract int FiringTime { get; }
-        
+
         protected override void OnEnabled()
         {
             base.OnEnabled();
 
             IsVulnerable = true;
-            
+
             CurrentHealth = ChildMaxHealth;
             CurrentArmour = ChildMaxArmour;
             Speed = EnemySpeed;
@@ -61,14 +61,14 @@ namespace SWAT
                 HitPoint point = new HitPoint(Player.HitPointsHolder.HitPoints[i], _hitPointsValues.Values[i]);
                 _hitPoints.Add(point);
             }
-            
+
             CurrentWeapon.Configure(
                 ProjectileDamage,
                 FiringRate,
                 ClipSize,
                 ReloadTime,
                 TotalAmmo);
-            
+
             ConfigureStates();
         }
 
@@ -97,13 +97,15 @@ namespace SWAT
             return await Task.Run(() => RandomHitPoint(randomInt));
         }
 
-        public void SetPositions(Path path)
+        public async void SetPositions(Path path)
         {
             Path = path;
+            await Task.Yield();
             SetFirstState();
         }
 
-        protected virtual void SetFirstState() => StateEngine.SwitchState<EnemyRunState>();
+        protected virtual void SetFirstState()
+            => StateEngine.SwitchState<EnemyRunState>();
 
         protected override void Dead(Vector3 hitPosition)
         {
@@ -131,17 +133,20 @@ namespace SWAT
 
         public void OnDespawn() { }
 
-        protected override void LateRun() => Hud.transform.parent.transform.LookAt(_camera.transform);
+        protected override void LateRun()
+            => Hud.transform.parent.transform.LookAt(_camera.transform);
 
-        public void UnityEvent_FirePoseReached() => CurrentWeapon.SetFireState(true);
-        
+        public void UnityEvent_FirePoseReached()
+            => CurrentWeapon.SetFireState(true);
+
 #region States
         protected class EnemyFiringState : IState
         {
             private readonly Enemy _enemy;
             private float _currentFiringTime;
 
-            public EnemyFiringState(Enemy enemy) => _enemy = enemy;
+            public EnemyFiringState(Enemy enemy)
+                => _enemy = enemy;
 
             public void Enter()
             {
@@ -170,7 +175,9 @@ namespace SWAT
         protected class EnemyRunState : RunState
         {
             private readonly Enemy _enemy;
-            public EnemyRunState(IRunStateReady character) : base(character) => _enemy = (Enemy)character;
+
+            public EnemyRunState(IRunStateReady character) : base(character)
+                => _enemy = (Enemy)character;
 
             public override void Enter()
             {
@@ -180,7 +187,7 @@ namespace SWAT
 
                 _enemy.CurrentWeapon.SetFireState(false);
             }
-            
+
             protected override bool OnPathPointStop()
             {
                 _enemy.StateEngine.SwitchState<EnemyFiringState>();
