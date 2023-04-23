@@ -91,7 +91,7 @@ namespace Controllers
         public void InputAfterCivilianMet()
         {
             Time.timeScale = 1f;
-            _runCamera.m_Lens.FieldOfView = 60;
+            _runCamera.m_Lens.FieldOfView = 40;
             _composer.m_TrackedObjectOffset = _baseOffset;
 
             if (_runCamera.LookAt != _player.transform)
