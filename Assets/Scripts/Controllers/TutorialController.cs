@@ -68,7 +68,7 @@ namespace Controllers
             _animator.SetTrigger(MeetCivilian);
 
             _runCamera.LookAt = civilian.transform;
-            _runCamera.Follow = civilian.transform;
+            // _runCamera.Follow = civilian.transform;
             
             _composer.m_TrackedObjectOffset = new Vector3(_baseOffset.x, _baseOffset.y, 0);
 
@@ -97,7 +97,7 @@ namespace Controllers
             if (_runCamera.LookAt != _player.transform)
             {
                 _runCamera.LookAt = _player.transform;
-                _runCamera.Follow = _player.transform;
+                // _runCamera.Follow = _player.transform;
                 _animator.SetTrigger(StopMeetCivilian);
             }
 
