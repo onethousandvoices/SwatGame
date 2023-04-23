@@ -118,11 +118,14 @@ namespace SWAT
         protected override void OnGameStart(Event_GameStart obj)
         {
             base.OnGameStart(obj);
+            SetPhysicsState(true);
             _isGameOver = false;
+            Rb.velocity = Vector3.zero;
             Hud.gameObject.SetActive(true);
             StateEngine.SwitchState<IdleState>();
             Animator.SetTrigger(GameStart);
             CurrentWeapon.Reload();
+            transform.rotation = Path.Start.transform.rotation;
         }
 
         [Button("Run")]
@@ -156,10 +159,11 @@ namespace SWAT
                 return true;
             }
 
-            public override void Exit()
+            public override async void Exit()
             {
                 _player.transform.rotation = TargetPathPoint.transform.rotation;
                 _player.CurrentWeapon.Lower();
+                await Task.Delay(1000);
                 GameEvents.Call(new Event_PlayerChangedPosition());
             }
         }

@@ -79,6 +79,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Collider>k__BackingField: {fileID: 605033036016228144}
   <FlySpeed>k__BackingField: 50
+  _trail: {fileID: 1538027363202374545}
 --- !u!96 &1538027363202374545
 TrailRenderer:
   serializedVersion: 2

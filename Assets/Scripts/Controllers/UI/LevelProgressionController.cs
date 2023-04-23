@@ -46,6 +46,7 @@ namespace Controllers
             float singlePercent = rect.rect.width / 100;
             float currentPercent = 0f;
 
+            _checkpointIndex = 0;
             _checkpoints = new Checkpoint[_stagesCount];
 
             for (int i = 0; i < _checkpoints.Length; i++)
@@ -70,8 +71,14 @@ namespace Controllers
         private void OnGameOver(Event_GameOver obj) 
             => _animator.SetTrigger(Hide);
 
-        private void OnGameStart(Event_GameStart obj) 
-            => _animator.SetTrigger(Show);
+        private void OnGameStart(Event_GameStart obj)
+        {
+            for (int i = 1; i < _checkpoints.Length; i++)
+                _checkpoints[i].SetState(CheckpointState.Locked);
+            _slider.value = 0;
+            _checkpointIndex = 0;
+            _animator.SetTrigger(Show);
+        }
 
         private void ConfigureLowerBar(Event_CharactersSpawned obj)
         {

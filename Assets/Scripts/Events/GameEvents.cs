@@ -41,7 +41,8 @@ namespace SWAT.Events
                     callback(args);
         }
 
-        public static void UnregisterAll() => _events.Clear();
+        public static void UnregisterAll()
+            => _events.Clear();
     }
 
 #region Events
@@ -66,7 +67,9 @@ namespace SWAT.Events
     public class Event_CharactersSpawned
     {
         public BaseCharacter[] Characters { get; }
-        public Event_CharactersSpawned(BaseCharacter[] characters) => Characters = characters;
+
+        public Event_CharactersSpawned(BaseCharacter[] characters)
+            => Characters = characters;
     }
 
     public class Event_WeaponFire
@@ -81,6 +84,8 @@ namespace SWAT.Events
         }
     }
 
+    public class Event_KillStageEnemies { }
+
     public class Event_StageEnemiesDead { }
 
     public class Event_PlayerChangedPosition { }
@@ -90,7 +95,9 @@ namespace SWAT.Events
     public class Event_CharacterKilled
     {
         public BaseCharacter Character { get; }
-        public Event_CharacterKilled(BaseCharacter character) => Character = character;
+
+        public Event_CharacterKilled(BaseCharacter character)
+            => Character = character;
     }
 
     public class Event_GameStart { }

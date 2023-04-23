@@ -34,7 +34,7 @@ namespace Controllers
             GameEvents.Register<Event_GameOver>(OnGameOver);
             GameEvents.Register<Event_CharacterKilled>(OnEnemyKilled);
             GameEvents.Register<Event_PlayerChangedPosition>(OnPlayerMoved);
-            
+            GameEvents.Register<Event_KillStageEnemies>(OnKillStageEnemies);
             GameEvents.Register<Event_TEST_BossSpawn>(OnBossSpawn);
         }
 
@@ -52,6 +52,13 @@ namespace Controllers
             _index = 0;
             SpawnStageEnemies();
             SpawnPlayer();
+        }
+        
+        private void OnKillStageEnemies(Event_KillStageEnemies obj)
+        {
+            for (int j = 0; j < 5; j++)
+                for (int i = 0; i < _enemiesToKill.Count; i++)
+                    _enemiesToKill[i].Kill();
         }
 
         private void SpawnPlayer()

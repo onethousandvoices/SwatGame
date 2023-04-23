@@ -69,7 +69,7 @@ namespace SWAT
             Rb = Get<Rigidbody>();
             StateEngine = new StateEngine();
             Transform = transform;
-            
+
             SetPhysicsState(true);
 
             GameEvents.Register<Event_GameOver>(OnGameOver);
@@ -169,11 +169,12 @@ namespace SWAT
                 if (col != null && col.attachedRigidbody != null)
                     col.attachedRigidbody.AddExplosionForce(2888f, hitPosition, 3f);
 
-            StartCoroutine(DeathRoutine());
+            if (this is Enemy)
+                StartCoroutine(DeathRoutine());
         }
 
         [Button("Kill")]
-        private void Kill()
+        public void Kill()
             => Dead(transform.position);
 
         [Button("Update Params")]

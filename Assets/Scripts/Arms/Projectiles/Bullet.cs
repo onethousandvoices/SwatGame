@@ -1,14 +1,17 @@
 ﻿using NTC.Global.Pool;
-using SWAT.Behaviour;
 using UnityEngine;
 
 namespace SWAT.Weapons
 {
     public class Bullet : Projectile
     {
-        public override void OnSpawn() { }
+        [SerializeField] private TrailRenderer _trail;
 
-        public override void OnDespawn() { }
+        public override void OnSpawn()
+            => _trail.enabled = true;
+
+        public override void OnDespawn()
+            => _trail.enabled = false;
 
         private void OnTriggerEnter(Collider other)
         {

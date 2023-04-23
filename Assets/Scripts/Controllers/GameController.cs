@@ -8,7 +8,6 @@ using SWAT.Utility;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using UnityEditor;
 using UnityEngine;
 
 namespace Controllers
@@ -244,6 +243,10 @@ namespace Controllers
         [Button("Game Start")]
         private void StartGame()
             => GameEvents.Call(new Event_GameStart());
+
+        [Button("Kill Stage Enemies")]
+        private void KillStageEnemies()
+            => GameEvents.Call(new Event_KillStageEnemies());
     }
 
     [Serializable]

@@ -377,7 +377,7 @@ GameObject:
   - component: {fileID: 7160034945081212638}
   - component: {fileID: 7160034945081212639}
   - component: {fileID: 7160034945081212636}
-  - component: {fileID: 2093958544229632497}
+  - component: {fileID: 1996159201634498923}
   m_Layer: 6
   m_Name: right.arm3
   m_TagString: Untagged
@@ -477,7 +477,7 @@ CharacterJoint:
   m_EnablePreprocessing: 0
   m_MassScale: 1
   m_ConnectedMassScale: 1
---- !u!114 &2093958544229632497
+--- !u!114 &1996159201634498923
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1612,8 +1612,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1.1081276, y: 0.8061655, z: 3.5525362}
-  m_Center: {x: 0.034719467, y: -0.072614826, z: 1.9654474}
+  m_Size: {x: 1.1081276, y: 0.79131794, z: 3.5525362}
+  m_Center: {x: 0.034719467, y: -0.06519185, z: 1.9654653}
 --- !u!114 &7160034943674639155
 MonoBehaviour:
   m_ObjectHideFlags: 0

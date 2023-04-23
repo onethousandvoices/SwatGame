@@ -79,6 +79,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Collider>k__BackingField: {fileID: 605033036016228144}
   <FlySpeed>k__BackingField: 30
+  _trail: {fileID: 6316005390473011395}
 --- !u!96 &6316005390473011395
 TrailRenderer:
   serializedVersion: 2
@@ -121,7 +122,7 @@ TrailRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Time: 0.5
+  m_Time: 0.26
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -138,7 +139,7 @@ TrailRenderer:
         inWeight: 0.33333334
         outWeight: 0.33333334
       - serializedVersion: 3
-        time: 0.8106235
+        time: 0.71363866
         value: 0
         inSlope: 0
         outSlope: 0
